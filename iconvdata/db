@@ -60,54 +60,17 @@
 #    I really don't want to have to do, meaning that this will probably never happen :(
 #
 ###################################################################################################
-#  - glibc-2.32/iconvdata/ibm932.c                                    "IBM932", "csIBM932"  (https://en.wikipedia.org/wiki/Code_page_932_(IBM))
-#  - glibc-2.32/iconvdata/ibm943.c                                    "IBM943", "cp943", "csIBM943"  (https://en.wikipedia.org/wiki/Code_page_932_(Microsoft_Windows))
-#
-# Codec: IBM932
-# Codec: IBM943
-#
-# NOTE: Each codec has a different <SINGLE_BYTE_LOOKUP_TABLE> / <DOUBLE_BYTE_LOOKUP_TABLE>
-#
-# VAR SAVED_BYTE: unsigned char = 0
-#
-# decode(unsigned char ch) {
-#    if (SAVED_BYTE != 0) {
-#        uint16_t ch16 = (SAVED_BYTE << 8) | ch;
-#        SAVED_BYTE = 0;
-#        return <DOUBLE_BYTE_LOOKUP_TABLE>[ch16];
-#    }
-#    result = <SINGLE_BYTE_LOOKUP_TABLE>[ch];
-#    if (result == 0) {
-#        if (!DOES_DOUBLE_WIDE_EXIST_FOR(ch << 8 | 0x??))
-#            return ERROR; // Illegal bytes
-#        SAVED_BYTE = ch;
-#        return;
-#    }
-#    return result;
-# }
-#
-###################################################################################################
 # TODO:
 #  - https://en.wikipedia.org/wiki/UTF-1                              "ISO-10646-UTF-1", "csISO10646UTF1"
-#  - https://en.wikipedia.org/wiki/Shift_JIS                          "shift-jis", "sjis", "ms_kanji", "csShiftJis"
-#  - https://en.wikipedia.org/wiki/Code_page_932_(Microsoft_Windows)  "windows-31j", "cp932", "IBM932", "ms932", "sjis-open", "sjis-win", "csWindows31J", "windows-932"  (https://www.iana.org/assignments/character-sets/character-sets.xhtml)
+#  - https://en.wikipedia.org/wiki/Shift_JIS                          
 #  - https://en.wikipedia.org/wiki/KOI-7                              "KOI7", "KOI7-switched", "csKOI7switched"
 #  - https://en.wikipedia.org/wiki/Code_page_776                      "cp776"
 #  - https://en.wikipedia.org/wiki/Code_page_777                      "cp777"
 #  - https://en.wikipedia.org/wiki/Code_page_778                      "cp778", "LST-1590-2"
 #  - https://en.wikipedia.org/wiki/CSX%2B_Indic_character_set         "CSX+Indic"
 #  - https://en.wikipedia.org/wiki/Code_page_907                      "cp907", "IBM907"
-#  - glibc-2.32/iconvdata/euc-kr.c                                    "EUC-KR", "euckr", "csEUCKR", "OSF0004000a", "IBMeuckr", "ksc-5601", "ks-c-5601-1987", "ksc5601-1987", "ksc5601-1987", "IBM970", "cp970", "5601" (https://www.rfc-editor.org/rfc/rfc1557.html)
-#  - glibc-2.32/iconvdata/uhc.c                                       "MSCP949", "UHC", "cp949", "OSF100203B5", "IBM1363", "cp1363"
 #  - glibc-2.32/iconvdata/johab.c                                     "MSCP1361", "cp1361", "johab", "x-johab"
-#  - glibc-2.32/iconvdata/big5.c                                      "Big5", "Big-5", "csBig5", "Big-Five", "BIGFIVE", "cn-Big5", "cp950"  (https://en.wikipedia.org/wiki/Big5)
-#  - https://en.wikipedia.org/wiki/Big5                               "IBM950"  (Slight variant of "Big5")
-#  - glibc-2.32/iconvdata/big5hkscs.c                                 "Big5HKSCS", "Big5-HKSCS", "csBig5HKSCS"
 #  - glibc-2.32/iconvdata/euc-jp-ms.c                                 "EUC-JP-MS", "EUCJP-MS", "EUCJP-OPEN", "EUCJP-WIN"
-#  - glibc-2.32/iconvdata/euc-jp.c                                    "EUC-JP", "eucjp", "csEUCPkdFmtJapanese", "OSF00030010", "UJIS", "x-euc-jp", "x-eucjp", "euc-jp-linux", "euc-jp-linux"  (https://www.rfc-editor.org/rfc/rfc1345.html)
-#  - glibc-2.32/iconvdata/euc-cn.c                                    "EUC-CN", "GB2312", "csGB2312", "GB_2312-80", "iso-ir-58", "chinese", "csISO58GB231280", "euccn", "CN-GB", "x-euc-cn", "IBMeuccn", "gb2312-1980", "gb2312-80"  (https://en.wikipedia.org/wiki/GB_2312)
-#  - glibc-2.32/iconvdata/gbk.c                                       "GBK", "cp936", "MS936", "windows-936", "csGBK", "GB13000", "x-mswin-936", "936"  (https://en.wikipedia.org/wiki/GBK_(character_encoding))
-#  - glibc-2.32/iconvdata/euc-tw.c                                    "EUC-TW", "euctw", "OSF0005000a", "x-euc-tw", "cns11643"
 #  - glibc-2.32/iconvdata/iso-2022-jptw.c                             "ISO-2022-JP", "iso2022-jp", "csISO2022JP", "ISO2022JP", "jis", "jis-encoding", "csJisEncoding"  (https://www.rfc-editor.org/rfc/rfc1468.html)
 #  - glibc-2.32/iconvdata/iso-2022-jp.c                               "ISO-2022-JP-2", ""iso2022-jp2"", "csISO2022JP2", "ISO2022JP2"  (https://www.rfc-editor.org/rfc/rfc1554.html)
 #  - glibc-2.32/iconvdata/iso-2022-jp-3.c                             "ISO-2022-JP-3"
@@ -117,7 +80,6 @@
 #  - glibc-2.32/iconvdata/asmo_449.c                                  "ASMO_449", "ISO_9036", "arabic7", "iso-ir-89", "csISO89ASMO449"  (https://www.rfc-editor.org/rfc/rfc1345.html)
 #  - glibc-2.32/iconvdata/ansi_x3.110.c                               "ANSI_X3.110-1983", "iso-ir-99", "CSA_T500-1983", "CSA_T500", "NAPLPS", "csISO99NAPLPS", "ANSI_X3.110"  (https://www.rfc-editor.org/rfc/rfc1345.html)
 #  - glibc-2.32/iconvdata/utf-7.c                                     "UNICODE-1-1-UTF-7", "csUnicode11UTF7", "UTF-7", "UTF7", "csUTF7", "UTF-7-IMAP", "csUTF7IMAP"  (https://www.rfc-editor.org/rfc/rfc1642.html)
-#  - glibc-2.32/iconvdata/gb18030.c                                   "GB18030", "csGB18030", "windows-54936", "gb18030-2000", "IBM1392"  (https://www.iana.org/assignments/charset-reg/GB18030)
 #  - glibc-2.32/iconvdata/viscii.c                                    "VISCII", "csVISCII"  (https://www.rfc-editor.org/rfc/rfc1456.html)
 #  - glibc-2.32/iconvdata/armscii-8.c                                 "ARMSCII8", "ARMSCII-8"  (https://en.wikipedia.org/wiki/ArmSCII)
 #  - glibc-2.32/iconvdata/tcvn5712-1.c                                "tcvn", "tcvn5712-1", "tcvn-5712", "tcvn5712-1:1993"
@@ -136,7 +98,6 @@
 #  - https://en.wikipedia.org/wiki/ISO-IR-169
 #  - https://www.rfc-editor.org/rfc/rfc1345.html                      "iso-ir-142", "ISO_6937-2-add", "csISOTextComm"
 #  - https://www.rfc-editor.org/rfc/rfc1345.html                      "csEUCFixWidJapanese"
-#  - https://www.rfc-editor.org/rfc/rfc1345.html                      "KS_C_5601-1987", "iso-ir-149", "KS_C_5601-1989", "KSC_5601", "korean", "csKSC56011987"
 #  - https://www.rfc-editor.org/rfc/rfc1345.html                      "JIS_C6226-1978", "iso-ir-42", "csISO42JISC62261978"
 #  - https://www.rfc-editor.org/rfc/rfc1345.html                      "videotex-suppl", "iso-ir-70", "csISO70VideotexSupp1"
 #  - https://www.rfc-editor.org/rfc/rfc1556.html                      "ISO_8859-6-E", "csISO88596E"
@@ -169,7 +130,6 @@
 #                        The colliding stuff I've already removed, though)
 # s.a. https://www.ibm.com/docs/en/ibm-mq/8.0?topic=administering-available-code-pages
 #  - ???                    "IBM1383", "cp1383"
-#  - ???                    "windows-949", "ms949", "cp1361", "IBM1361", "ms1361", "ksc5601-1992", "x-windows-949"
 #  - ???                    "windows-950", "ms950", "x-windows-950"
 #  - ???                    "IBM838", "cp838"
 #  - ???                    "IBM834", "cp834"
@@ -183,12 +143,9 @@
 #  - ???                    "x-MacUkraine", "macukraine"
 #  - ???                    "x-MacThai", "macthai"
 #  - ???                    "x-MacDingbat", "macdingbat"
-#  - ???                    "x-KSC5601", "ksc5601"
 #  - ???                    "x-ISO-8859-6S", "ISO-8859-6S", "iso8859-6s", "8859-6s"
-#  - ???                    "IBM954", "cp954"
+#  - ???                    
 #  - ???                    "x-IBM954C", "IBM954c", "cp954c", "954c"
-#  - ???                    "x-IBM949C", "IBM949c", "cp949c", "949c"
-#  - ???                    "x-IBM943C", "IBM943c", "cp943c", "943c"
 #  - ???                    "x-IBM864S", "IBM864s", "cp864s", "864s", "csibm864s"
 #  - ???                    "x-IBM420S", "IBM420s", "cp420s", "420s", "csibm420s"
 #  - ???                    "x-IBM1363C", "IBM1363c", "cp1363c"
@@ -204,14 +161,6 @@
 #  - ???                    "x-windows-50221", "ms50221", "cp50221"
 #  - ???                    "x-windows-50220", "ms50220", "cp50220"
 #  - ???                    "x-PCK", "pck"
-#  - ???                    "x-MS950-HKSCS", "ms950-hkscs"
-#  - ???                    "x-MS932_0213"
-#  - ???                    "x-JISAutoDetect", "jisautodetect"
-#  - ???                    "x-IBM964", "IBM964", "cp964", "964", "IBMeuctw"
-#  - ???                    "x-IBM33722", "IBM33722", "33722", "IBM33722-vascii-vpua", "IBM5050", "cp33722"
-#  - ???                    "IBM33722", "cp5050", "5050"
-#  - ???                    "IBM33722A", "cp33722a"
-#  - ???                    "IBM33722C", "cp33722c", "IBMeucjp"
 #  - ???                    "IBM837", "cp837"
 #  - ???                    "x-eucJP-Open", "euc-jp-solaris", "eucjp-open"
 #  - ???                    "x-Big5-Solaris", "big5-solaris"
@@ -9791,4 +9740,47 @@
 @INCLUDE("./stateful-ibm1388")
 @INCLUDE("./stateful-ibm1390")
 @INCLUDE("./stateful-ibm1399")
+
+
+
+###################################################################################################
+# Codecs declared as CODEC_MBCS work like this:
+# NOTE: Each codec has a different <SINGLE_BYTE_LOOKUP_TABLE> / <DOUBLE_BYTE_LOOKUP_TABLE>
+#
+# VAR SAVED_BYTE: unsigned char = 0
+#
+# decode(unsigned char ch) {
+#    if (SAVED_BYTE != 0) {
+#        uint16_t ch16 = (SAVED_BYTE << 8) | ch;
+#        SAVED_BYTE = 0;
+#        return <DOUBLE_BYTE_LOOKUP_TABLE>[ch16];
+#    }
+#    result = <SINGLE_BYTE_LOOKUP_TABLE>[ch];
+#    if (result == 0) {
+#        if (!DOES_DOUBLE_WIDE_EXIST_FOR(ch << 8 | 0x??))
+#            return ERROR; // Illegal bytes
+#        SAVED_BYTE = ch;
+#        return;
+#    }
+#    return result;
+# }
+#
+@INCLUDE("./mbcs-big5")
+@INCLUDE("./mbcs-big5hkscs")
+@INCLUDE("./mbcs-cp949c")
+@INCLUDE("./mbcs-euc-cn")
+@INCLUDE("./mbcs-euc-kr")
+@INCLUDE("./mbcs-gbk")
+@INCLUDE("./mbcs-ibm1363")
+@INCLUDE("./mbcs-ibm1373")
+@INCLUDE("./mbcs-ibm1386")
+@INCLUDE("./mbcs-ibm5471")
+@INCLUDE("./mbcs-ibm932")
+@INCLUDE("./mbcs-ibm943")
+@INCLUDE("./mbcs-ibm949")
+@INCLUDE("./mbcs-ibm950")
+@INCLUDE("./mbcs-korean")
+@INCLUDE("./mbcs-ms949")
+@INCLUDE("./mbcs-shift-jis")
+
 

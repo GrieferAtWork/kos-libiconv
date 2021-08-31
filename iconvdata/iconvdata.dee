@@ -82,6 +82,18 @@ class StatefulCodec {
 }
 
 
+@@Multi-byte codec (each character is 1- or 2 bytes).
+class MbcsCodec {
+	this = default;
+	public member name: string;
+	public member aliases: {CodecAlias...} = [];
+
+	@@Decode map. Maps CP_ORD -> UNI_ORD or another
+	@@table that is used to decode a second byte.
+	public member map: {int: int | {int: int}} = Dict();
+}
+
+
 
 function getEncodeTable(table: {int...}, shift: int): {int: int} {
 	local result = Dict();
@@ -226,18 +238,40 @@ function parseDBFilename(filename: string): {string: Object} {
 				currentTable = none;
 				break;
 
-			case "sb":
-				if (currentItem !is StatefulCodec)
-					errAt(argStart, "@SB is only allowed for @CODEC_STATEFUL");
+			case "codec_mbcs":
+				currentItem  = constructCurrentItem(MbcsCodec);
 				currentIndex = 0;
-				currentTable = currentItem.sb_table;
+				currentTable = none;
+				break;
+
+			case "sb":
+				if (currentItem is MbcsCodec) {
+					currentIndex = 0;
+					currentTable = currentItem.map;
+				} else if (currentItem is StatefulCodec) {
+					currentIndex = 0;
+					currentTable = currentItem.sb_table;
+				} else {
+					errAt(argStart, "@SB is only allowed for @CODEC_STATEFUL or @CODEC_MBCS");
+				}
 				break;
 
 			case "db":
-				if (currentItem !is StatefulCodec)
-					errAt(argStart, "@SB is only allowed for @CODEC_STATEFUL");
-				currentIndex = 0;
-				currentTable = currentItem.db_table;
+				if (currentItem is MbcsCodec) {
+					local firstByte = arg, startOrd = "0";
+					if ("," in arg) {
+						firstByte, none, startOrd = arg.partition(",")...;
+					}
+					firstByte = int(firstByte.strip());
+					currentIndex = int(startOrd.strip());
+					currentTable = Dict();
+					currentItem.map[firstByte] = currentTable;
+				} else if (currentItem is StatefulCodec) {
+					currentIndex = 0;
+					currentTable = currentItem.db_table;
+				} else {
+					errAt(argStart, "@DB is only allowed for @CODEC_STATEFUL or @CODEC_MBCS");
+				}
 				break;
 
 			case "ord": {
@@ -263,7 +297,7 @@ function parseDBFilename(filename: string): {string: Object} {
 		if (ch.isalnum()) {
 			if (currentTable is none)
 				errAt(i, "Unable to define ordinals at this time");
-			if (currentTable is List) {
+			if (currentTable is List || currentItem is MbcsCodec) {
 				local lineIds = [];
 				local lineStart = i;
 				for (;;) {

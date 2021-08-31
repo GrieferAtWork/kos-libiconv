@@ -1,4 +1,12 @@
 
+# Submodule for KOS: libiconv
+
+This repository is a sub-module for [KOS](https://github.com/GrieferAtWork/KOSmk4) and exists for the sole purpose to allow other projects to make use of the (admittedly very large) database that is included for the purpose of converting between different codecs.
+
+Currently, only KOSmk4 uses this library, but that might change in the future (I'm looking at you, [deemon](https://github.com/GrieferAtWork/deemon)...)
+
+
+
 ### Q: Why are you hardcoding all of the codecs into a single library?
 
 A: Because it's way more efficient, and before you get any wrong idea about how big this library is as a result, you should know that at the time of this being written, it's `582596` bytes (`569KiB`; which includes `.debug_info`) large (and sports support for `374` different codecs with `1502` different aliases). So no: this doesn't result in some insanely large data blobs, but rather a single very managable blob.
