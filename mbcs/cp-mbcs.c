@@ -40,6 +40,55 @@ DECL_BEGIN
 
 /* TODO */
 
+/************************************************************************/
+/* MBCS code page encode/decode functions.                              */
+/************************************************************************/
+INTERN NONNULL((1, 2)) ssize_t FORMATPRINTER_CC
+libiconv_mbcs_decode(struct iconv_decode *__restrict self,
+                     /*cp???*/ char const *__restrict data, size_t size) {
+	(void)self;
+	(void)data;
+	(void)size;
+	COMPILER_IMPURE();
+	/* TODO */
+	return 0;
+}
+
+INTERN NONNULL((1, 2)) ssize_t FORMATPRINTER_CC
+libiconv_mbcs_encode(struct iconv_encode *__restrict self,
+                     /*utf-8*/ char const *__restrict data, size_t size) {
+	(void)self;
+	(void)data;
+	(void)size;
+	COMPILER_IMPURE();
+	/* TODO */
+	return 0;
+}
+
+
+/* Initialize a mbcs encoder/decoder. */
+INTERN NONNULL((1, 2)) void CC
+libiconv_mbcs_decode_init(struct iconv_decode *__restrict self,
+                          /*out*/ struct iconv_printer *__restrict input) {
+	(void)self;
+	(void)input;
+	COMPILER_IMPURE();
+	/* TODO */
+}
+
+INTERN NONNULL((1, 2)) void CC
+libiconv_mbcs_encode_init(struct iconv_encode *__restrict self,
+                          /*out*/ struct iconv_printer *__restrict input) {
+	(void)self;
+	(void)input;
+	COMPILER_IMPURE();
+	/* TODO */
+}
+
+
+DEFINE_PUBLIC_ALIAS(iconv_mbcs_decode_init, libiconv_mbcs_decode_init);
+DEFINE_PUBLIC_ALIAS(iconv_mbcs_encode_init, libiconv_mbcs_encode_init);
+
 DECL_END
 #endif /* CODEC_MBCS_COUNT != 0 */
 

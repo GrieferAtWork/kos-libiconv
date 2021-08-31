@@ -107,6 +107,17 @@ INTDEF libiconv_mbcs_offset_t const libiconv_mbcs_offsets[];
 	                                     libiconv_mbcs_offsets[(codec)-CODEC_MBCS_MIN])
 
 
+/************************************************************************/
+/* MBCS code page encode/decode functions.                              */
+/************************************************************************/
+INTDEF NONNULL((1, 2)) ssize_t FORMATPRINTER_CC libiconv_mbcs_decode(struct iconv_decode *__restrict self, /*cp???*/ char const *__restrict data, size_t size);
+INTDEF NONNULL((1, 2)) ssize_t FORMATPRINTER_CC libiconv_mbcs_encode(struct iconv_encode *__restrict self, /*utf-8*/ char const *__restrict data, size_t size);
+
+
+/* Initialize a mbcs encoder/decoder. */
+INTDEF NONNULL((1, 2)) void CC libiconv_mbcs_decode_init(struct iconv_decode *__restrict self, /*out*/ struct iconv_printer *__restrict input);
+INTDEF NONNULL((1, 2)) void CC libiconv_mbcs_encode_init(struct iconv_encode *__restrict self, /*out*/ struct iconv_printer *__restrict input);
+
 DECL_END
 #endif /* CODEC_MBCS_COUNT != 0 */
 

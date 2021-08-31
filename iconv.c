@@ -52,45 +52,59 @@ DECL_BEGIN
 STATIC_ASSERT(sizeof(union iconv_decode_data) == (_ICONV_DECODE_OPAQUE_POINTERS * sizeof(void *)));
 STATIC_ASSERT(sizeof(union iconv_encode_data) == (_ICONV_ENCODE_OPAQUE_POINTERS * sizeof(void *)));
 
-
-#if CODEC_STATEFUL_COUNT != 0
-typedef NONNULL((1, 2)) void (CC *PICONV_STATEFUL_ENCODE_INIT)(struct iconv_encode *__restrict self, /*out*/ struct iconv_printer *__restrict input);
-typedef NONNULL((1, 2)) void (CC *PICONV_STATEFUL_DECODE_INIT)(struct iconv_decode *__restrict self, /*out*/ struct iconv_printer *__restrict input);
-PRIVATE PICONV_STATEFUL_ENCODE_INIT pdyn_iconv_stateful_encode_init = NULL;
-PRIVATE PICONV_STATEFUL_DECODE_INIT pdyn_iconv_stateful_decode_init = NULL;
-PRIVATE void *pdyn_libiconv_stateful                                = NULL;
-PRIVATE WUNUSED bool CC load_libiconv_stateful(void) {
-	if (pdyn_libiconv_stateful == NULL) {
-		void *lib = dlopen("libiconv-stateful.so", RTLD_LOCAL);
-		if (!lib) {
-not_available:
-			ATOMIC_CMPXCH(pdyn_libiconv_stateful, NULL, (void *)-1);
-		} else {
-			PICONV_STATEFUL_ENCODE_INIT sencode_init;
-			PICONV_STATEFUL_DECODE_INIT sdecode_init;
-			*(void **)&sencode_init = dlsym(lib, "iconv_stateful_encode_init");
-			*(void **)&sdecode_init = dlsym(lib, "iconv_stateful_decode_init");
-			if (!sencode_init || !sdecode_init) {
-				dlclose(lib);
-				goto not_available;
-			}
-			pdyn_iconv_stateful_encode_init = sencode_init;
-			pdyn_iconv_stateful_decode_init = sdecode_init;
-			COMPILER_WRITE_BARRIER();
-			if (!ATOMIC_CMPXCH(pdyn_libiconv_stateful, NULL, lib))
-				dlclose(lib); /* Another thread already succeeded */
-		}
+#define DEFINE_SUPPLEMENTAL_LIBICONV_LIBRARY_BINDING(name)                                                                                            \
+	typedef NONNULL((1, 2)) void (CC *_PSUPENCODE_INIT_##name)(struct iconv_encode *__restrict self, /*out*/ struct iconv_printer *__restrict input); \
+	typedef NONNULL((1, 2)) void (CC *_PSUPDECODE_INIT_##name)(struct iconv_decode *__restrict self, /*out*/ struct iconv_printer *__restrict input); \
+	PRIVATE _PSUPENCODE_INIT_##name pdyn_iconv_##name##_encode_init = NULL;                                                                           \
+	PRIVATE _PSUPDECODE_INIT_##name pdyn_iconv_##name##_decode_init = NULL;                                                                           \
+	PRIVATE void *pdyn_libiconv_##name                                = NULL;                                                                         \
+	PRIVATE WUNUSED bool CC load_libiconv_##name(void) {                                                                                              \
+		if (pdyn_libiconv_##name == NULL) {                                                                                                           \
+			void *lib = dlopen("libiconv-" #name ".so", RTLD_LOCAL);                                                                                  \
+			if (!lib) {                                                                                                                               \
+not_available:                                                                                                                                        \
+				ATOMIC_CMPXCH(pdyn_libiconv_##name, NULL, (void *)-1);                                                                                \
+			} else {                                                                                                                                  \
+				_PSUPENCODE_INIT_##name sencode_init;                                                                                                 \
+				_PSUPDECODE_INIT_##name sdecode_init;                                                                                                 \
+				*(void **)&sencode_init = dlsym(lib, "iconv_" #name "_encode_init");                                                                  \
+				*(void **)&sdecode_init = dlsym(lib, "iconv_" #name "_decode_init");                                                                  \
+				if (!sencode_init || !sdecode_init) {                                                                                                 \
+					dlclose(lib);                                                                                                                     \
+					goto not_available;                                                                                                               \
+				}                                                                                                                                     \
+				pdyn_iconv_##name##_encode_init = sencode_init;                                                                                       \
+				pdyn_iconv_##name##_decode_init = sdecode_init;                                                                                       \
+				COMPILER_WRITE_BARRIER();                                                                                                             \
+				if (!ATOMIC_CMPXCH(pdyn_libiconv_##name, NULL, lib))                                                                                  \
+					dlclose(lib); /* Another thread already succeeded */                                                                              \
+			}                                                                                                                                         \
+		}                                                                                                                                             \
+		return pdyn_libiconv_##name != (void *)-1;                                                                                                    \
 	}
-	return pdyn_libiconv_stateful != (void *)-1;
-}
+/* Create supplemental library bindings. */
+#if CODEC_STATEFUL_COUNT != 0
+DEFINE_SUPPLEMENTAL_LIBICONV_LIBRARY_BINDING(stateful)
 #endif /* CODEC_STATEFUL_COUNT != 0 */
+#if CODEC_MBCS_COUNT != 0
+DEFINE_SUPPLEMENTAL_LIBICONV_LIBRARY_BINDING(mbcs)
+#endif /* CODEC_MBCS_COUNT != 0 */
+#undef DEFINE_SUPPLEMENTAL_LIBICONV_LIBRARY_BINDING
+
+
+
 
 /* Called by: -Wl,-fini=libiconv_fini */
 INTERN void NOTHROW_NCX(libiconv_fini)(void) {
+#define FREE_SUPPLEMENTAL_LIBRARY(name)                             \
+	if (pdyn_libiconv_##name && pdyn_libiconv_##name != (void *)-1) \
+		dlclose(pdyn_libiconv_##name);
 #if CODEC_STATEFUL_COUNT != 0
-	if (pdyn_libiconv_stateful && pdyn_libiconv_stateful != (void *)-1)
-		dlclose(pdyn_libiconv_stateful);
+	FREE_SUPPLEMENTAL_LIBRARY(stateful)
 #endif /* CODEC_STATEFUL_COUNT != 0 */
+#if CODEC_MBCS_COUNT != 0
+	FREE_SUPPLEMENTAL_LIBRARY(mbcs)
+#endif /* CODEC_MBCS_COUNT != 0 */
 }
 
 
@@ -214,6 +228,15 @@ NOTHROW_NCX(CC libiconv_decode_init)(/*in|out*/ struct iconv_decode *__restrict 
 		(*pdyn_iconv_stateful_decode_init)(self, input);
 		break;
 #endif /* CODEC_STATEFUL_COUNT != 0 */
+
+#if CODEC_MBCS_COUNT != 0
+	case CODEC_MBCS_MIN ... CODEC_MBCS_MAX:
+		if (!load_libiconv_mbcs())
+			goto default_case;
+#define WANT_default_case
+		(*pdyn_iconv_mbcs_decode_init)(self, input);
+		break;
+#endif /* CODEC_MBCS_COUNT != 0 */
 
 		/* C-escape */
 	case CODEC_C_ESCAPE:
@@ -382,10 +405,16 @@ NOTHROW_NCX(CC libiconv_decode_isshiftzero)(struct iconv_decode const *__restric
 
 #if CODEC_STATEFUL_COUNT != 0
 	case CODEC_STATEFUL_MIN ... CODEC_STATEFUL_MAX:
-		/* XXX: Should DB0 could as a zero-shift state? Or does text have to end with ShiftIn? */
+		/* XXX: Should DB0 count as a zero-shift state? Or does text have to end with ShiftIn? */
 		return self->icd_data.idd_stateful.sf_state == _ICONV_DECODE_STATEFUL_SB ||
 		       self->icd_data.idd_stateful.sf_state == _ICONV_DECODE_STATEFUL_DB0;
 #endif /* CODEC_STATEFUL_COUNT != 0 */
+
+#if CODEC_MBCS_COUNT != 0
+	case CODEC_MBCS_MIN ... CODEC_MBCS_MAX:
+		/* TODO: MBCS: Check if expecting first byte */
+		return true;
+#endif /* CODEC_MBCS_COUNT != 0 */
 
 	default:
 		break;
@@ -509,6 +538,15 @@ NOTHROW_NCX(CC libiconv_encode_init)(/*in|out*/ struct iconv_encode *__restrict 
 		(*pdyn_iconv_stateful_encode_init)(self, input);
 		break;
 #endif /* CODEC_STATEFUL_COUNT != 0 */
+
+#if CODEC_MBCS_COUNT != 0
+	case CODEC_MBCS_MIN ... CODEC_MBCS_MAX:
+		if (!load_libiconv_mbcs())
+			goto default_case;
+#define WANT_default_case
+		(*pdyn_iconv_mbcs_encode_init)(self, input);
+		break;
+#endif /* CODEC_MBCS_COUNT != 0 */
 
 		/* C-escape */
 	case CODEC_C_ESCAPE:
