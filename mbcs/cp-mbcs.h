@@ -44,23 +44,27 @@ struct iconv_mbcs_byte2_range {
 #define ICONV_MBCS_BYTE2_RANGE_TYPE_ARR   2 /* 16-bit array of unicode ordinals */
 #define ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32 3 /* 32-bit array of unicode ordinals */
 	byte_t imc_type;  /* Type of range (one of ICONV_MBCS_BYTE2_RANGE_TYPE_*). */
-	/* All of the following are only valid when `imc_type != ICONV_MBCS_BYTE2_RANGE_TYPE_EOF' */
-	byte_t imc_size;  /* Size of this range structure (divided by 2)
+	byte_t imc_size;  /* Size  of  this  range  structure  (divided  by 2)
 	                   * Multiply by 2 to calculate the offset to the next
-	                   * element in the range list. */
+	                   * element in the range list. (0 for EOF) */
+	/* All of the following are only valid when `imc_type != ICONV_MBCS_BYTE2_RANGE_TYPE_EOF' */
 	/* NOTE: Ranges are sorted by `imc_cpmin' and don't overlap, meaning that
-	 *       when searching for the correct range, you can always stop once
+	 *       when searching for the correct  range, you can always stop  once
 	 *       the next range's `imc_cpmin >= SEARCHED_BYTE' */
 	byte_t imc_cpmin; /* First code-page byte mapped by this range. */
 	byte_t imc_cpmax; /* Last code-page byte mapped by this range. */
 	union {
-		/* Range-specific data. */
-		uint16_t                          imc_lin;    /* [ICONV_MBCS_BYTE2_RANGE_TYPE_LIN] Linear unicode mapping
-		                                               * >> RESULT = (char16_t)(uint16_t)(BYTE2 + imc_lin); */
-		COMPILER_FLEXIBLE_ARRAY(char16_t, imc_arr);   /* [ICONV_MBCS_BYTE2_RANGE_TYPE_ARR] Array unicode mapping
-		                                               * >> RESULT = imc_arr[BYTE2 - imc_cpmin]; */
-		COMPILER_FLEXIBLE_ARRAY(char32_t, imc_arr32); /* [ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32] Array unicode mapping
-		                                               * >> RESULT = (char32_t)UNALIGNED_GET32((uint32_t const *)&imc_arr32[BYTE2 - imc_cpmin]); */
+		/* Range-specific data.
+		 * NOTE: The arrays aren't actually of length 256, but if flexible arrays
+		 *       are used, then GCC bickers because they're used in a union. (Why
+		 *       dafuq aren't I allowed to use flexible arrays in unions?) */
+		uint16_t imc_lin;    /* [ICONV_MBCS_BYTE2_RANGE_TYPE_LIN] Linear unicode mapping
+		                      * >> RESULT = (char16_t)(uint16_t)(BYTE2 + imc_lin); */
+		char16_t imc_arr[256];   /* [ICONV_MBCS_BYTE2_RANGE_TYPE_ARR] Array unicode mapping
+		                          * >> RESULT = imc_arr[BYTE2 - imc_cpmin]; */
+		/* WARNING: The 32-bit integer array is only aligned by 2 bytes! */
+		char32_t imc_arr32[256]; /* [ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32] Array unicode mapping
+		                          * >> RESULT = (char32_t)UNALIGNED_GET32((uint32_t const *)&imc_arr32[BYTE2 - imc_cpmin]); */
 	};
 };
 
@@ -81,7 +85,7 @@ struct iconv_mbcs_codepage {
 	/* TODO: Encode data */
 };
 
-/* Check if `byte1_uniord' has an associated table, where
+/* Check if `byte1_uniord'  has an  associated table,  where
  * `byte1_uniord' is the result of `self->imc_1byte[BYTE1]'. */
 #define iconv_mbcs_codepage_hasbyte2(self, byte1_uniord) \
 	((byte1_uniord) >= (self)->imc_offidx_min && (byte1_uniord) <= (self)->imc_offidx_max)

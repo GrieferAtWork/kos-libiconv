@@ -83,23 +83,6 @@ DECL_BEGIN
  *
  */
 
-/*[[[deemon
-import File from deemon;
-import fs;
-// Put in a separate file so this one doesn't bloat too much
-local dataFilename = "cp-stateful-data.c.inl";
-local savedStdout = File.stdout;
-File.stdout = File.open(dataFilename, "w");
-File.stdout.write(File.open("cp-stateful.c").read().decode("utf-8").partition("#ifndef")[0].unifylines());
-(printCpStatefulDatabase from ..iconvdata.iconvdata)();
-File.stdout.close();
-File.stdout = savedStdout;
-print "#include", repr dataFilename;
-]]]*/
-#include "cp-stateful-data.c.inl"
-/*[[[end]]]*/
-
-
 #define IS_ICONV_ERR_ERRNO(flags)                     (((flags) & ICONV_ERRMASK) == ICONV_ERR_ERRNO)
 #define IS_ICONV_ERR_ERROR_OR_ERRNO(flags)            (((flags) & ICONV_ERRMASK) <= ICONV_ERR_ERROR)
 #define IS_ICONV_ERR_ERROR_OR_ERRNO_OR_DISCARD(flags) (((flags) & ICONV_ERRMASK) <= ICONV_ERR_DISCARD)

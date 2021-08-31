@@ -1,3 +1,8 @@
+/*[[[magic
+options["COMPILE.language"] = "c";
+local gcc_opt = options.setdefault("GCC.options", []);
+gcc_opt.remove("-g"); // Disable debug informations for this file!
+]]]*/
 /* Copyright (c) 2019-2021 Griefer@Work                                       *
  *                                                                            *
  * This software is provided 'as-is', without any express or implied          *
@@ -17,30 +22,39 @@
  *    misrepresented as being the original software.                          *
  * 3. This notice may not be removed or altered from any source distribution. *
  */
-#ifndef GUARD_LIBICONV_MBCS_CP_MBCS_C
-#define GUARD_LIBICONV_MBCS_CP_MBCS_C 1
+#ifndef GUARD_LIBICONV_STATEFUL_CPDB_C
+#define GUARD_LIBICONV_STATEFUL_CPDB_C 1
 
+#ifndef __INTELLISENSE__
 #include "../api.h"
 /**/
 
-#include <hybrid/byteorder.h>
-
-#include <kos/types.h>
-
-#include <format-printer.h>
 #include <stddef.h>
 
-#include <libiconv/iconv.h>
-
 #include "../codecs.h"
-#include "cp-mbcs.h"
+#include "cp-stateful.h"
 
-#if CODEC_MBCS_COUNT != 0
+#if CODEC_STATEFUL_COUNT != 0
 DECL_BEGIN
 
-/* TODO */
+/*[[[deemon
+import File from deemon;
+import fs;
+// Put in a separate file so this one doesn't bloat too much
+local dataFilename = "cpdb.inl";
+local savedStdout = File.stdout;
+File.stdout = File.open(dataFilename, "w");
+File.stdout.write(File.open("../api.h").read().decode("utf-8").partition("#ifndef")[0].unifylines());
+(printCpStatefulDatabase from ..iconvdata.iconvdata)();
+File.stdout.close();
+File.stdout = savedStdout;
+print "#include", repr dataFilename;
+]]]*/
+#include "cpdb.inl"
+/*[[[end]]]*/
 
 DECL_END
-#endif /* CODEC_MBCS_COUNT != 0 */
+#endif /* CODEC_STATEFUL_COUNT != 0 */
+#endif /* !__INTELLISENSE__ */
 
-#endif /* !GUARD_LIBICONV_MBCS_CP_MBCS_C */
+#endif /* !GUARD_LIBICONV_STATEFUL_CPDB_C */
