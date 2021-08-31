@@ -226,8 +226,8 @@ struct iconv_stateful_database;
 INTDEF struct iconv_stateful_database const libiconv_stateful_db;
 INTDEF libiconv_stateful_offset_t const libiconv_stateful_offsets[];
 
-/* Return the 7-bit code page associated with `codec'.
- * The caller must ensure that `codec >= CODEC_CP7L_MIN && codec <= CODEC_CP7L_MAX' */
+/* Return the stateful code page associated with `codec'.
+ * The caller must ensure that `codec >= CODEC_STATEFUL_MIN && codec <= CODEC_STATEFUL_MAX' */
 #define libiconv_stateful_page(codec)                                                \
 	(struct iconv_stateful_codepage const *)((byte_t const *)&libiconv_stateful_db + \
 	                                         libiconv_stateful_offsets[(codec)-CODEC_STATEFUL_MIN])

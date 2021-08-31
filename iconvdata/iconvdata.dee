@@ -463,7 +463,7 @@ function parseDB(): {string: Object} {
 	return parseDBFilename(fs.joinpath(fs.headof(__FILE__), "db"));
 }
 
-global final CODECS = parseDB();
+global final CODECS: {string: Object} = parseDB();
 
 /* Hacky way to work around deemon taking forever to exit (XXX: might be a deemon bug?) */
 Error.AppExit.atexit([]{ Error.AppExit.exit(0); });
