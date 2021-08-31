@@ -8608,6 +8608,15 @@ after_fold:
 		}
 	}
 
+	/* Special handling for character within the unicode surrogate range:
+	 * Technically, these characters aren't  allowed in normal text,  but
+	 * because we're nice, we'll try to remove them. :) */
+	if (uni_ch >= 0xd800 && uni_ch <= 0xdfff) {
+		if (nth == 0)
+			return 0;
+		--nth;
+	}
+
 	/* All possibilities exhausted. */
 	return (size_t)-1;
 }

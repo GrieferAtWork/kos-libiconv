@@ -82,6 +82,8 @@ function parseDB(): {int: {string...}} {
 				errAt(idStart, "Invalid integer: " + repr data[idStart:i]);
 			}
 			currentOrdinal = ord;
+			if (currentOrdinal >= 0xD800 && currentOrdinal <= 0xDFFF)
+				errAt(idStart, "Tried to define surrogate ordinal U+" + currentOrdinal.hex()[2:].zfill(4));
 			currentMappingList = result.get(currentOrdinal);
 			if (currentMappingList is none)
 				result[currentOrdinal] = currentMappingList = [];
@@ -100,6 +102,8 @@ function parseDB(): {int: {string...}} {
 			currentOrdinal = strText.ord();
 			local isFirst = true;
 			newData << data[flushStart:i] << currentOrdinal.hex()[2:].zfill(4).upper();
+			if (currentOrdinal >= 0xD800 && currentOrdinal <= 0xDFFF)
+				errAt(i, "Tried to define surrogate ordinal U+" + currentOrdinal.hex()[2:].zfill(4));
 			currentMappingList = result.get(currentOrdinal);
 			if (currentMappingList is none)
 				result[currentOrdinal] = currentMappingList = [];
