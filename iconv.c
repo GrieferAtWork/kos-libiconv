@@ -412,8 +412,9 @@ NOTHROW_NCX(CC libiconv_decode_isshiftzero)(struct iconv_decode const *__restric
 
 #if CODEC_MBCS_COUNT != 0
 	case CODEC_MBCS_MIN ... CODEC_MBCS_MAX:
-		/* TODO: MBCS: Check if expecting first byte */
-		return true;
+		/* MBCS is in a zero-shift state as long as we're
+		 * not expecting the second of a 2-byte sequence. */
+		return self->icd_data.idd_mbcs.mc_b2 == NULL;
 #endif /* CODEC_MBCS_COUNT != 0 */
 
 	default:

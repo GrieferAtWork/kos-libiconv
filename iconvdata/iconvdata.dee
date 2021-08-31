@@ -1349,7 +1349,7 @@ do_add_encode_identity_range:
 	print("};");
 }
 
-#define ICONV_MBCS_BYTE2_RANGE_TYPE_EOF   0 /* Range list end (sentinal) */
+#define ICONV_MBCS_BYTE2_RANGE_TYPE_EOF   0 /* Range list end (sentinel) */
 #define ICONV_MBCS_BYTE2_RANGE_TYPE_LIN   1 /* Linear unicode mapping */
 #define ICONV_MBCS_BYTE2_RANGE_TYPE_ARR   2 /* 16-bit array of unicode ordinals */
 #define ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32 3 /* 32-bit array of unicode ordinals */
@@ -1629,9 +1629,9 @@ function printCpMbcsDatabase() {
 			for (local range_i, range: util.enumerate(b2.ranges)) {
 				print("		byte_t "),;
 				print("_", b2_i, "r", range_i, "_t,"),;
-				print("_", b2_i, "r", range_i, "_s,"),;
+				print("_", b2_i, "r", range_i, "_cx,"),;
 				print("_", b2_i, "r", range_i, "_ci,"),;
-				print("_", b2_i, "r", range_i, "_cx;"),;
+				print("_", b2_i, "r", range_i, "_s;"),;
 				print(" uint16_t _", b2_i, "r", range_i),;
 				switch (range.imc_type) {
 				case ICONV_MBCS_BYTE2_RANGE_TYPE_LIN:
@@ -1647,7 +1647,7 @@ function printCpMbcsDatabase() {
 				}
 				print;
 			}
-			print("		byte_t _", b2_i, "_et,_", b2_i, "_es;");
+			print("		byte_t _", b2_i, "_et,_", b2_i, "_ex;");
 		}
 		print("	} ", dbFieldName(exCodec.codec.name), ";");
 	}
@@ -1683,12 +1683,12 @@ function printCpMbcsDatabase() {
 				print("		"),;
 				print("._", b2_i, "r", range_i, "_t="),;
 				print(range.imc_type, ","),;
-//				print("._", b2_i, "r", range_i, "_s="),;
-				print(range.imc_size, ","),;
-//				print("._", b2_i, "r", range_i, "_ci="),;
-				print(range.imc_cpmin, ","),;
 //				print("._", b2_i, "r", range_i, "_cx="),;
 				print(range.imc_cpmax, ","),;
+//				print("._", b2_i, "r", range_i, "_ci="),;
+				print(range.imc_cpmin, ","),;
+//				print("._", b2_i, "r", range_i, "_s="),;
+				print(range.imc_size, ","),;
 				switch (range.imc_type) {
 				case ICONV_MBCS_BYTE2_RANGE_TYPE_LIN:
 //					print(" ._", b2_i, "r", range_i, "_l="),;
@@ -1714,8 +1714,8 @@ function printCpMbcsDatabase() {
 				}
 			}
 			print("		._", b2_i, "_et=", ICONV_MBCS_BYTE2_RANGE_TYPE_EOF, ","),;
-//			print("._", b2_i, "_es="),;
-			print("0,");
+//			print("._", b2_i, "_ex="),;
+			print("255,");
 		}
 		print("	},");
 	}
