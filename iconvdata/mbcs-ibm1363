@@ -18,7 +18,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 # Source: https://github.com/unicode-org/icu/tree/main/icu4c/source/data/mappings/ibm-1363_P110-1997.ucm
-@CODEC_MBCS(CODEC_IBM1363: "IBM1363", "x-IBM1363", "UHC", "MSCP949", "cp949", "OSF100203B5")
+@CODEC_MBCS(CODEC_IBM1363: "IBM1363", "x-IBM1363", "UHC", "MSCP949", "OSF100203B5")
 @SB
 	0000 0001 0002 0003 0004 0005 0006 0007   # 00-07   ␀ ␁ ␂ ␃ ␄ ␅ ␆ ␇ #
 	0008 0009 000A 000B 000C 000D 000E 000F   # 08-0F   ␈ ␉ ␊ ␋ ␌ ␍ ␎ ␏ #

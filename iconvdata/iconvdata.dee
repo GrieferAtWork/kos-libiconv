@@ -475,6 +475,7 @@ function printCodecEnums() {
 	local codecs_cp7h = [];
 	local codecs_iso646 = [];
 	local codecs_stateful = [];
+	local codecs_mbcs = [];
 	for (local name, codec: CODECS) {
 		if (codec is CodePage) {
 			switch (codec.getCpClass()) {
@@ -493,6 +494,8 @@ function printCodecEnums() {
 			}
 		} else if (codec is StatefulCodec) {
 			codecs_stateful.append(name);
+		} else if (codec is MbcsCodec) {
+			codecs_mbcs.append(name);
 		} else {
 			codecs_custom.append(name);
 		}
@@ -520,6 +523,7 @@ function printCodecEnums() {
 	codecs_cp7h.sort();
 	codecs_iso646.sort();
 	codecs_stateful.sort();
+	codecs_mbcs.sort();
 
 	print("	/* Custom codecs */");
 	printCodecs(codecs_custom);
@@ -567,6 +571,15 @@ function printCodecEnums() {
 		print("#define CODEC_STATEFUL_MIN ", codecs_stateful.first);
 		printCodecs(codecs_stateful);
 		print("#define CODEC_STATEFUL_MAX ", codecs_stateful.last);
+	}
+
+	print;
+	print("	/* MBCS codepage codecs */");
+	print("#define CODEC_MBCS_COUNT ", #codecs_mbcs);
+	if (codecs_mbcs) {
+		print("#define CODEC_MBCS_MIN ", codecs_mbcs.first);
+		printCodecs(codecs_mbcs);
+		print("#define CODEC_MBCS_MAX ", codecs_mbcs.last);
 	}
 }
 

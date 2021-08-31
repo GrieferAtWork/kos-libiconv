@@ -457,6 +457,28 @@ enum {
 	CODEC_IBM937,  /* "ibm937", "cp937", "csibm937" */
 	CODEC_IBM939,  /* "ibm939", "cp939", "csibm939", "x-ibm939", "939" */
 #define CODEC_STATEFUL_MAX CODEC_IBM939
+
+	/* MBCS codepage codecs */
+#define CODEC_MBCS_COUNT 17
+#define CODEC_MBCS_MIN CODEC_BIG5
+	CODEC_BIG5,       /* "big5", "big-5", "csbig5", "big-five", "bigfive", "cn-big5", "cp950ms950", "windows-950", "x-windows-950", "x-big5" */
+	CODEC_BIG5HKSCS,  /* "big5hkscs", "big5-hkscs", "csbig5hkscs", "ibm1375", "big5hk", "hkscs-big5" */
+	CODEC_CP949C,     /* "cp949c", "x-ibm949c", "ibm949c", "949c" */
+	CODEC_EUC_CN,     /* "euc-cn", "gb2312", "csgb2312", "gb-2312-80", "iso-ir-58", "chinese", "csiso58gb231280", "euccn", "cn-gb", "x-euc-cn", "ibmeuccn", "gb2312-1980", "gb2312-80", "cp1383", "ibm1383", "1383", "hp15cn", "ibm1383-vpua" */
+	CODEC_EUC_KR,     /* "euc-kr", "euckr", "cseuckr", "osf4000a", "ibmeuckr", "ibm970", "cp970", "5601" */
+	CODEC_GBK,        /* "gbk", "cp936", "ms936", "windows-936", "csgbk", "gb13000", "x-mswin-936", "936" */
+	CODEC_IBM1363,    /* "ibm1363", "x-ibm1363", "uhc", "mscp949", "osf100203b5" */
+	CODEC_IBM1373,    /* "ibm1373" */
+	CODEC_IBM1386,    /* "ibm1386" */
+	CODEC_IBM5471,    /* "ibm5471", "x-ms950-hkscs", "ms950-hkscs" */
+	CODEC_IBM932,     /* "ibm932", "csibm932", "ibm942", "x-ibm942", "x-ibm942c" */
+	CODEC_IBM943,     /* "ibm943", "cp943", "csibm943", "943", "x-ibm943" */
+	CODEC_IBM949,     /* "ibm949", "cp949", "949", "x-ibm949" */
+	CODEC_IBM950,     /* "ibm950", "cp950", "950", "x-ibm950" */
+	CODEC_ISO_IR_149, /* "iso-ir-149", "korean", "ks-c-5601-1987", "ks-c-5601-1989", "ksc-5601", "csksc56011987", "cp1363", "x-ibm1363c", "ibm1363c", "cp1363c" */
+	CODEC_MS949,      /* "ms949", "x-ksc5601", "ksc5601", "windows-949", "cp1361", "ibm1361", "ms1361", "ksc5601-1992", "x-windows-949" */
+	CODEC_SHIFT_JIS,  /* "shift-jis", "sjis", "ms-kanji", "csshiftjis", "windows-31j", "cp932", "ms932", "sjis-open", "sjis-win", "cswindows31j", "windows-932", "x-sjis", "x-ms-cp932", "cp943c", "x-ibm943c", "ibm943c", "943c", "x-ms932-213", "x-jisautodetect", "jisautodetect" */
+#define CODEC_MBCS_MAX CODEC_SHIFT_JIS
 /*[[[end]]]*/
 };
 

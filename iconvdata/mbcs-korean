@@ -18,7 +18,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 # Source: https://github.com/unicode-org/icu/tree/main/icu4c/source/data/mappings/ibm-1363_P11B-1998.ucm
-@CODEC_MBCS(CODEC_KS_C_5601_1987: "KS_C_5601-1987", "iso-ir-149", "KS_C_5601-1989", "KSC_5601", "korean", "csKSC56011987", "cp1363", "x-IBM1363C", "IBM1363c", "cp1363c")
+@CODEC_MBCS(CODEC_ISO_IR_149: "iso-ir-149", "korean", "KS_C_5601-1987", "KS_C_5601-1989", "KSC_5601", "csKSC56011987", "cp1363", "x-IBM1363C", "IBM1363c", "cp1363c")
 @SB
 	0000 0001 0002 0003 0004 0005 0006 0007   # 00-07   ␀ ␁ ␂ ␃ ␄ ␅ ␆ ␇ #
 	0008 0009 000A 000B 000C 000D 000E 000F   # 08-0F   ␈ ␉ ␊ ␋ ␌ ␍ ␎ ␏ #
