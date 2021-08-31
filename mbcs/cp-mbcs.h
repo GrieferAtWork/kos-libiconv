@@ -38,6 +38,8 @@ DECL_BEGIN
 
 
 
+
+
 DECL_END
 #endif /* CODEC_MBCS_COUNT != 0 */
 
