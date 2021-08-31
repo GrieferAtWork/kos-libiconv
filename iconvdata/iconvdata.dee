@@ -1532,6 +1532,7 @@ class ExMbcsCodec {
 	public member imc_offidx_min: int;
 	public member imc_offidx_max: int;
 	public member imc_offtab: {int...} = [];
+#define SIZEOF__imc_offtab__elements 2
 	public member byte2_tables: {ExMbcsByte2Table...} = [];
 }
 
@@ -1556,7 +1557,7 @@ function createExMbcsCodec(codec: MbcsCodec): ExMbcsCodec {
 	}
 
 	/* Relocate 2-byte offsets */
-	local offtab_size = #result.imc_offtab * 4;
+	local offtab_size = #result.imc_offtab * SIZEOF__imc_offtab__elements;
 	for (local i: [:#result.imc_offtab]) {
 		result.imc_offtab[i] += offtab_size;
 	}
@@ -1608,6 +1609,12 @@ function printCpMbcsDatabase() {
 		for (local codec: codecs)
 			createExMbcsCodec(codec));
 
+	/* Assert that offset table values aren't too large */
+	local final MAX_OFFSET = (1 << (SIZEOF__imc_offtab__elements * 8)) - 1;
+	for (local exCodec: exCodecs) {
+		local cMaxOffset = exCodec.imc_offtab > ...;
+		assert cMaxOffset <= MAX_OFFSET;
+	}
 
 	/* Print the database control structure */
 	print("struct iconv_mbcs_database {");
@@ -1616,7 +1623,7 @@ function printCpMbcsDatabase() {
 		print("		char16_t _1[256];");
 		print("		char16_t _oi; /* U+", exCodec.imc_offidx_min.hex()[2:].upper().zfill(4), " */");
 		print("		char16_t _ox; /* U+", exCodec.imc_offidx_max.hex()[2:].upper().zfill(4), " */");
-		print("		uint32_t _ot[", (#exCodec.imc_offtab).hex(), "];");
+		print("		uint16_t _ot[", (#exCodec.imc_offtab).hex(), "];");
 		for (local b2_i, b2: util.enumerate(exCodec.byte2_tables)) {
 			print("		/* First byte: ", b2._firstbyte.hex()[2:].zfill(2), "h */");
 			for (local range_i, range: util.enumerate(b2.ranges)) {

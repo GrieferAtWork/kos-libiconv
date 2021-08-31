@@ -61,10 +61,12 @@ struct iconv_mbcs_byte2_range {
 		uint16_t imc_lin;    /* [ICONV_MBCS_BYTE2_RANGE_TYPE_LIN] Linear unicode mapping
 		                      * >> RESULT = (char16_t)(uint16_t)(BYTE2 + imc_lin); */
 		char16_t imc_arr[256];   /* [ICONV_MBCS_BYTE2_RANGE_TYPE_ARR] Array unicode mapping
-		                          * >> RESULT = imc_arr[BYTE2 - imc_cpmin]; */
+		                          * >> RESULT = imc_arr[BYTE2 - imc_cpmin];
+		                          * NOTE: Undefined ordinals appear as `0' in this list! */
 		/* WARNING: The 32-bit integer array is only aligned by 2 bytes! */
 		char32_t imc_arr32[256]; /* [ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32] Array unicode mapping
-		                          * >> RESULT = (char32_t)UNALIGNED_GET32((uint32_t const *)&imc_arr32[BYTE2 - imc_cpmin]); */
+		                          * >> RESULT = (char32_t)UNALIGNED_GET32((uint32_t const *)&imc_arr32[BYTE2 - imc_cpmin]);
+		                          * NOTE: Undefined ordinals appear as `0' in this list! */
 	};
 };
 
@@ -79,7 +81,7 @@ struct iconv_mbcs_codepage {
 	                          * case the ordinal is an index into second-byte offset table. */
 	char16_t imc_offidx_min; /* Lower bound for offset indices */
 	char16_t imc_offidx_max; /* Upper bound for offset indices */
-	COMPILER_FLEXIBLE_ARRAY(uint32_t, imc_offtab); /* [(imc_offidx_max - imc_offidx_min) + 1]
+	COMPILER_FLEXIBLE_ARRAY(uint16_t, imc_offtab); /* [(imc_offidx_max - imc_offidx_min) + 1]
 	                                                * Array of offsets to `iconv_mbcs_byte2_range',
 	                                                * originating from the start of this structure. */
 	/* TODO: Encode data */
