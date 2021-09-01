@@ -18,7 +18,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 # Source: https://github.com/unicode-org/icu/tree/main/icu4c/source/data/mappings/ibm-943_P15A-2003.ucm
-@CODEC_MBCS(CODEC_SHIFT_JIS: "shift-jis", "sjis", "ms_kanji", "csShiftJis", "windows-31j", "cp932", "ms932", "sjis-open", "sjis-win", "csWindows31J", "windows-932", "x-sjis", "x-ms-cp932", "cp943c", "x-IBM943C", "IBM943c", "943c", "x-MS932_0213", "x-JISAutoDetect", "jisautodetect")
+@CODEC_MBCS(CODEC_SHIFT_JIS: "Shift_JIS", "SJIS", "MS_Kanji", "csShiftJis", "windows-31j", "cp932", "ms932", "sjis-open", "sjis-win", "csWindows31J", "windows-932", "x-sjis", "x-ms-cp932", "cp943c", "x-IBM943C", "IBM943c", "943c", "x-MS932_0213", "x-JISAutoDetect", "jisautodetect")
 @SB
 	0000 0001 0002 0003 0004 0005 0006 0007   # 00-07   ␀ ␁ ␂ ␃ ␄ ␅ ␆ ␇ #
 	0008 0009 000A 000B 000C 000D 000E 000F   # 08-0F   ␈ ␉ ␊ ␋ ␌ ␍ ␎ ␏ #

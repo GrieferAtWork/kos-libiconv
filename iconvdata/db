@@ -63,7 +63,7 @@
 ###################################################################################################
 # TODO:
 #  - https://en.wikipedia.org/wiki/UTF-1                              "ISO-10646-UTF-1", "csISO10646UTF1"
-#  - https://en.wikipedia.org/wiki/Shift_JIS                          
+#  - https://en.wikipedia.org/wiki/GB_18030
 #  - https://en.wikipedia.org/wiki/KOI-7                              "KOI7", "KOI7-switched", "csKOI7switched"
 #  - https://en.wikipedia.org/wiki/Code_page_776                      "cp776"
 #  - https://en.wikipedia.org/wiki/Code_page_777                      "cp777"
@@ -505,5 +505,12 @@
 @INCLUDE("./mbcs-korean")
 @INCLUDE("./mbcs-ms949")
 @INCLUDE("./mbcs-shift-jis")
+# MBCS codecs with overly long byte sequences:
+#   3 or more bytes may decode to a character
+@INCLUDE("./mbcs-euc-jp")
+@INCLUDE("./mbcs-euc-tw")
+@INCLUDE("./mbcs-gb18030")
+@INCLUDE("./mbcs-ibm33722")
+@INCLUDE("./mbcs-ibm954")
 
 

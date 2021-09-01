@@ -43,19 +43,8 @@ struct iconv_mbcs_byte2_range {
 #define ICONV_MBCS_BYTE2_RANGE_TYPE_LIN   1 /* Linear unicode mapping */
 #define ICONV_MBCS_BYTE2_RANGE_TYPE_ARR   2 /* 16-bit array of unicode ordinals */
 #define ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32 3 /* 32-bit array of unicode ordinals */
-	/* TODO: There are a couple of MBCS  codecs (currently not in the  database)
-	 *       that have overly long code-page byte sequences. For these, we could
-	 *       introduce additional range types here  that could be used to  point
-	 *       to even more MBCS ranges for a third or fourth (etc.) byte!
-	 * In particular, the following codecs:
-	 *   - mbcs-euc-jp:    "EUC-JP", "eucjp", "csEUCPkdFmtJapanese", "OSF00030010", "UJIS", "x-euc-jp", "x-eucjp", "euc-jp-linux"
-	 *   - mbcs-gb18030:   "GB18030", "csGB18030", "windows-54936", "gb18030-2000", "IBM1392"
-	 *   - mbcs-ibm33722:  "IBM33722", "IBM5050", "cp33722", "33722", "x-IBM33722", "x-IBM33722A", "x-IBM33722C", "IBM33722-vascii-vpua", "IBM33722A", "cp33722a", "IBM33722C", "cp33722c", "IBMeucjp", "cp5050", "5050"
-	 *   - mbcs-ibm954:    "IBM954", "x-IBM954", "x-IBM954C"
-	 *   - mbcs-euc-tw:    "EUC-TW", "euctw", "OSF0005000a", "x-euc-tw", "cns11643", "IBM964", "IBMeucTW", "cp964", "964", "IBM964_VPUA", "x-IBM964"
-	 * These codecs have already been removed from the TODO list, but couldn't
-	 * be generated because the raw data format currently doesn't support such
-	 * an encoding. */
+#define ICONV_MBCS_BYTE2_RANGE_TYPE_TAB   4 /* Another table (offset from code-page start to another array
+                                             * of `struct iconv_mbcs_byte2_range' to-be used for decoding) */
 	byte_t imc_type;  /* Type of range (one of ICONV_MBCS_BYTE2_RANGE_TYPE_*). */
 	/* NOTE: Ranges are sorted by `imc_cpmin' and don't overlap, meaning that
 	 *       when searching for the correct  range, you can always stop  once
@@ -80,6 +69,8 @@ struct iconv_mbcs_byte2_range {
 		uint32_t imc_arr32[256]; /* [ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32] Array unicode mapping
 		                          * >> RESULT = (char32_t)UNALIGNED_GET32(&imc_arr32[BYTE2 - imc_cpmin]);
 		                          * NOTE: Undefined ordinals appear as `0' in this list! */
+		uint16_t imc_tab;    /* [ICONV_MBCS_BYTE2_RANGE_TYPE_TAB] Linear unicode mapping
+		                      * >> RESULT = (char16_t)(uint16_t)((uint16_t)BYTE2 + imc_lin); */
 	};
 };
 

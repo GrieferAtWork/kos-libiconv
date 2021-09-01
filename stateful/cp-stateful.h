@@ -172,19 +172,19 @@ struct iconv_stateful_codepage {
 	uint16_t isc_rab_maxoff;        /* Random access block max offset */
 	uint16_t isc_encode_count;      /* # of encode ranges. */
 	uint16_t isc_encode_tab_count;  /* # of encode uint16_t entries. */
-	uint16_t isc_encode_rab_minoff; /* Encode random access block max offset */
+	uint16_t isc_encode_rab_minoff; /* Encode random access block min offset */
 	uint16_t isc_encode_rab_maxoff; /* Encode random access block max offset */
 	uint8_t  isc_encode_repl;       /* Encode replacement character. */
 	uint8_t  isc_encode_2ch_count;  /* # of 2-character encode entires. */
 	uint16_t isc_encode_c32_count;  /* # of 32-bit unicode encode entries. */
 	COMPILER_FLEXIBLE_ARRAY(struct iconv_stateful_range, isc_db_ranges); /* [isc_db_count] */
-/*	uint16_t                    isc_db_ranges_end; // [== 0xffff] */
-/*	uint16_t                    isc_rab[(isc_rab_maxoff - isc_rab_minoff) + 1]; // Random access offset table */
-/*	char16_t                    isc_u16[isc_u16_count]; */
+/*	uint16_t isc_db_ranges_end; // [== 0xffff] */
+/*	uint16_t isc_rab[(isc_rab_maxoff - isc_rab_minoff) + 1]; // Random access offset table */
+/*	char16_t isc_u16[isc_u16_count]; */
 	/* NOTE: `isc_u32' is guarantied to exist at an offset divisible by 4. */
-/*	uint32_t                    isc_u32[isc_u32_count]; // 32-bit unicode table (when indices are `>= isc_u16_count')
- *	                                                    // Entries are 32-bit  unicode when 0x80000000  is set;  else
- *	                                                    // entires are 2x 16-bit  unicode (0xffff0000 is first  char) */
+/*	uint32_t isc_u32[isc_u32_count]; // 32-bit unicode table (when indices are `>= isc_u16_count')
+ *	                                 // Entries are 32-bit  unicode when 0x80000000  is set;  else
+ *	                                 // entires are 2x 16-bit  unicode (0xffff0000 is first  char) */
 /*	struct iconv_stateful_encode_range isc_encode_ranges[isc_encode_count]; */
 /*	uint16_t                           isc_encode_ranges_end;  // [== 0xffff] */
 /*	uint16_t                           isc_encode_rab[(isc_encode_rab_maxoff - isc_encode_rab_minoff) + 1]; // Random access offset table */

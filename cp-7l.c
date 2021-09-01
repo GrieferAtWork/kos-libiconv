@@ -88,52 +88,92 @@ struct iconv_cp7l_database {
 /* Codepage database offsets. */
 STATIC_ASSERT((libiconv_cp7l_offset_t)-1 >= sizeof(struct iconv_cp7l_database));
 STATIC_ASSERT(CODEC_CP7L_MIN + 39 == CODEC_CP7L_MAX);
+STATIC_ASSERT(CODEC_CP7L_MIN + 0 == CODEC_BCDIC);
+STATIC_ASSERT(CODEC_CP7L_MIN + 1 == CODEC_BRF);
+STATIC_ASSERT(CODEC_CP7L_MIN + 2 == CODEC_BURROUGHS_B5500);
+STATIC_ASSERT(CODEC_CP7L_MIN + 3 == CODEC_CP1090);
+STATIC_ASSERT(CODEC_CP7L_MIN + 4 == CODEC_CP353);
+STATIC_ASSERT(CODEC_CP7L_MIN + 5 == CODEC_CP355);
+STATIC_ASSERT(CODEC_CP7L_MIN + 6 == CODEC_CP357);
+STATIC_ASSERT(CODEC_CP7L_MIN + 7 == CODEC_CP358);
+STATIC_ASSERT(CODEC_CP7L_MIN + 8 == CODEC_CP359);
+STATIC_ASSERT(CODEC_CP7L_MIN + 9 == CODEC_CP896);
+STATIC_ASSERT(CODEC_CP7L_MIN + 10 == CODEC_CP904);
+STATIC_ASSERT(CODEC_CP7L_MIN + 11 == CODEC_GBCD);
+STATIC_ASSERT(CODEC_CP7L_MIN + 12 == CODEC_IBM1401);
+STATIC_ASSERT(CODEC_CP7L_MIN + 13 == CODEC_IBM704);
+STATIC_ASSERT(CODEC_CP7L_MIN + 14 == CODEC_IBM7090);
+STATIC_ASSERT(CODEC_CP7L_MIN + 15 == CODEC_ISO5426);
+STATIC_ASSERT(CODEC_CP7L_MIN + 16 == CODEC_ISO5426_2);
+STATIC_ASSERT(CODEC_CP7L_MIN + 17 == CODEC_ISO_IR_13);
+STATIC_ASSERT(CODEC_CP7L_MIN + 18 == CODEC_ISO_IR_146);
+STATIC_ASSERT(CODEC_CP7L_MIN + 19 == CODEC_ISO_IR_147);
+STATIC_ASSERT(CODEC_CP7L_MIN + 20 == CODEC_ISO_IR_150);
+STATIC_ASSERT(CODEC_CP7L_MIN + 21 == CODEC_ISO_IR_18);
+STATIC_ASSERT(CODEC_CP7L_MIN + 22 == CODEC_ISO_IR_19);
+STATIC_ASSERT(CODEC_CP7L_MIN + 23 == CODEC_ISO_IR_50);
+STATIC_ASSERT(CODEC_CP7L_MIN + 24 == CODEC_ISO_IR_51);
+STATIC_ASSERT(CODEC_CP7L_MIN + 25 == CODEC_ISO_IR_54);
+STATIC_ASSERT(CODEC_CP7L_MIN + 26 == CODEC_ISO_IR_55);
+STATIC_ASSERT(CODEC_CP7L_MIN + 27 == CODEC_ISO_IR_68);
+STATIC_ASSERT(CODEC_CP7L_MIN + 28 == CODEC_ISO_IR_88);
+STATIC_ASSERT(CODEC_CP7L_MIN + 29 == CODEC_ISO_IR_89);
+STATIC_ASSERT(CODEC_CP7L_MIN + 30 == CODEC_ISO_IR_8_2);
+STATIC_ASSERT(CODEC_CP7L_MIN + 31 == CODEC_ISO_IR_91);
+STATIC_ASSERT(CODEC_CP7L_MIN + 32 == CODEC_ISO_IR_93);
+STATIC_ASSERT(CODEC_CP7L_MIN + 33 == CODEC_ISO_IR_94);
+STATIC_ASSERT(CODEC_CP7L_MIN + 34 == CODEC_ISO_IR_95);
+STATIC_ASSERT(CODEC_CP7L_MIN + 35 == CODEC_ISO_IR_96);
+STATIC_ASSERT(CODEC_CP7L_MIN + 36 == CODEC_ISO_IR_98);
+STATIC_ASSERT(CODEC_CP7L_MIN + 37 == CODEC_ISO_IR_9_2);
+STATIC_ASSERT(CODEC_CP7L_MIN + 38 == CODEC_JIS_C_6229_OCR_A);
+STATIC_ASSERT(CODEC_CP7L_MIN + 39 == CODEC_KOI7_N2);
 INTERN_CONST libiconv_cp7l_offset_t const libiconv_cp7l_offsets[40] = {
-	[CODEC_BCDIC - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_BCDIC),
-	[CODEC_BRF - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_BRF),
-	[CODEC_BURROUGHS_B5500 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_BURROUGHS_B5500),
-	[CODEC_CP1090 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_CP1090),
-	[CODEC_CP353 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_CP353),
-	[CODEC_CP355 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_CP355),
-	[CODEC_CP357 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_CP357),
-	[CODEC_CP358 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_CP358),
-	[CODEC_CP359 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_CP359),
-	[CODEC_CP896 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_CP896),
-	[CODEC_CP904 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_CP904),
-	[CODEC_GBCD - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_GBCD),
-	[CODEC_IBM1401 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_IBM1401),
-	[CODEC_IBM704 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_IBM704),
-	[CODEC_IBM7090 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_IBM7090),
-	[CODEC_ISO5426 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO5426),
-	[CODEC_ISO5426_2 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO5426_2),
-	[CODEC_ISO_IR_13 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_13),
-	[CODEC_ISO_IR_146 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_146),
-	[CODEC_ISO_IR_147 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_147),
-	[CODEC_ISO_IR_150 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_150),
-	[CODEC_ISO_IR_18 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_18),
-	[CODEC_ISO_IR_19 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_19),
-	[CODEC_ISO_IR_50 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_50),
-	[CODEC_ISO_IR_51 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_51),
-	[CODEC_ISO_IR_54 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_54),
-	[CODEC_ISO_IR_55 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_55),
-	[CODEC_ISO_IR_68 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_68),
-	[CODEC_ISO_IR_88 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_88),
-	[CODEC_ISO_IR_89 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_89),
-	[CODEC_ISO_IR_8_2 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_8_2),
-	[CODEC_ISO_IR_91 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_91),
-	[CODEC_ISO_IR_93 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_93),
-	[CODEC_ISO_IR_94 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_94),
-	[CODEC_ISO_IR_95 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_95),
-	[CODEC_ISO_IR_96 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_96),
-	[CODEC_ISO_IR_98 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_98),
-	[CODEC_ISO_IR_9_2 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_ISO_IR_9_2),
-	[CODEC_JIS_C_6229_OCR_A - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_JIS_C_6229_OCR_A),
-	[CODEC_KOI7_N2 - CODEC_CP7L_MIN] = offsetof(struct iconv_cp7l_database, db_KOI7_N2),
+	/* [CODEC_BCDIC - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_BCDIC),
+	/* [CODEC_BRF - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_BRF),
+	/* [CODEC_BURROUGHS_B5500 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_BURROUGHS_B5500),
+	/* [CODEC_CP1090 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_CP1090),
+	/* [CODEC_CP353 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_CP353),
+	/* [CODEC_CP355 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_CP355),
+	/* [CODEC_CP357 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_CP357),
+	/* [CODEC_CP358 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_CP358),
+	/* [CODEC_CP359 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_CP359),
+	/* [CODEC_CP896 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_CP896),
+	/* [CODEC_CP904 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_CP904),
+	/* [CODEC_GBCD - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_GBCD),
+	/* [CODEC_IBM1401 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_IBM1401),
+	/* [CODEC_IBM704 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_IBM704),
+	/* [CODEC_IBM7090 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_IBM7090),
+	/* [CODEC_ISO5426 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO5426),
+	/* [CODEC_ISO5426_2 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO5426_2),
+	/* [CODEC_ISO_IR_13 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_13),
+	/* [CODEC_ISO_IR_146 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_146),
+	/* [CODEC_ISO_IR_147 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_147),
+	/* [CODEC_ISO_IR_150 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_150),
+	/* [CODEC_ISO_IR_18 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_18),
+	/* [CODEC_ISO_IR_19 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_19),
+	/* [CODEC_ISO_IR_50 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_50),
+	/* [CODEC_ISO_IR_51 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_51),
+	/* [CODEC_ISO_IR_54 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_54),
+	/* [CODEC_ISO_IR_55 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_55),
+	/* [CODEC_ISO_IR_68 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_68),
+	/* [CODEC_ISO_IR_88 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_88),
+	/* [CODEC_ISO_IR_89 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_89),
+	/* [CODEC_ISO_IR_8_2 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_8_2),
+	/* [CODEC_ISO_IR_91 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_91),
+	/* [CODEC_ISO_IR_93 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_93),
+	/* [CODEC_ISO_IR_94 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_94),
+	/* [CODEC_ISO_IR_95 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_95),
+	/* [CODEC_ISO_IR_96 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_96),
+	/* [CODEC_ISO_IR_98 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_98),
+	/* [CODEC_ISO_IR_9_2 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_ISO_IR_9_2),
+	/* [CODEC_JIS_C_6229_OCR_A - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_JIS_C_6229_OCR_A),
+	/* [CODEC_KOI7_N2 - CODEC_CP7L_MIN] = */ offsetof(struct iconv_cp7l_database, db_KOI7_N2),
 };
 
 /* The actual codepage database. */
 INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
-	.db_BCDIC = { {
+	/* .db_BCDIC = */ { {
 		0x0020, 0x0031, 0x0032, 0x0033, 0x0034, 0x0035, 0x0036, 0x0037, /* 00h-07h */
 		0x0038, 0x0039, 0x0030, 0x0023, 0x0040, 0x0000, 0x0000, 0x0000, /* 08h-0fh */
 		0x0000, 0x002f, 0x0053, 0x0054, 0x0055, 0x0056, 0x0057, 0x0058, /* 10h-17h */
@@ -165,7 +205,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x0057, 0x16 }, { 0x0058, 0x17 }, { 0x0059, 0x18 }, { 0x005a, 0x19 },
 		{ 0x2311, 0x3c },
 	} },
-	.db_BRF = { {
+	/* .db_BRF = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -208,7 +248,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x2838, 0x5f }, { 0x2839, 0x3f }, { 0x283a, 0x57 }, { 0x283b, 0x5d },
 		{ 0x283c, 0x23 }, { 0x283d, 0x59 }, { 0x283e, 0x29 }, { 0x283f, 0x3d },
 	} },
-	.db_BURROUGHS_B5500 = { {
+	/* .db_BURROUGHS_B5500 = */ { {
 		0x0030, 0x0031, 0x0032, 0x0033, 0x0034, 0x0035, 0x0036, 0x0037, /* 00h-07h */
 		0x0038, 0x0039, 0x0023, 0x0040, 0x003f, 0x003a, 0x003e, 0x2265, /* 08h-0fh */
 		0x002b, 0x0041, 0x0042, 0x0043, 0x0044, 0x0045, 0x0046, 0x0047, /* 10h-17h */
@@ -244,7 +284,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x00d7, 0x20 }, { 0x2190, 0x1f }, { 0x2260, 0x3c }, { 0x2264, 0x2f },
 		{ 0x2265, 0x0f },
 	} },
-	.db_CP1090 = { {
+	/* .db_CP1090 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -295,7 +335,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x2518, 0x6a }, { 0x251c, 0x74 }, { 0x2524, 0x75 }, { 0x252c, 0x77 },
 		{ 0x2534, 0x76 }, { 0x253c, 0x6e }, { 0x2592, 0x61 }, { 0x25c6, 0x60 },
 	} },
-	.db_CP353 = { {
+	/* .db_CP353 = */ { {
 		0x0020, 0x0031, 0x0032, 0x0033, 0x0034, 0x0035, 0x0036, 0x0037, /* 00h-07h */
 		0x0038, 0x0039, 0x0030, 0x0023, 0x0040, 0x003a, 0x003e, 0x221a, /* 08h-0fh */
 		0x2422, 0x002f, 0x0053, 0x0054, 0x0055, 0x0056, 0x0057, 0x0058, /* 10h-17h */
@@ -330,7 +370,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x0394, 0x2f }, { 0x03b3, 0x1d }, { 0x2021, 0x1a }, { 0x221a, 0x0f },
 		{ 0x2311, 0x3c }, { 0x2422, 0x10 }, { 0x29fb, 0x1f }, { 0x2bd2, 0x3f },
 	} },
-	.db_CP355 = { {
+	/* .db_CP355 = */ { {
 		0x0020, 0x0031, 0x0032, 0x0033, 0x0034, 0x0035, 0x0036, 0x0037, /* 00h-07h */
 		0x0038, 0x0039, 0x0030, 0x0023, 0x0000, 0x0000, 0x0000, 0x0000, /* 08h-0fh */
 		0x0040, 0x002f, 0x0053, 0x0054, 0x0055, 0x0056, 0x0057, 0x0058, /* 10h-17h */
@@ -362,7 +402,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x0057, 0x16 }, { 0x0058, 0x17 }, { 0x0059, 0x18 }, { 0x005a, 0x19 },
 		{ 0x03b3, 0x1d }, { 0x2021, 0x1a },
 	} },
-	.db_CP357 = { {
+	/* .db_CP357 = */ { {
 		0x0020, 0x0031, 0x0032, 0x0033, 0x0034, 0x0035, 0x0036, 0x0037, /* 00h-07h */
 		0x0038, 0x0039, 0x0030, 0x003d, 0x0000, 0x0000, 0x0000, 0x0000, /* 08h-0fh */
 		0x0027, 0x002f, 0x0053, 0x0054, 0x0055, 0x0056, 0x0057, 0x0058, /* 10h-17h */
@@ -394,7 +434,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x0057, 0x16 }, { 0x0058, 0x17 }, { 0x0059, 0x18 }, { 0x005a, 0x19 },
 		{ 0x2021, 0x1a },
 	} },
-	.db_CP358 = { {
+	/* .db_CP358 = */ { {
 		0x0020, 0x0031, 0x0032, 0x0033, 0x0034, 0x0035, 0x0036, 0x0037, /* 00h-07h */
 		0x0038, 0x0039, 0x0030, 0x0027, 0x0000, 0x0000, 0x0000, 0x0000, /* 08h-0fh */
 		0x0021, 0x002f, 0x0053, 0x0054, 0x0055, 0x0056, 0x0057, 0x0058, /* 10h-17h */
@@ -426,7 +466,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x0057, 0x16 }, { 0x0058, 0x17 }, { 0x0059, 0x18 }, { 0x005a, 0x19 },
 		{ 0x2021, 0x1a },
 	} },
-	.db_CP359 = { {
+	/* .db_CP359 = */ { {
 		0x0020, 0x0031, 0x0032, 0x0033, 0x0034, 0x0035, 0x0036, 0x0037, /* 00h-07h */
 		0x0038, 0x0039, 0x0030, 0x0023, 0x0000, 0x0000, 0x0000, 0x0000, /* 08h-0fh */
 		0x0040, 0x002f, 0x0053, 0x0054, 0x0055, 0x0056, 0x0057, 0x0058, /* 10h-17h */
@@ -457,7 +497,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x0055, 0x14 }, { 0x0056, 0x15 }, { 0x0057, 0x16 }, { 0x0058, 0x17 },
 		{ 0x0059, 0x18 }, { 0x005a, 0x19 },
 	} },
-	.db_CP896 = { {
+	/* .db_CP896 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -502,7 +542,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0xff9b, 0x5b }, { 0xff9c, 0x5c }, { 0xff9d, 0x5d }, { 0xff9e, 0x5e },
 		{ 0xff9f, 0x5f },
 	} },
-	.db_CP904 = { {
+	/* .db_CP904 = */ { {
 		0x0000, 0x2554, 0x2557, 0x255a, 0x255d, 0x2551, 0x2550, 0xffec, /* 00h-07h */
 		0x0008, 0xffee, 0x000a, 0x303f, 0x000c, 0x000d, 0xffed, 0x263c, /* 08h-0fh */
 		0x256c, 0x0011, 0x2195, 0x0013, 0x2593, 0x2569, 0x2566, 0x2563, /* 10h-17h */
@@ -553,7 +593,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x303f, 0x0b }, { 0xffe8, 0x1d }, { 0xffe9, 0x1f }, { 0xffea, 0x1c },
 		{ 0xffeb, 0x1e }, { 0xffec, 0x07 }, { 0xffed, 0x0e }, { 0xffee, 0x09 },
 	} },
-	.db_GBCD = { {
+	/* .db_GBCD = */ { {
 		0x0030, 0x0031, 0x0032, 0x0033, 0x0034, 0x0035, 0x0036, 0x0037, /* 00h-07h */
 		0x0038, 0x0039, 0x005b, 0x0023, 0x0040, 0x003a, 0x003e, 0x003f, /* 08h-0fh */
 		0x0020, 0x0041, 0x0042, 0x0043, 0x0044, 0x0045, 0x0046, 0x0047, /* 10h-17h */
@@ -589,7 +629,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x005b, 0x0a }, { 0x005c, 0x1f }, { 0x005d, 0x1c }, { 0x005e, 0x20 },
 		{ 0x005f, 0x3a },
 	} },
-	.db_IBM1401 = { {
+	/* .db_IBM1401 = */ { {
 		0x0020, 0x0031, 0x0032, 0x0033, 0x0034, 0x0035, 0x0036, 0x0037, /* 00h-07h */
 		0x0038, 0x0039, 0x0030, 0x0023, 0x0040, 0x003a, 0x003e, 0x221a, /* 08h-0fh */
 		0x00a2, 0x002f, 0x0053, 0x0054, 0x0055, 0x0056, 0x0057, 0x0058, /* 10h-17h */
@@ -625,7 +665,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x0394, 0x2f }, { 0x2021, 0x1a }, { 0x221a, 0x0f }, { 0x2311, 0x3c },
 		{ 0x2bd2, 0x3f },
 	} },
-	.db_IBM704 = { {
+	/* .db_IBM704 = */ { {
 		0x0030, 0x0031, 0x0032, 0x0033, 0x0034, 0x0035, 0x0036, 0x0037, /* 00h-07h */
 		0x0038, 0x0039, 0x0000, 0x0023, 0x0040, 0x0000, 0x0000, 0x0000, /* 08h-0fh */
 		0x0026, 0x0041, 0x0042, 0x0043, 0x0044, 0x0045, 0x0046, 0x0047, /* 10h-17h */
@@ -657,7 +697,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x0057, 0x36 }, { 0x0058, 0x37 }, { 0x0059, 0x38 }, { 0x005a, 0x39 },
 		{ 0x2021, 0x3a }, { 0x2311, 0x1c },
 	} },
-	.db_IBM7090 = { {
+	/* .db_IBM7090 = */ { {
 		0x0030, 0x0031, 0x0032, 0x0033, 0x0034, 0x0035, 0x0036, 0x0037, /* 00h-07h */
 		0x0038, 0x0039, 0x0000, 0x003d, 0x0022, 0x0000, 0x0000, 0x0000, /* 08h-0fh */
 		0x0026, 0x0041, 0x0042, 0x0043, 0x0044, 0x0045, 0x0046, 0x0047, /* 10h-17h */
@@ -689,7 +729,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x0056, 0x35 }, { 0x0057, 0x36 }, { 0x0058, 0x37 }, { 0x0059, 0x38 },
 		{ 0x005a, 0x39 }, { 0x00b1, 0x3a },
 	} },
-	.db_ISO5426 = { {
+	/* .db_ISO5426 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -735,7 +775,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x2021, 0x36 }, { 0x2117, 0x2e }, { 0x266d, 0x2c }, { 0x266f, 0x3c },
 		{ 0xfe20, 0x5d }, { 0xfe21, 0x5e }, { 0xfe23, 0x5f },
 	} },
-	.db_ISO5426_2 = { {
+	/* .db_ISO5426_2 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -778,7 +818,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0xa757, 0x78 }, { 0xa759, 0x6d }, { 0xa75b, 0x3e }, { 0xa75d, 0x2b },
 		{ 0xa76b, 0x3c }, { 0xa76d, 0x2e }, { 0xa76f, 0x2d }, { 0xa770, 0x2f },
 	} },
-	.db_ISO_IR_13 = { {
+	/* .db_ISO_IR_13 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -822,7 +862,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x30ef, 0x5c }, { 0x30f2, 0x26 }, { 0x30f3, 0x5d }, { 0x30fb, 0x25 },
 		{ 0x30fc, 0x30 },
 	} },
-	.db_ISO_IR_146 = { {
+	/* .db_ISO_IR_146 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -873,7 +913,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x0448, 0x7b }, { 0x0452, 0x7c }, { 0x0455, 0x79 }, { 0x0458, 0x6a },
 		{ 0x0459, 0x71 }, { 0x045a, 0x77 }, { 0x045b, 0x7d }, { 0x045f, 0x78 },
 	} },
-	.db_ISO_IR_147 = { {
+	/* .db_ISO_IR_147 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -924,7 +964,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x0448, 0x7b }, { 0x0453, 0x7c }, { 0x0455, 0x79 }, { 0x0458, 0x6a },
 		{ 0x0459, 0x71 }, { 0x045a, 0x77 }, { 0x045c, 0x7d }, { 0x045f, 0x78 },
 	} },
-	.db_ISO_IR_150 = { {
+	/* .db_ISO_IR_150 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -974,7 +1014,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x03c3, 0x73 }, { 0x03c4, 0x74 }, { 0x03c5, 0x75 }, { 0x03c6, 0x76 },
 		{ 0x03c7, 0x77 }, { 0x03c8, 0x78 }, { 0x03c9, 0x79 }, { 0x203e, 0x7e },
 	} },
-	.db_ISO_IR_18 = { {
+	/* .db_ISO_IR_18 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1025,7 +1065,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x03f5, 0x51 }, { 0x1f00, 0x7d }, { 0x1f01, 0x5d }, { 0x1f04, 0x7b },
 		{ 0x1f05, 0x5b }, { 0xe019, 0x7c }, { 0xe01a, 0x5c },
 	} },
-	.db_ISO_IR_19 = { {
+	/* .db_ISO_IR_19 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1076,7 +1116,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x03a3, 0x73 }, { 0x03a4, 0x74 }, { 0x03a5, 0x79 }, { 0x03a6, 0x66 },
 		{ 0x03a7, 0x78 }, { 0x03a8, 0x63 }, { 0x03a9, 0x76 },
 	} },
-	.db_ISO_IR_50 = { {
+	/* .db_ISO_IR_50 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1113,7 +1153,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x2085, 0x75 }, { 0x2086, 0x76 }, { 0x2087, 0x77 }, { 0x2088, 0x78 },
 		{ 0x2089, 0x79 }, { 0x2192, 0x5e }, { 0x222b, 0x5f }, { 0x30eb, 0x6c },
 	} },
-	.db_ISO_IR_51 = { {
+	/* .db_ISO_IR_51 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1161,7 +1201,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x044d, 0x5c }, { 0x044e, 0x40 }, { 0x044f, 0x51 }, { 0x207a, 0x3f },
 		{ 0x207b, 0x3e }, { 0x2192, 0x2e }, { 0x221a, 0x2c }, { 0x222b, 0x2f },
 	} },
-	.db_ISO_IR_54 = { {
+	/* .db_ISO_IR_54 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1199,7 +1239,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x046a, 0x73 }, { 0x046b, 0x53 }, { 0x0472, 0x71 }, { 0x0473, 0x51 },
 		{ 0x0474, 0x72 }, { 0x0475, 0x52 }, { 0x0490, 0x60 }, { 0x0491, 0x40 },
 	} },
-	.db_ISO_IR_55 = { {
+	/* .db_ISO_IR_55 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1245,7 +1285,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0xe002, 0x21 }, { 0xe003, 0x22 }, { 0xe005, 0x24 }, { 0xe009, 0x23 },
 		{ 0xe012, 0x25 }, { 0xe013, 0x26 }, { 0xe014, 0x27 },
 	} },
-	.db_ISO_IR_68 = { {
+	/* .db_ISO_IR_68 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1296,7 +1336,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x2308, 0x53 }, { 0x230a, 0x44 }, { 0x2373, 0x49 }, { 0x2374, 0x52 },
 		{ 0x2375, 0x57 }, { 0x237a, 0x41 }, { 0x2395, 0x4c }, { 0x25cb, 0x4f },
 	} },
-	.db_ISO_IR_88 = { {
+	/* .db_ISO_IR_88 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1347,7 +1387,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x03c6, 0x76 }, { 0x03c7, 0x78 }, { 0x03c8, 0x79 }, { 0x03c9, 0x7a },
 		{ 0x203e, 0x7e },
 	} },
-	.db_ISO_IR_89 = { {
+	/* .db_ISO_IR_89 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1396,7 +1436,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x064c, 0x6c }, { 0x064d, 0x6d }, { 0x064e, 0x6e }, { 0x064f, 0x6f },
 		{ 0x0650, 0x70 }, { 0x0651, 0x71 }, { 0x0652, 0x72 }, { 0x203e, 0x7e },
 	} },
-	.db_ISO_IR_8_2 = { {
+	/* .db_ISO_IR_8_2 = */ { {
 		0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, /* 00h-07h */
 		0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, /* 08h-0fh */
 		0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, /* 10h-17h */
@@ -1419,7 +1459,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x00e6, 0x7b }, { 0x00e9, 0x65 }, { 0x00f8, 0x7c }, { 0x00fc, 0x75 },
 		{ 0x00fe, 0x70 }, { 0x0110, 0x44 }, { 0x0111, 0x64 },
 	} },
-	.db_ISO_IR_91 = { {
+	/* .db_ISO_IR_91 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1462,7 +1502,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x007f, 0x7f }, { 0x00a3, 0x23 }, { 0x00a5, 0x5c }, { 0x2440, 0x3c },
 		{ 0x2441, 0x3e }, { 0x2442, 0x5d }, { 0x2443, 0x7c },
 	} },
-	.db_ISO_IR_93 = { {
+	/* .db_ISO_IR_93 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1491,7 +1531,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x0020, 0x20 }, { 0x005c, 0x25 }, { 0x007f, 0x7f }, { 0x00a3, 0x23 },
 		{ 0x00a4, 0x24 }, { 0x00a7, 0x27 },
 	} },
-	.db_ISO_IR_94 = { {
+	/* .db_ISO_IR_94 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1535,7 +1575,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x005f, 0x5f }, { 0x007c, 0x7c }, { 0x007f, 0x7f }, { 0x00a5, 0x5c },
 		{ 0x2329, 0x5b }, { 0x232a, 0x5d },
 	} },
-	.db_ISO_IR_95 = { {
+	/* .db_ISO_IR_95 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1563,7 +1603,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x001c, 0x1c }, { 0x001d, 0x1d }, { 0x001e, 0x1e }, { 0x001f, 0x1f },
 		{ 0x0020, 0x20 }, { 0x005c, 0x25 }, { 0x007f, 0x7f },
 	} },
-	.db_ISO_IR_96 = { {
+	/* .db_ISO_IR_96 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1604,7 +1644,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x30ed, 0x5b }, { 0x30ef, 0x5c }, { 0x30f2, 0x26 }, { 0x30f3, 0x5d },
 		{ 0x30fc, 0x30 },
 	} },
-	.db_ISO_IR_98 = { {
+	/* .db_ISO_IR_98 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1635,7 +1675,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x0037, 0x37 }, { 0x0038, 0x38 }, { 0x0039, 0x39 }, { 0x007f, 0x7f },
 		{ 0x2446, 0x3a }, { 0x2447, 0x3b }, { 0x2448, 0x3c }, { 0x2449, 0x3d },
 	} },
-	.db_ISO_IR_9_2 = { {
+	/* .db_ISO_IR_9_2 = */ { {
 		0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, /* 00h-07h */
 		0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, /* 08h-0fh */
 		0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, /* 10h-17h */
@@ -1658,7 +1698,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x00e4, 0x7b }, { 0x00e9, 0x65 }, { 0x00f6, 0x7c }, { 0x00fc, 0x75 },
 		{ 0x00fe, 0x70 }, { 0x0110, 0x44 }, { 0x0111, 0x64 },
 	} },
-	.db_JIS_C_6229_OCR_A = { {
+	/* .db_JIS_C_6229_OCR_A = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */
@@ -1701,7 +1741,7 @@ INTERN_CONST struct iconv_cp7l_database const libiconv_cp7l_db = {
 		{ 0x00a3, 0x23 }, { 0x00a5, 0x5c }, { 0x2440, 0x3c }, { 0x2441, 0x3e },
 		{ 0x2442, 0x5d },
 	} },
-	.db_KOI7_N2 = { {
+	/* .db_KOI7_N2 = */ { {
 		0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, /* 00h-07h */
 		0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, /* 08h-0fh */
 		0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, /* 10h-17h */

@@ -89,8 +89,9 @@ class MbcsCodec {
 	public member aliases: {CodecAlias...} = [];
 
 	@@Decode map. Maps CP_ORD -> UNI_ORD or another
-	@@table that is used to decode a second byte.
-	public member map: {int: int | {int: int}} = Dict();
+	@@table that is used to decode a second byte, or
+	@@points to a third table, and so on.
+	public member map: {int: int | {int: int | Object}} = Dict();
 }
 
 
@@ -260,12 +261,28 @@ function parseDBFilename(filename: string): {string: Object} {
 				if (currentItem is MbcsCodec) {
 					local firstByte = arg, startOrd = "0";
 					if ("," in arg) {
-						firstByte, none, startOrd = arg.partition(",")...;
+						firstByte, none, startOrd = arg.rpartition(",")...;
 					}
-					firstByte = int(firstByte.strip());
+					if (firstByte.startswith("[") && firstByte.endswith("]")) {
+						firstByte = Tuple(
+							for (local x: firstByte[1:-1].split(","))
+								int(x.strip()));
+					} else {
+						firstByte = int(firstByte.strip());
+					}
 					currentIndex = int(startOrd.strip());
-					currentTable = Dict();
-					currentItem.map[firstByte] = currentTable;
+					if (firstByte is int) {
+						currentTable = Dict();
+						currentItem.map[firstByte] = currentTable;
+					} else {
+						currentTable = currentItem.map;
+						for (local b: firstByte) {
+							local newTab = currentTable.get(b);;
+							if (newTab !is Dict)
+								currentTable[b] = newTab = Dict();
+							currentTable = newTab;
+						}
+					}
 				} else if (currentItem is StatefulCodec) {
 					currentIndex = 0;
 					currentTable = currentItem.db_table;
@@ -726,10 +743,11 @@ function printCodepageDatabase(kind: int) {
 	print("/* Codepage database offsets. */");
 	print("STATIC_ASSERT((libiconv_cp", cpInsert, "_offset_t)-1 >= sizeof(struct iconv_cp", cpInsert, "_database));");
 	print("STATIC_ASSERT(CODEC_CP", cpInsertUpper, "_MIN + ", (#codecs-1), " == CODEC_CP", cpInsertUpper, "_MAX);");
+	for (local i, cp: util.enumerate(codecs))
+		print("STATIC_ASSERT(CODEC_CP", cpInsertUpper, "_MIN + ", i, " == ", cp.name, ");");
 	print("INTERN_CONST libiconv_cp", cpInsert, "_offset_t const libiconv_cp", cpInsert, "_offsets[", #codecs, "] = {");
-	for (local cp: codecs) {
-		print("	[", cp.name, " - CODEC_CP", cpInsertUpper, "_MIN] = offsetof(struct iconv_cp", cpInsert, "_database, ", dbFieldName(cp.name), "),");
-	}
+	for (local cp: codecs)
+		print("	/* [", cp.name, " - CODEC_CP", cpInsertUpper, "_MIN] = */ offsetof(struct iconv_cp", cpInsert, "_database, ", dbFieldName(cp.name), "),");
 	print("};");
 
 	print;
@@ -745,7 +763,7 @@ function printCodepageDatabase(kind: int) {
 			shift = 128;
 		}
 		local encode_table = getEncodeTable(table, shift);
-		print("	.", dbFieldName(cp.name), " = { {");
+		print("	/* .", dbFieldName(cp.name), " = */ { {");
 		for (local i, l: util.enumerate(table.segments(8))) {
 			local lo = shift + (i * 8);
 			print("		", ", ".join(for (local x: l) "0x" + x.hex()[2:].zfill(4)), ", /* ",
@@ -795,11 +813,13 @@ function printCpIso646Database() {
 			codecs.append(codec);
 	}
 	codecs.sort(CodePage.name);
+	for (local i, codec: util.enumerate(codecs))
+		print("STATIC_ASSERT(CODEC_ISO646_MIN + ", i, " == ", codec.name, ");");
 	print("INTERN_CONST struct iconv_iso646_codepage const libiconv_iso646_pages[", #codecs, "] = {");
 	local longestNameLen = codecs.each.name.length > ...;
 	for (local codec: codecs) {
-		print("	[", codec.name, " - CODEC_ISO646_MIN]",
-			" " * (longestNameLen - #codec.name), " = { { ",
+		print("	/* [", codec.name, " - CODEC_ISO646_MIN]",
+			" " * (longestNameLen - #codec.name), " = */ { { ",
 			", ".join(
 				for (local x: ISO646_OVERRIDE_ORDINALS)
 					"0x" + codec.table[x].hex()[2:].zfill(4)),
@@ -1271,77 +1291,78 @@ do_add_encode_identity_range:
 	print("};");
 
 	/* Print the offset table. */
+	for (local i, exCodec: util.enumerate(exCodecs))
+		print("STATIC_ASSERT(CODEC_STATEFUL_MIN + ", i, " == ", exCodec.codec.name, ");");
 	print("INTERN_CONST libiconv_stateful_offset_t const libiconv_stateful_offsets[", #exCodecs, "] = {");
 	for (local exCodec: exCodecs)
-		print("	[", exCodec.codec.name, " - CODEC_STATEFUL_MIN] = offsetof(struct iconv_stateful_database, ", dbFieldName(exCodec.codec.name), "),");
+		print("	/* [", exCodec.codec.name, " - CODEC_STATEFUL_MIN] = */ offsetof(struct iconv_stateful_database, ", dbFieldName(exCodec.codec.name), "),");
 	print("};");
 
 	/* Now print the database controller contents. */
 	print("INTERN_CONST struct iconv_stateful_database const libiconv_stateful_db = {");
 	for (local exCodec: exCodecs) {
 		print;
-		print("	/* ", exCodec.codec.name, " */");
-		print("	.", dbFieldName(exCodec.codec.name), " = {");
-		print("		._sb = {"),;
-		printCompressed(exCodec.codec.sb_table, "		        ");
+		print("	/* .", dbFieldName(exCodec.codec.name), " = */ {");
+		print("		{"),; /* _sb */
+		printCompressed(exCodec.codec.sb_table, "		 ");
 		print("},");
-		print("		._db_count = ", #exCodec.isc_db_ranges, ",");
-		print("		._u16_count = ", #exCodec.isc_u16, ",");
-		print("		._u32_count = ", #exCodec.isc_u32, ",");
-		print("		._rab_minoff = ", exCodec.isc_rab_minoff, ",");
-		print("		._rab_maxoff = ", exCodec.isc_rab_maxoff, ",");
-		print("		._encode_count = ", (#exCodec.isc_encode_ranges).hex(), ",");
-		print("		._encode_tab_count = ", (#exCodec.isc_encode_tab).hex(), ",");
-		print("		._encode_rab_minoff = ", exCodec.isc_encode_rab_minoff.hex(), ",");
-		print("		._encode_rab_maxoff = ", exCodec.isc_encode_rab_maxoff.hex(), ",");
-		print("		._encode_repl = ", exCodec.isc_encode_repl.hex(), ",");
-		print("		._encode_2ch_count = ", (#exCodec.isc_encode_2ch).hex(), ",");
-		print("		._encode_c32_count = ", (#exCodec.isc_encode_c32).hex(), ",");
-		print("		._db_ranges = {"),;
+		print("		", #exCodec.isc_db_ranges, ",");              /* _db_count */
+		print("		", #exCodec.isc_u16, ",");                    /* _u16_count */
+		print("		", #exCodec.isc_u32, ",");                    /* _u32_count */
+		print("		", exCodec.isc_rab_minoff, ",");              /* _rab_minoff */
+		print("		", exCodec.isc_rab_maxoff, ",");              /* _rab_maxoff */
+		print("		", (#exCodec.isc_encode_ranges).hex(), ",");  /* _encode_count */
+		print("		", (#exCodec.isc_encode_tab).hex(), ",");     /* _encode_tab_count */
+		print("		", exCodec.isc_encode_rab_minoff.hex(), ","); /* _encode_rab_minoff */
+		print("		", exCodec.isc_encode_rab_maxoff.hex(), ","); /* _encode_rab_maxoff */
+		print("		", exCodec.isc_encode_repl.hex(), ",");       /* _encode_repl */
+		print("		", (#exCodec.isc_encode_2ch).hex(), ",");     /* _encode_2ch_count */
+		print("		", (#exCodec.isc_encode_c32).hex(), ",");     /* _encode_c32_count */
+		print("		{"),; /* _db_ranges */
 		printCompressed(
 			(for (local isr_cp_ord, isr_uni_off: exCodec.isc_db_ranges)
 				"{" + isr_cp_ord + "," + isr_uni_off + "}"),
-			"		               ");
+			"		 ");
 		print("},"),;
-		print("		._db_ranges_end = 0xffff,");
-		print("		._rab = {"),;
-		printCompressed(exCodec.isc_rab, "		         ");
+		print("		0xffff,"); /* _db_ranges_end */
+		print("		{"),; /* _rab */
+		printCompressed(exCodec.isc_rab, "		 ");
 		print("},");
-		print("		._u16 = {"),;
-		printCompressed(exCodec.isc_u16, "		         ");
+		print("		{"),; /* _u16 */
+		printCompressed(exCodec.isc_u16, "		 ");
 		print("},");
 		if (exCodec.isc_u32) {
-			print("		._u32 = {"),;
-			printCompressed(exCodec.isc_u32, "		         ");
+			print("		{"),; /* _u32 */
+			printCompressed(exCodec.isc_u32, "		 ");
 			print("},");
 		}
-		print("		._encode_ranges = {"),;
+		print("		{"),; /* _encode_ranges */
 		printCompressed(
 			(for (local iser_uni_ord, iser_cp_off: exCodec.isc_encode_ranges)
 				"{" + iser_uni_ord + "," + iser_cp_off + "}")
-			, "		                   ");
+			, "		 ");
 		print("},");
 		print("		._encode_ranges_end = 0xffff,");
-		print("		._encode_rab = {"),;
-		printCompressed(exCodec.isc_encode_rab, "		                ");
+		print("		{"),; /* _encode_rab */
+		printCompressed(exCodec.isc_encode_rab, "		 ");
 		print("},");
-		print("		._encode_tab = {"),;
-		printCompressed(exCodec.isc_encode_tab, "		                ");
+		print("		{"),; /* _encode_tab */
+		printCompressed(exCodec.isc_encode_tab, "		 ");
 		print("},");
 		if (exCodec.isc_encode_2ch) {
-			print("		._encode_2ch = {"),;
+			print("		{"),; /* _encode_2ch */
 			printCompressed(
 				(for (local is2ce_uni2, is2ce_cp: exCodec.isc_encode_2ch)
 					"{" + is2ce_uni2 + "," + is2ce_cp + "}")
-				, "		                ");
+				, "		 ");
 			print("},");
 		}
 		if (exCodec.isc_encode_c32) {
-			print("		._encode_c32 = {"),;
+			print("		{"),; /* _encode_c32 */
 			printCompressed(
 				(for (local isc32e_uni, isc32e_cp: exCodec.isc_encode_c32)
 					"{" + isc32e_uni + "," + isc32e_cp + "}")
-				, "		                ");
+				, "		 ");
 			print("},");
 		}
 		print("	},");
@@ -1353,6 +1374,9 @@ do_add_encode_identity_range:
 #define ICONV_MBCS_BYTE2_RANGE_TYPE_LIN   1 /* Linear unicode mapping */
 #define ICONV_MBCS_BYTE2_RANGE_TYPE_ARR   2 /* 16-bit array of unicode ordinals */
 #define ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32 3 /* 32-bit array of unicode ordinals */
+#define ICONV_MBCS_BYTE2_RANGE_TYPE_TAB   4 /* Another table (offset from code-page start to another array
+                                             * of `struct iconv_mbcs_byte2_range' to-be used for decoding) */
+global ExMbcsByte2Table;
 class ExMbcsByte2Range {
 	this = default;
 	public member imc_type: int;
@@ -1361,33 +1385,36 @@ class ExMbcsByte2Range {
 	public member imc_cpmax: int;
 	public member imc_lin: int = none;
 	public member imc_arr: {int...} = none;
+	public member imc_tab: ExMbcsByte2Table = none;
 }
 class ExMbcsByte2Table {
 	this = default;
-	public member _firstbyte: int;
+	public member _firstbyte: {int...} = [];
+	public member offset: int; /* offsetof() this table */
 	public member sizeof: int; /* sizeof() this table */
 	public member ranges: {ExMbcsByte2Range...} = []; /* Ranges */
 }
 
 @@Given a table for mapping the second byte to unicode, convert to a @ExMbcsByte2Table
-function createExMbcsByte2Table(map_table: {int: int}): ExMbcsByte2Table {
+@@This returns the created table, and a list of recursively created ables (excluding the primary table)
+function createExMbcsByte2Table(map_table: {int: int | Object}): (ExMbcsByte2Table, {ExMbcsByte2Table...}) {
 	local result = ExMbcsByte2Table();
-	local table: {int...} = [0] * 256;
+	local recursiveTables = [];
+	local table: {int | Object...} = [0] * 256;
 	for (local cp, uni: map_table)
 		table[cp] = uni;
-	assert (table + ...) > 0;
 	local i = 0;
 	/* First the first non-empty codepage ordinal. */
-	while (table[i] == 0)
+	while (table[i] is int && table[i] == 0)
 		++i;
 	local maxOrd = 0xff;
-	while (table[maxOrd] == 0)
+	while (table[maxOrd] is int && table[maxOrd] == 0)
 		--maxOrd;
 	function hasConsecutiveNul(start: int, count: int): bool {
 		if (start + count > maxOrd)
 			return false;
 		for (local i: [start:start + count]) {
-			if (table[i] != 0)
+			if (table[i] !is int || table[i] != 0)
 				return false;
 		}
 		return true;
@@ -1396,15 +1423,17 @@ function createExMbcsByte2Table(map_table: {int: int}): ExMbcsByte2Table {
 		if (start + count > maxOrd)
 			return false;
 		for (local i: [start:start + count]) {
-			if (table[i] > 0xffff)
+			if (table[i] !is int || table[i] > 0xffff)
 				return false;
 		}
 		return true;
 	}
 	function hasConsecutiveLinear(start: int, count: int): bool {
 		local start_uni = table[start];
+		assert start_uni is int;
 		local numLinear = 1;
 		while (start + numLinear <= maxOrd && numLinear < count &&
+		       table[start + numLinear] is int &&
 		       table[start + numLinear] == start_uni + numLinear)
 			++numLinear;
 		return numLinear == count;
@@ -1413,8 +1442,10 @@ function createExMbcsByte2Table(map_table: {int: int}): ExMbcsByte2Table {
 		if (start >= maxOrd)
 			return true;
 		local start_uni = table[start];
+		assert start_uni is int;
 		local numLinear = 1;
 		while (start + numLinear <= maxOrd && numLinear < 4 &&
+		       table[start + numLinear] is int &&
 		       table[start + numLinear] == start_uni + numLinear)
 			++numLinear;
 		/* Linear range are more efficient when there are
@@ -1445,11 +1476,22 @@ again_range:
 	local uni = table[i];
 	local range: ExMbcsByte2Range = ExMbcsByte2Range();
 	range.imc_cpmin = i;
-	if (uni == 0) {
+	if (uni !is int) {
+		/* Recursively create another table. */
+		range.imc_type = ICONV_MBCS_BYTE2_RANGE_TYPE_TAB;
+		local tab, more = createExMbcsByte2Table(uni)...;
+		for (local x: more)
+			x._firstbyte.insert(0, i);
+		tab._firstbyte.insert(0, i);
+		recursiveTables.extend(more);
+		recursiveTables.append(tab);
+		range.imc_tab  = tab;
+		++i;
+	} else if (uni == 0) {
 		/* Skip undefined range. */
 		do {
 			++i;
-		} while (i <= maxOrd && table[i] == 0);
+		} while (i <= maxOrd && table[i] is int && table[i] == 0);
 		goto again_range;
 	} else if (uni > 0xffff) {
 		/* Force 32-bit range. */
@@ -1467,6 +1509,8 @@ again_range:
 				break;
 			if (#range.imc_arr >= 126) /* (4+(126*4))/2 == 254 (prevent imc_size overflow) */
 				break;
+			if (table[i] !is int)
+				break;
 			range.imc_arr.append(table[i]);
 		}
 	} else if (shouldCreateLinearRange(i)) {
@@ -1478,6 +1522,8 @@ again_range:
 			if (i > maxOrd)
 				break;
 			++uni;
+			if (table[i] !is int)
+				break;
 			if (table[i] != uni)
 				break;
 		}
@@ -1497,7 +1543,7 @@ again_range:
 			if (#range.imc_arr >= 253) /* (4+(253*2))/2 == 255 (prevent imc_size overflow) */
 				break;
 			uni = table[i];
-			if (uni > 0xffff)
+			if (uni !is int || uni > 0xffff)
 				break;
 			range.imc_arr.append(uni);
 		}
@@ -1506,11 +1552,15 @@ again_range:
 	range.imc_cpmax = i - 1;
 	/* Calculate range size */
 	if (range.imc_type == ICONV_MBCS_BYTE2_RANGE_TYPE_LIN)
-		range.imc_size = (6) / 2;
+		range.imc_size = (4 + 2) / 2;
 	else if (range.imc_type == ICONV_MBCS_BYTE2_RANGE_TYPE_ARR)
 		range.imc_size = (4 + 2 * #range.imc_arr) / 2;
-	else if (range.imc_type == ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32) {
+	else if (range.imc_type == ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32)
 		range.imc_size = (4 + 4 * #range.imc_arr) / 2;
+	else if (range.imc_type == ICONV_MBCS_BYTE2_RANGE_TYPE_TAB)
+		range.imc_size = (4 + 2) / 2;
+	else {
+		assert false, "Bad type";
 	}
 	assert range.imc_size <= 0xff, "Internal error: range too large";
 	result.ranges.append(range);
@@ -1522,7 +1572,7 @@ again_range:
 	for (local r: result.ranges)
 		size += r.imc_size * 2 + 2; /* +2 for the trailing _eof_type + _eof_size */
 	result.sizeof = size;
-	return result;
+	return (result, recursiveTables);
 }
 
 class ExMbcsCodec {
@@ -1547,12 +1597,23 @@ function createExMbcsCodec(codec: MbcsCodec): ExMbcsCodec {
 			result.imc_1byte[i] = val;
 			onebyte_uni.append(val);
 		} else {
-			local tab: ExMbcsByte2Table = createExMbcsByte2Table(val);
-			tab._firstbyte = i;
+			local tab: ExMbcsByte2Table, more: {ExMbcsByte2Table...};
+			tab, more = createExMbcsByte2Table(val)...;
+			for (local x: more)
+				x._firstbyte.insert(0, i);
+			tab._firstbyte.insert(0, i);
 			result.imc_1byte[i] = 0x10000 + #result.imc_offtab; /* Relocated later. */
+			assert twobyte_offset <= 0xffff;
 			result.imc_offtab.append(twobyte_offset);
+			tab.offset = twobyte_offset;
 			result.byte2_tables.append(tab);
 			twobyte_offset += tab.sizeof;
+			for (local x: more) {
+				assert twobyte_offset <= 0xffff;
+				x.offset = twobyte_offset;
+				result.byte2_tables.append(x);
+				twobyte_offset += x.sizeof;
+			}
 		}
 	}
 
@@ -1595,6 +1656,13 @@ function createExMbcsCodec(codec: MbcsCodec): ExMbcsCodec {
 	return result;
 }
 
+function firstByteToStr(b: {int...}): string {
+	if (#b == 1)
+		return b.first.hex()[2:].zfill(2) + "h";
+	return "[{}]".format({
+		",".join(for (local x: b) x.hex()[2:].zfill(2) + "h")
+	});
+}
 
 function printCpMbcsDatabase() {
 	local codecs = [];
@@ -1625,7 +1693,7 @@ function printCpMbcsDatabase() {
 		print("		char16_t _ox; /* U+", exCodec.imc_offidx_max.hex()[2:].upper().zfill(4), " */");
 		print("		uint16_t _ot[", (#exCodec.imc_offtab).hex(), "];");
 		for (local b2_i, b2: util.enumerate(exCodec.byte2_tables)) {
-			print("		/* First byte: ", b2._firstbyte.hex()[2:].zfill(2), "h */");
+			print("		/* First byte: ", firstByteToStr(b2._firstbyte), " */");
 			for (local range_i, range: util.enumerate(b2.ranges)) {
 				print("		byte_t "),;
 				print("_", b2_i, "r", range_i, "_t,"),;
@@ -1643,6 +1711,9 @@ function printCpMbcsDatabase() {
 				case ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32:
 					print("_A[", (#range.imc_arr * 2).hex(), "];"),;
 					break;
+				case ICONV_MBCS_BYTE2_RANGE_TYPE_TAB:
+					print("_T;"),;
+					break;
 				default: assert false;
 				}
 				print;
@@ -1654,9 +1725,11 @@ function printCpMbcsDatabase() {
 	print("};");
 
 	/* Print the offset table. */
+	for (local i, codec: util.enumerate(codecs))
+		print("STATIC_ASSERT(CODEC_MBCS_MIN + ", i, " == ", codec.name, ");");
 	print("INTERN_CONST libiconv_mbcs_offset_t const libiconv_mbcs_offsets[", #codecs, "] = {");
 	for (local codec: codecs)
-		print("	[", codec.name, " - CODEC_MBCS_MIN] = offsetof(struct iconv_mbcs_database, ", dbFieldName(codec.name), "),");
+		print("	/* [", codec.name, " - CODEC_MBCS_MIN] = */ offsetof(struct iconv_mbcs_database, ", dbFieldName(codec.name), "),");
 	print("};");
 
 	/* Print the database contents */
@@ -1668,20 +1741,21 @@ function printCpMbcsDatabase() {
 	print("#endif");
 	print("INTERN_CONST struct iconv_mbcs_database const libiconv_mbcs_db = {");
 	for (local exCodec: exCodecs) {
-		print("	.", dbFieldName(exCodec.codec.name), "={");
-		print("		._1={"),;
-		printCompressed(exCodec.imc_1byte, "		     ");
+		print;
+		print("	/* .", dbFieldName(exCodec.codec.name), " = */ {");
+		print("		{"),; /* _1 */
+		printCompressed(exCodec.imc_1byte, "		 ");
 		print("},");
-		print("		._oi=", exCodec.imc_offidx_min, ",");
-		print("		._ox=", exCodec.imc_offidx_max, ",");
-		print("		._ot={"),;
-		printCompressed(exCodec.imc_offtab, "		      ");
+		print("		", exCodec.imc_offidx_min, ","); /* _oi */
+		print("		", exCodec.imc_offidx_max, ","); /* _ox */
+		print("		{"),; /* _ot */
+		printCompressed(exCodec.imc_offtab, "		 ");
 		print("},");
 		for (local b2_i, b2: util.enumerate(exCodec.byte2_tables)) {
-			print("		/* First byte: ", b2._firstbyte.hex()[2:].zfill(2), "h */");
+			print("		/* First byte: ", firstByteToStr(b2._firstbyte), " */");
 			for (local range_i, range: util.enumerate(b2.ranges)) {
 				print("		"),;
-				print("._", b2_i, "r", range_i, "_t="),;
+//				print("._", b2_i, "r", range_i, "_t="),;
 				print(range.imc_type, ","),;
 //				print("._", b2_i, "r", range_i, "_cx="),;
 				print(range.imc_cpmax, ","),;
@@ -1691,29 +1765,34 @@ function printCpMbcsDatabase() {
 				print(range.imc_size, ","),;
 				switch (range.imc_type) {
 				case ICONV_MBCS_BYTE2_RANGE_TYPE_LIN:
-//					print(" ._", b2_i, "r", range_i, "_l="),;
+					/* "_", b2_i, "r", range_i, "_l" */
 					print(range.imc_lin, ",");
 					break;
 				case ICONV_MBCS_BYTE2_RANGE_TYPE_ARR: {
 					print;
-					local prefix = "._" + b2_i + "r" + range_i + "_a={";
-					print("		", prefix),;
-					printCompressed(range.imc_arr, "		" + (" " * (#prefix)));
+					/* "._", b2_i, "r", range_i, "_a" */
+					print("		{"),;
+					printCompressed(range.imc_arr, "		 ");
 					print("},");
 				}	break;
 				case ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32: {
 					print;
-					local prefix = "._" + b2_i + "r" + range_i + "_A={";
-					print("		", prefix),;
+					/* "._", b2_i, "r", range_i, "_A" */
+					print("		{"),;
 					printCompressed((for (local x: range.imc_arr)
 						"E({},{})".format({ x >> 16, x & 0xffff })
-					), "		" + (" " * (#prefix)));
+					), "		 ");
 					print("},");
+				}	break;
+				case ICONV_MBCS_BYTE2_RANGE_TYPE_TAB: {
+					/* "_", b2_i, "r", range_i, "_T" */
+					print(range.imc_tab.offset, ",");
 				}	break;
 				default: assert false;
 				}
 			}
-			print("		._", b2_i, "_et=", ICONV_MBCS_BYTE2_RANGE_TYPE_EOF, ","),;
+			print("		/*_", b2_i, "_et*/"),;
+			print(ICONV_MBCS_BYTE2_RANGE_TYPE_EOF, ","),;
 //			print("._", b2_i, "_ex="),;
 			print("255,");
 		}

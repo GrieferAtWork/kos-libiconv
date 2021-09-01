@@ -70,14 +70,15 @@ DECL_BEGIN
 PRIVATE ATTR_PURE WUNUSED NONNULL((1, 2)) byte_t
 NOTHROW(CC get_byte1_of_range)(struct iconv_mbcs_codepage const *cp,
                                struct iconv_mbcs_byte2_range const *range) {
-	byte_t result;
-	for (result = 0;; ++result) {
+	unsigned int result;
+	for (result = 0; result <= 0xff; ++result) {
 		char16_t uni = cp->imc_1byte[result];
 		if (iconv_mbcs_codepage_hasbyte2(cp, uni) &&
 		    iconv_mbcs_codepage_getbyte2(cp, uni) == range)
 			break; /* Found it! */
 	}
-	return result;
+	/* TODO: Reverse engineer lead-up bytes for multi-byte prefixes */
+	return (byte_t)result;
 }
 
 INTERN NONNULL((1, 2)) ssize_t FORMATPRINTER_CC
@@ -114,6 +115,7 @@ unmapped_multichar:
 				outch = '?';
 				if (!IS_ICONV_ERR_REPLACE(self->icd_flags)) {
 					byte_t byte1;
+					/* TODO: Support for multi-byte lead-up */
 					byte1 = get_byte1_of_range(cp, self->icd_data.idd_mbcs.mc_b2);
 					outch = (char32_t)(char16_t)(((uint16_t)byte1 << 8) | ch);
 				}
@@ -133,6 +135,12 @@ unmapped_multichar:
 					if unlikely(!outch)
 						goto unmapped_multichar;
 					break;
+				case ICONV_MBCS_BYTE2_RANGE_TYPE_TAB: {
+					/* Load the start of the follow-up range. */
+					range = (struct iconv_mbcs_byte2_range const *)((byte_t const *)cp + range->imc_tab);
+					self->icd_data.idd_mbcs.mc_b2 = range;
+					continue;
+				}	break;
 				default: __builtin_unreachable();
 				}
 			}
