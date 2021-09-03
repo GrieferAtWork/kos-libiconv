@@ -266,6 +266,8 @@ DEFINE_TEST(iconv) {
 	convert("utf-8", "c-escape-bytes-chr", ICONV_ERR_ERRNO, "\\", buf);
 	assertf(strcmp(buf, "\'\\\\\'") == 0, "buf = %q", buf);
 
+	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\u263A\\nWorld", buf);
+	assertf(strcmp(buf, "Hello\u263A\nWorld") == 0, "buf = %q", buf);
 	convert("c-escape", "c-escape-bytes", ICONV_ERR_ERRNO, "Hello\\u263A\\nWorld", buf);
 	assertf(strcmp(buf, "Hello\\xE2\\x98\\xBA\\nWorld") == 0, "buf = %q", buf);
 

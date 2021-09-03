@@ -299,6 +299,7 @@ err_ilseq:
 	return -(ssize_t)(size_t)(end - data);
 }
 
+
 INTERN NONNULL((1, 2)) ssize_t FORMATPRINTER_CC
 libiconv_c_escape_decode(struct iconv_decode *__restrict self,
                          /*utf-8*/ char const *__restrict data, size_t size) {
@@ -610,12 +611,12 @@ exit_escape_at_data:
 
 				case 'u':
 					self->icd_data.idd_cesc.ce_esc = _ICONV_DECODE_CESCAPE_ESC_MODE_U16;
-					self->icd_data.idd_cesc.ce_esc_value = 0;
+					self->icd_data.idd_cesc.ce_esc_u16 = 0;
 					break;
 
 				case 'U':
 					self->icd_data.idd_cesc.ce_esc = _ICONV_DECODE_CESCAPE_ESC_MODE_U32;
-					self->icd_data.idd_cesc.ce_esc_value = 0;
+					self->icd_data.idd_cesc.ce_esc_u32 = 0;
 					break;
 
 				case '\r':
