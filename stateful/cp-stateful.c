@@ -358,7 +358,7 @@ libiconv_stateful_encode(struct iconv_encode *__restrict self,
 			if (ent->iser_cp_off >= cp->isc_encode_rab_minoff &&
 			    ent->iser_cp_off <= cp->isc_encode_rab_maxoff) {
 				/* Random access character */
-				uint16_t cp_offset, rab_index, result;
+				uint16_t cp_offset, rab_index;
 				uint16_t const *isc_encode_rab, *isc_encode_tab;
 				isc_encode_rab = iconv_stateful_codepage__isc_encode_rab__from__isc_encode_ranges(cp, isc_encode_ranges);
 				isc_encode_tab = iconv_stateful_codepage__isc_encode_tab__from__isc_encode_rab(cp, isc_encode_rab);
@@ -378,7 +378,7 @@ libiconv_stateful_encode(struct iconv_encode *__restrict self,
 				}
 				/* Single-character encoding. */
 				cp_ch = isc_encode_tab[cp_offset];
-				if unlikely(result == 0) {
+				if unlikely(cp_ch == 0) {
 cannot_encode_ch:
 					if (IS_ICONV_ERR_ERROR_OR_ERRNO(self->ice_flags)) {
 						data -= _uni_status;

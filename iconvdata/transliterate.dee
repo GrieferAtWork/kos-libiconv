@@ -47,7 +47,6 @@ function parseDB(): {int: {string...}} {
 		warnAt(i, msg);
 		throw Error(msg);
 	}
-	local i = 0;
 	local i = 0, len = #data, flushStart = 0;
 	local result: {int: {string...}} = Dict();
 	local currentOrdinal: int = none;

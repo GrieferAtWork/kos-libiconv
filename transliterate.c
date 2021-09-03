@@ -8269,7 +8269,7 @@ NOTHROW(CC libiconv_transdb_lookup)(char32_t ch) {
 	return NULL;
 }
 
-PRIVATE WUNUSED NONNULL((1)) size_t
+PRIVATE ATTR_PURE WUNUSED NONNULL((1)) size_t
 NOTHROW_NCX(CC count_case_variations)(char32_t const *__restrict str, size_t len) {
 	size_t i, result = 1;
 	for (i = 0; i < len; ++i) {
