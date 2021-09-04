@@ -36,7 +36,7 @@ DECL_BEGIN
  * converting  data from an  arbitrary codec into UTF-8.
  * @param: self:             [in|out] iconv decode controller.
  * @param: input_codec_name: [in]  The name of the codec in which input data will be presented.
- * @param: input:            [out] Location where to write callback+cookie for data input.
+ * @param: input:            [out] Location  where to write callback+cookie for data input.
  *                                 The written function+cookie may only be used for as long
  *                                 as `self' remains valid.
  * @return: 0 : Success (you may now use `input->ii_printer' and `input->ii_arg' to feed data)
@@ -66,7 +66,7 @@ NOTHROW_NCX(CC libiconv_decode_isshiftzero)(struct iconv_decode const *__restric
  * converting  data from an  arbitrary codec into UTF-8.
  * @param: self:              [in|out] iconv encode controller.
  * @param: output_codec_name: [in]  The name of the codec in which output data will be printed.
- * @param: input:             [out] Location where to write callback+cookie for data input.
+ * @param: input:             [out] Location  where to write callback+cookie for data input.
  *                                  The written function+cookie may only be used for as long
  *                                  as `self' remains valid.
  * @return: 0 : Success (you may now use `input->ii_printer' and `input->ii_arg' to feed data)
@@ -89,14 +89,14 @@ NOTHROW_NCX(CC libiconv_encode_flush)(struct iconv_encode *__restrict self);
 
 
 
-/* The combination of the encode+decode functions into a single one which
- * allows for conversion from an arbitrary codec into another arbitrary codec.
+/* The  combination  of the  encode+decode functions  into  a single  one which
+ * allows  for conversion from an arbitrary codec into another arbitrary codec.
  * This is pretty much just a convenience wrapper around the other 2 functions,
- * and you can easily tell as much if you were to look at this one's impl.
+ * and you can  easily tell as  much if you  were to look  at this one's  impl.
  * @param: self:              [in|out] iconv encode/decode controller.
  * @param: input_codec_name:  [in]  The name of the codec in which input data will be presented.
  * @param: output_codec_name: [in]  The name of the codec in which output data will be printed.
- * @param: input:             [out] Location where to write callback+cookie for data input.
+ * @param: input:             [out] Location  where to write callback+cookie for data input.
  *                                  The written function+cookie may only be used for as long
  *                                  as `self' remains valid.
  * @return: 0 : Success (you may now use `input->ii_printer' and `input->ii_arg' to feed data)

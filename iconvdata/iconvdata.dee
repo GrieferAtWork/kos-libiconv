@@ -1138,7 +1138,7 @@ do_add_encode_identity_range:
 			}
 		}
 
-		/* Find the largest range of free slots between cpOffsetsInUse
+		/* Find the largest range of free slots between  cpOffsetsInUse
 		 * This range must be large enough to hold random_access_blocks */
 		cpOffsetsInUse.sort();
 		local largestRangeStart = 0;
@@ -1449,7 +1449,7 @@ function createExMbcsByte2Table(map_table: {int: int | Object}): (ExMbcsByte2Tab
 		       table[start + numLinear] == start_uni + numLinear)
 			++numLinear;
 		/* Linear range are more efficient when there are
-		 * at least 4 consecutive unicode ordinals:
+		 * at  least  4  consecutive  unicode   ordinals:
 		 *
 		 * 1 2 4 6 7                         1 2 4 6 7
 		 * [-] [XXX]                         [XXXXXXX]
@@ -1463,7 +1463,7 @@ function createExMbcsByte2Table(map_table: {int: int | Object}): (ExMbcsByte2Tab
 		 * [-----] [XXX]                     [XXXXXXXXXXXX]
 		 * 6b      10b  --> Total = 16b      18b
 		 *
-		 * For 3 consecutive it's just as efficient, but at
+		 * For 3  consecutive it's  just  as efficient,  but  at
 		 * runtime, the array method is a bit faster to process. */
 		if (numLinear >= 4)
 			return true; /* Create a linear range for at least 4 consecutive */
@@ -1502,7 +1502,7 @@ again_range:
 			if (i > maxOrd)
 				break;
 			/* Encode as a 32-bit array until we reach 2 consecutive
-			 * NUL-characters, or 2 consecutive < 0xffff. */
+			 * NUL-characters,   or   2   consecutive   <    0xffff. */
 			if (hasConsecutiveNul(i, 2))
 				break;
 			if (hasConsecutive16Bit(i, 2))
@@ -1529,7 +1529,7 @@ again_range:
 		}
 	} else {
 		/* Encode as a array until we reach 3 consecutive NUL-characters,
-		 * or 4 consecutive linear, or a character > 0xffff. */
+		 * or  4   consecutive  linear,   or   a  character   >   0xffff. */
 		range.imc_type = ICONV_MBCS_BYTE2_RANGE_TYPE_ARR;
 		range.imc_arr  = [uni];
 		for (;;) {
@@ -1802,8 +1802,3 @@ function printCpMbcsDatabase() {
 	print("#undef E");
 
 }
-
-
-
-
-

@@ -126,7 +126,7 @@ libiconv_uri_escape_decode(struct iconv_decode *__restrict self,
 			 *    a b c d e f g h i j k l m n o p q r s t u v w x y z
 			 *    0 1 2 3 4 5 6 7 8 9 - _ . ~ */
 			switch (ch) {
-	
+
 			case 'A' ... 'Z':
 			case 'a' ... 'z':
 			case '0' ... '9':
@@ -136,13 +136,13 @@ libiconv_uri_escape_decode(struct iconv_decode *__restrict self,
 			case '~':
 				/* Allowed as-is. */
 				break;
-	
+
 			case '%':
 				/* Enter escape mode. */
 				DO_decode_output(flush_start, (size_t)(data - flush_start));
 				self->icd_data.idd_uri.ue_mode = _ICONV_DECODE_URI_PCT;
 				break;
-	
+
 			default:
 				/* Illegal character! */
 				if (IS_ICONV_ERR_ERROR_OR_ERRNO(self->icd_flags))

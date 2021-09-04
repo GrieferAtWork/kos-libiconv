@@ -488,7 +488,7 @@ enum {
 };
 
 /* Return the internal ID of the codec associated with `name'
- * Casing is ignored and codec aliases are respected.
+ * Casing   is  ignored  and  codec  aliases  are  respected.
  * @return: * :                  Internal codec ID (s.a. `iconv_getcodecnames()')
  * @return: ICONV_CODEC_UNKNOWN: Unrecognized codec. */
 INTDEF ATTR_PURE WUNUSED NONNULL((1)) iconv_codec_t
@@ -500,7 +500,7 @@ NOTHROW_NCX(CC libiconv_codecbynamez)(char const *__restrict name, size_t namele
  * sorted such that the most important name comes first and all other names
  * can be enumerated by use of `strend(p)+1'.
  *
- * When `id' is invalid, return `NULL'. Note that all valid codecs have at
+ * When `id' is invalid, return `NULL'. Note that all valid codecs have  at
  * least 1 valid name. As such, supported codecs as well as their names can
  * be enumerated as:
  * >> iconv_codec_t id;
@@ -521,17 +521,17 @@ INTDEF ATTR_CONST WUNUSED char const *
 NOTHROW_NCX(CC libiconv_getcodecnames)(iconv_codec_t id);
 
 
-/* Same as `iconv_codecbyname()', but also parse possible flag-relation options.
- * The given `*pflags' argument must already be populated with valid data before
+/* Same as `iconv_codecbyname()', but  also parse possible flag-relation  options.
+ * The given `*pflags' argument must already  be populated with valid data  before
  * this function is called, and should usually point to `icd_flags' or `ice_flags' */
 INTDEF WUNUSED NONNULL((1)) iconv_codec_t
 NOTHROW_NCX(CC libiconv_codec_and_flags_byname)(char const *__restrict name,
                                                 /*[in|out]*/ uintptr_half_t *__restrict pflags);
 
-/* Check if the 2 given strings reference the same codec name.
+/* Check  if  the 2  given strings  reference  the same  codec name.
  * This differs from same codec ID as this function doesn't actually
- * search the codec database but will simply strip potential flags,
- * normalize the underlying codec names, and check if the resulting
+ * search the codec database but will simply strip potential  flags,
+ * normalize the underlying codec names, and check if the  resulting
  * strings strcasecmp(3) to be equal. */
 INTDEF ATTR_CONST WUNUSED NONNULL((1, 2)) bool
 NOTHROW_NCX(CC libiconv_same_codec_name)(char const *__restrict a,

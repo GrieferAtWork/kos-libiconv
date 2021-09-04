@@ -8410,7 +8410,7 @@ again:
  * sorted such that the most important name comes first and all other names
  * can be enumerated by use of `strend(p)+1'.
  *
- * When `id' is invalid, return `NULL'. Note that all valid codecs have at
+ * When `id' is invalid, return `NULL'. Note that all valid codecs have  at
  * least 1 valid name. As such, supported codecs as well as their names can
  * be enumerated as:
  * >> iconv_codec_t id;

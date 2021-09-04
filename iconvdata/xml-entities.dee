@@ -59,6 +59,3 @@ function loadXmlEntities(): {string: (int, bool)} {
 
 @@Mapping from entity <Name: string -> (ord: int, semicolonIsOptional: bool)>
 global final XML_ENTITIES: {string: (int, bool)} = loadXmlEntities();
-
-
-

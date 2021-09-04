@@ -35,8 +35,8 @@
 #if CODEC_ISO646_COUNT != 0
 DECL_BEGIN
 
-/* General-purpose ISO646 code pages only override a limited number
- * of characters. To safe space, we use a special encoding that only
+/* General-purpose ISO646 code pages  only override a limited  number
+ * of characters. To safe space, we use a special encoding that  only
  * provides overrides for these specific characters, while all others
  * will simply be encoded as ASCII.
  * s.a.: https://en.wikipedia.org/wiki/ISO/IEC_646
@@ -54,12 +54,12 @@ INTDEF struct iconv_iso646_codepage const libiconv_iso646_pages[];
 
 
 /* Index into `iic_override' for which override to use for which character.
- * When no override should be used, returned index is out-of-bounds. */
+ * When no  override  should  be used,  returned  index  is  out-of-bounds. */
 INTDEF uint8_t const libiconv_iso646_override[128];
 
 /* Evaluate to the ordinal indices at which each of the overrides applies.
- * Coincidentally, these indices are also equal to the default overrides,
- * though since every iso646 codepage specifies all overrides, that fact
+ * Coincidentally, these indices are also equal to the default  overrides,
+ * though since every iso646 codepage  specifies all overrides, that  fact
  * doesn't actually matter. */
 INTDEF uint8_t const libiconv_iso646_override_chars[ISO646_OVERRIDE_COUNT];
 

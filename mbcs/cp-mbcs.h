@@ -60,16 +60,16 @@ struct iconv_mbcs_byte2_range {
 		 * NOTE: The arrays aren't actually of length 256, but if flexible arrays
 		 *       are used, then GCC bickers because they're used in a union. (Why
 		 *       dafuq aren't I allowed to use flexible arrays in unions?) */
-		uint16_t imc_lin;    /* [ICONV_MBCS_BYTE2_RANGE_TYPE_LIN] Linear unicode mapping
+		uint16_t imc_lin;    /* [ICONV_MBCS_BYTE2_RANGE_TYPE_LIN] Linear   unicode   mapping
 		                      * >> RESULT = (char16_t)(uint16_t)((uint16_t)BYTE2 + imc_lin); */
 		uint32_t imc_arr[256];   /* [ICONV_MBCS_BYTE2_RANGE_TYPE_ARR] Array unicode mapping
 		                          * >> RESULT = imc_arr[BYTE2 - imc_cpmin];
 		                          * NOTE: Undefined ordinals appear as `0' in this list! */
 		/* WARNING: The 32-bit integer array is only aligned by 2 bytes! */
-		uint32_t imc_arr32[256]; /* [ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32] Array unicode mapping
+		uint32_t imc_arr32[256]; /* [ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32] Array       unicode       mapping
 		                          * >> RESULT = (char32_t)UNALIGNED_GET32(&imc_arr32[BYTE2 - imc_cpmin]);
 		                          * NOTE: Undefined ordinals appear as `0' in this list! */
-		uint16_t imc_tab;    /* [ICONV_MBCS_BYTE2_RANGE_TYPE_TAB] Linear unicode mapping
+		uint16_t imc_tab;    /* [ICONV_MBCS_BYTE2_RANGE_TYPE_TAB] Linear   unicode   mapping
 		                      * >> RESULT = (char16_t)(uint16_t)((uint16_t)BYTE2 + imc_lin); */
 	};
 };

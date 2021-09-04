@@ -144,7 +144,7 @@ INTERN_CONST struct iconv_iso646_codepage const libiconv_iso646_pages[48] = {
 
 
 /* Index into `iic_override' for which override to use for which character.
- * When no override should be used, returned index is out-of-bounds. */
+ * When no  override  should  be used,  returned  index  is  out-of-bounds. */
 INTERN_CONST uint8_t const libiconv_iso646_override[128] = {
 /*[[[deemon
 import util;
@@ -176,8 +176,8 @@ for (local i, o: util.enumerate(indices)) {
 };
 
 /* Evaluate to the ordinal indices at which each of the overrides applies.
- * Coincidentally, these indices are also equal to the default overrides,
- * though since every iso646 codepage specifies all overrides, that fact
+ * Coincidentally, these indices are also equal to the default  overrides,
+ * though since every iso646 codepage  specifies all overrides, that  fact
  * doesn't actually matter. */
 INTERN_CONST uint8_t const libiconv_iso646_override_chars[ISO646_OVERRIDE_COUNT] = {
 	0x21, 0x22, 0x23, 0x24, 0x26, 0x3a, 0x3f, 0x40, 0x5b,

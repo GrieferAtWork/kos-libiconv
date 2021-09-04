@@ -621,7 +621,7 @@ exit_escape_at_data:
 
 				case '\r':
 					/* Special case: If the next character is \n, then it must also be ignored.
-					 * We do this by setting the first byte of the saved escape sequence as \r */
+					 * We  do this by setting the first byte of the saved escape sequence as \r */
 					self->icd_data.idd_cesc.ce_esc = _ICONV_DECODE_CESCAPE_ESC_MODE_SLF;
 					break;
 

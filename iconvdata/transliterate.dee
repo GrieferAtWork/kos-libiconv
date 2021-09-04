@@ -256,9 +256,9 @@ again_recursive:
 		}
 	}
 
-	/* For multi-character transliterations, remove those that
+	/* For   multi-character   transliterations,   remove   those    that
 	 * exclusively use ordinals also used by previously transliterations.
-	 * This can happen (e.g.) when exchanging differently long
+	 * This   can   happen  (e.g.)   when  exchanging   differently  long
 	 * arrows with "-->" and "---->" patterns. */
 	for (local none, ord_repl: result) {
 		local len = #ord_repl;
@@ -354,9 +354,9 @@ function printTranslitDatabase() {
 			if (longestReplLen < len)
 				longestReplLen = len;
 			/* NOTE: This right here assumes that deemon's casefold() function
-			 *       behaves identical to `unicode_fold()' from KOS's libc.
+			 *       behaves identical  to `unicode_fold()'  from KOS's  libc.
 			 * As of right now, that is the case but if that ever were to change,
-			 * this right here might result in libiconv crashing at runtime due
+			 * this right here might result  in libiconv crashing at runtime  due
 			 * to a miscalculation of required buffer sizes. */
 			local len = #r.casefold();
 			if (longestFoldedReplLen < len)
