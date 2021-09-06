@@ -88,7 +88,7 @@ class MbcsCodec {
 	public member name: string;
 	public member aliases: {CodecAlias...} = [];
 
-	@@Decode map. Maps CP_ORD -> UNI_ORD or another
+	@@Decode  map. Maps CP_ORD -> UNI_ORD or another
 	@@table that is used to decode a second byte, or
 	@@points to a third table, and so on.
 	public member map: {int: int | {int: int | Object}} = Dict();
@@ -1061,7 +1061,7 @@ do_add_identity_range:
 		encodeTable[0] = 0;
 
 		@@List of (uni_ord, count, cp_ord | {cp_ord...})
-		@@When `cp_ord' is 0, it's an undefined range
+		@@When `cp_ord' is  0, it's  an undefined  range
 		local encodeRanges: {(int, int, int | {int...})...} = [];
 		for (local uni_ord = 0; uni_ord <= 0xffff;) {
 			local cp_ord = encodeTable.get(uni_ord, 0);
@@ -1395,7 +1395,7 @@ class ExMbcsByte2Table {
 	public member ranges: {ExMbcsByte2Range...} = []; /* Ranges */
 }
 
-@@Given a table for mapping the second byte to unicode, convert to a @ExMbcsByte2Table
+@@Given  a  table  for   mapping  the  second   byte  to  unicode,   convert  to  a   @ExMbcsByte2Table
 @@This returns the created table, and a list of recursively created ables (excluding the primary table)
 function createExMbcsByte2Table(map_table: {int: int | Object}): (ExMbcsByte2Table, {ExMbcsByte2Table...}) {
 	local result = ExMbcsByte2Table();

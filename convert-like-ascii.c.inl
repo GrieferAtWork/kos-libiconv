@@ -20,7 +20,7 @@
 #ifdef __INTELLISENSE__
 #include "convert.c"
 //#define DEFINE_FOR_LATIN1
-//#define DEFINE_FOR_ASCII
+//#define  DEFINE_FOR_ASCII
 #define DEFINE_FOR_CP7H
 #endif /* __INTELLISENSE__ */
 
