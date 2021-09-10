@@ -43,7 +43,7 @@ DECL_BEGIN
 import File from deemon;
 import fs;
 // Put in a separate file so this one doesn't bloat too much
-local dataFilename = "cpdb.inl";
+local dataFilename = "cpdb.dat";
 local savedStdout = File.stdout;
 File.stdout = File.open(dataFilename, "w");
 File.stdout.write(File.open("../api.h").read().decode("utf-8").partition("#ifndef")[0].unifylines());
@@ -52,7 +52,7 @@ File.stdout.close();
 File.stdout = savedStdout;
 print "#include", repr dataFilename;
 ]]]*/
-#include "cpdb.inl"
+#include "cpdb.dat"
 /*[[[end]]]*/
 
 DECL_END
