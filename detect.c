@@ -69,10 +69,9 @@ DECL_BEGIN
 PRIVATE ATTR_CONST WUNUSED bool
 NOTHROW(CC istxtchar)(char32_t ch) {
 	uint16_t flags = __unicode_flags(ch);
-	if (flags & (__UNICODE_FPRINT | __UNICODE_FALPHA | __UNICODE_FSPACE |
-	             __UNICODE_FLF | __UNICODE_FLOWER | __UNICODE_FUPPER |
-	             __UNICODE_FTITLE | __UNICODE_FDIGIT | __UNICODE_FDECIMAL |
-	             __UNICODE_FSYMSTRT | __UNICODE_FSYMCONT)) {
+	if (flags & (__UNICODE_ISPRINT | __UNICODE_ISSPACE |
+	             __UNICODE_ISNUMERIC | __UNICODE_ISSYMSTRT |
+	             __UNICODE_ISSYMCONT)) {
 		assert(ch != 0); /* Just for safety... */
 		return true;
 	}

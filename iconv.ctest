@@ -91,7 +91,7 @@ PRIVATE bool has_transliteration(char32_t ch, char const *translit) {
 	char32_t buf[ICONV_TRANSLITERATE_MAXLEN];
 	size_t len, nth;
 	for (nth = 0;; ++nth) {
-		len = iconv_transliterate(buf, ch, nth);
+		len = iconv_transliterate(buf, ch, nth, ICONV_TRANSLITERATE_F_ALL);
 		if (len == (size_t)-1)
 			break;
 		*unicode_32to8(utf8_buf, buf, len) = '\0';
@@ -123,6 +123,17 @@ DEFINE_TEST(iconv) {
 	assert(has_transliteration(0x00C4, "A")); /* Ä */
 	assert(has_transliteration(0x00D6, "O")); /* Ö */
 	assert(has_transliteration(0x00DC, "U")); /* Ü */
+
+	/* Because the next  test relies  on unicode  folding,
+	 * test that folding works as a stand-alone operation! */
+	{
+		size_t len;
+		char32_t buf[UNICODE_FOLDED_MAX];
+		len = (size_t)(unicode_fold(0xdf, buf) - buf);
+		EQs(len, 2);
+		EQu32(buf[0], 's');
+		EQu32(buf[1], 's');
+	}
 
 
 	convert("latin-1", "de", ICONV_ERR_ERRNO, "aou: \xE4\xF6\xFC!", buf);

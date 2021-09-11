@@ -8284,9 +8284,9 @@ NOTHROW(CC libiconv_transdb_lookup)(char32_t ch) {
 		/* `entry' now points at the <ch> field. */
 		cmp = strcmp(utf8, entry);
 		if (cmp < 0) {
-			hi = i + 1;
+			hi = i;
 		} else if (cmp > 0) {
-			lo = i;
+			lo = i + 1;
 		} else {
 			/* Return a pointer to the first transliteration. */
 			return strend(entry) + 1;
@@ -8307,7 +8307,7 @@ NOTHROW(CC libiconv_transdb_lookup)(char32_t ch) {
 	 ((self)->__ut_title != (self)->__ut_upper || !((what) & ICONV_TRANSLITERATE_F_UPPER)) && \
 	 ((self)->__ut_title != (self)->__ut_lower || !((what) & ICONV_TRANSLITERATE_F_LOWER)))
 #define unitraits_try_fold(self, what) \
-	((self)->__ut_fold != 0xff && ((what) & ICONV_TRANSLITERATE_F_FOLD))
+	((self)->__ut_fold_idx != 0xff && ((what) & ICONV_TRANSLITERATE_F_FOLD))
 
 
 PRIVATE ATTR_PURE WUNUSED NONNULL((1)) size_t
@@ -8534,8 +8534,8 @@ NOTHROW_NCX(CC libiconv_transliterate)(char32_t result[ICONV_TRANSLITERATE_MAXLE
 		len = (size_t)(unicode_fold(uni_ch, result) - result);
 		assert(len != 0);
 		if unlikely(len == 1 && result[0] == uni_ch) {
-			goto after_fold; /* Shouldn't happen (because __ut_fold != 0xff, len
-			                  * should always be  >= 2), but  better be  safe... */
+			goto after_fold; /* Shouldn't happen (because __ut_fold_idx != 0xff, len
+			                  * should always  be  >=  2),  but  better  be  safe... */
 		}
 		total_variations = 1;
 		for (i = 0; i < len; ++i) {
