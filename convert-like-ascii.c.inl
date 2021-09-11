@@ -196,7 +196,9 @@ force_normal_output:
 				char cpbuf[ICONV_TRANSLITERATE_MAXLEN];
 				char32_t transbuf[ICONV_TRANSLITERATE_MAXLEN];
 				size_t nth, len;
-				for (nth = 0; (len = libiconv_transliterate(transbuf, c32, nth)) != (size_t)-1; ++nth) {
+				for (nth = 0; (len = libiconv_transliterate(transbuf, c32, nth,
+				                                            ICONV_TRANSLITERATE_F_ALL)) != (size_t)-1;
+				     ++nth) {
 #ifdef DEFINE_FOR_CP7H
 					if (LOCAL_libiconv_encode_buf(self, cpbuf, transbuf, len))
 #else /* DEFINE_FOR_CP7H */

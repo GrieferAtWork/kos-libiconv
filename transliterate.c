@@ -8295,21 +8295,34 @@ NOTHROW(CC libiconv_transdb_lookup)(char32_t ch) {
 	return NULL;
 }
 
+
+/* Check which case variations from a given unicode traits descriptor should be used. */
+#define unitraits_try_lower(self, what) \
+	((self)->__ut_lower != 0 && ((what) & ICONV_TRANSLITERATE_F_LOWER))
+#define unitraits_try_upper(self, what)                                   \
+	((self)->__ut_upper != 0 && ((what) & ICONV_TRANSLITERATE_F_UPPER) && \
+	 ((self)->__ut_upper != (self)->__ut_lower || !((what) & ICONV_TRANSLITERATE_F_LOWER)))
+#define unitraits_try_title(self, what)                                                       \
+	((self)->__ut_title != 0 && ((what) & ICONV_TRANSLITERATE_F_TITLE) &&                     \
+	 ((self)->__ut_title != (self)->__ut_upper || !((what) & ICONV_TRANSLITERATE_F_UPPER)) && \
+	 ((self)->__ut_title != (self)->__ut_lower || !((what) & ICONV_TRANSLITERATE_F_LOWER)))
+#define unitraits_try_fold(self, what) \
+	((self)->__ut_fold != 0xff && ((what) & ICONV_TRANSLITERATE_F_FOLD))
+
+
 PRIVATE ATTR_PURE WUNUSED NONNULL((1)) size_t
-NOTHROW_NCX(CC count_case_variations)(char32_t const *__restrict str, size_t len) {
+NOTHROW_NCX(CC count_case_variations)(char32_t const *__restrict str, size_t len,
+                                      unsigned int what) {
 	size_t i, result = 1;
 	for (i = 0; i < len; ++i) {
 		byte_t variations = 1;
 		struct __unitraits const *traits;
 		traits = __unicode_descriptor(str[i]);
-		if (traits->__ut_lower != 0)
+		if (unitraits_try_lower(traits, what))
 			++variations;
-		if (traits->__ut_upper != 0 &&
-		    traits->__ut_upper != traits->__ut_lower)
+		if (unitraits_try_upper(traits, what))
 			++variations;
-		if (traits->__ut_title != 0 &&
-		    traits->__ut_title != traits->__ut_upper &&
-		    traits->__ut_title != traits->__ut_lower)
+		if (unitraits_try_title(traits, what))
 			++variations;
 		result *= variations;
 	}
@@ -8323,7 +8336,8 @@ NOTHROW_NCX(CC count_case_variations)(char32_t const *__restrict str, size_t len
 PRIVATE WUNUSED NONNULL((1, 2, 3)) size_t
 NOTHROW_NCX(CC libiconv_handle_trans)(char32_t result[ICONV_TRANSLITERATE_MAXLEN],
                                       char const *__restrict repl,
-                                      size_t *__restrict p_nth) {
+                                      size_t *__restrict p_nth,
+                                      unsigned int what) {
 	size_t len, i, textlen, total_variations;
 	byte_t variations[ICONV_TRANSLITERATE_MAXLEN];
 	char32_t text[ICONV_TRANSLITERATE_MAXLEN];
@@ -8356,22 +8370,19 @@ NOTHROW_NCX(CC libiconv_handle_trans)(char32_t result[ICONV_TRANSLITERATE_MAXLEN
 		byte_t i_variations = 1;
 		struct __unitraits const *traits;
 		traits = __unicode_descriptor(text[i]);
-		if (traits->__ut_lower != 0)
+		if (unitraits_try_lower(traits, what))
 			++i_variations;
-		if (traits->__ut_upper != 0 &&
-		    traits->__ut_upper != traits->__ut_lower)
+		if (unitraits_try_upper(traits, what))
 			++i_variations;
-		if (traits->__ut_title != 0 &&
-		    traits->__ut_title != traits->__ut_upper &&
-		    traits->__ut_title != traits->__ut_lower)
+		if (unitraits_try_title(traits, what))
 			++i_variations;
-		if (traits->__ut_fold != 0xff) {
+		if (unitraits_try_fold(traits, what)) {
 			size_t fold_len;
 			char32_t fold[UNICODE_FOLDED_MAX];
 			fold_len = (size_t)(unicode_fold(text[i], fold) - fold);
 			assert(fold_len != 0);
 			if (fold_len != 1 || fold[i] != text[i])
-				i_variations += count_case_variations(fold, fold_len);
+				i_variations += count_case_variations(fold, fold_len, what);
 		}
 		variations[i] = i_variations;
 		total_variations *= i_variations;
@@ -8396,24 +8407,21 @@ NOTHROW_NCX(CC libiconv_handle_trans)(char32_t result[ICONV_TRANSLITERATE_MAXLEN
 			continue; /* Leave unchanged. */
 		}
 		traits = __unicode_descriptor(text[i]);
-		if (traits->__ut_lower != 0) {
+		if (unitraits_try_lower(traits, what)) {
 			if (variation == 0) {
 				result[len++] = text[i] + traits->__ut_lower; /* tolower */
 				continue;
 			}
 			--variation;
 		}
-		if (traits->__ut_upper != 0 &&
-		    traits->__ut_upper != traits->__ut_lower) {
+		if (unitraits_try_upper(traits, what)) {
 			if (variation == 0) {
 				result[len++] = text[i] + traits->__ut_upper; /* toupper */
 				continue;
 			}
 			--variation;
 		}
-		if (traits->__ut_title != 0 &&
-		    traits->__ut_title != traits->__ut_upper &&
-		    traits->__ut_title != traits->__ut_lower) {
+		if (unitraits_try_title(traits, what)) {
 			if (variation == 0) {
 				result[len++] = text[i] + traits->__ut_title; /* totitle */
 				continue;
@@ -8421,7 +8429,7 @@ NOTHROW_NCX(CC libiconv_handle_trans)(char32_t result[ICONV_TRANSLITERATE_MAXLEN
 			--variation;
 		}
 		/* Use case folding. */
-		assert(traits->__ut_fold != 0xff);
+		assert(unitraits_try_fold(traits, what));
 		fold_len = (size_t)(unicode_fold(text[i], fold) - fold);
 		assert(fold_len != 0);
 		assert(fold_len != 1 || fold[len] != text[i]);
@@ -8430,14 +8438,11 @@ NOTHROW_NCX(CC libiconv_handle_trans)(char32_t result[ICONV_TRANSLITERATE_MAXLEN
 			byte_t fold_variation;
 			byte_t fold_variations = 1;
 			traits = __unicode_descriptor(fold[fold_i]);
-			if (traits->__ut_lower != 0)
+			if (unitraits_try_lower(traits, what))
 				++fold_variations;
-			if (traits->__ut_upper != 0 &&
-			    traits->__ut_upper != traits->__ut_lower)
+			if (unitraits_try_upper(traits, what))
 				++fold_variations;
-			if (traits->__ut_title != 0 &&
-			    traits->__ut_title != traits->__ut_upper &&
-			    traits->__ut_title != traits->__ut_lower)
+			if (unitraits_try_title(traits, what))
 				++fold_variations;
 			fold_variation = variation % fold_variations;
 			variation /= fold_variations;
@@ -8447,15 +8452,14 @@ NOTHROW_NCX(CC libiconv_handle_trans)(char32_t result[ICONV_TRANSLITERATE_MAXLEN
 				continue;
 			}
 			--fold_variation;
-			if (traits->__ut_lower != 0) {
+			if (unitraits_try_lower(traits, what)) {
 				if (fold_variation == 0) {
 					result[len++] = fold[fold_i] + traits->__ut_lower; /* tolower */
 					continue;
 				}
 				--fold_variation;
 			}
-			if (traits->__ut_upper != 0 &&
-			    traits->__ut_upper != traits->__ut_lower) {
+			if (unitraits_try_upper(traits, what)) {
 				if (fold_variation == 0) {
 					result[len++] = fold[fold_i] + traits->__ut_upper; /* toupper */
 					continue;
@@ -8463,9 +8467,7 @@ NOTHROW_NCX(CC libiconv_handle_trans)(char32_t result[ICONV_TRANSLITERATE_MAXLEN
 				--fold_variation;
 			}
 			assert(fold_variation == 0);
-			assert(traits->__ut_title != 0);
-			assert(traits->__ut_title != traits->__ut_upper);
-			assert(traits->__ut_title != traits->__ut_lower);
+			assert(unitraits_try_title(traits, what));
 			result[len++] = fold[fold_i] + traits->__ut_title; /* totitle */
 		}
 	}
@@ -8490,33 +8492,32 @@ NOTHROW_NCX(CC libiconv_handle_trans)(char32_t result[ICONV_TRANSLITERATE_MAXLEN
  *                 generated, starting at `0' and ending as soon as  this
  *                 function returns `(size_t)-1' to indicate that no more
  *                 possible transliterations are available.
+ * @param: what:   What to try (set of `ICONV_TRANSLITERATE_F_*')
  * @return: (size_t)-1: No (more) transliterations available.
  * @return: * : The # of characters written to `result' (may be 0). */
 INTERN WUNUSED NONNULL((1)) size_t
 NOTHROW_NCX(CC libiconv_transliterate)(char32_t result[ICONV_TRANSLITERATE_MAXLEN],
-                                       char32_t uni_ch, size_t nth) {
+                                       char32_t uni_ch, size_t nth,
+                                       unsigned int what) {
 	struct __unitraits const *traits;
 	traits = __unicode_descriptor(uni_ch);
 
 	/* Try lower/upper/title case deltas. */
-	if (traits->__ut_lower != 0) {
+	if (unitraits_try_lower(traits, what)) {
 		if (nth == 0) {
 			result[0] = (char32_t)(uni_ch + traits->__ut_lower);
 			return 1;
 		}
 		--nth;
 	}
-	if (traits->__ut_upper != 0 &&
-	    traits->__ut_upper != traits->__ut_lower) {
+	if (unitraits_try_upper(traits, what)) {
 		if (nth == 0) {
 			result[0] = (char32_t)(uni_ch + traits->__ut_upper);
 			return 1;
 		}
 		--nth;
 	}
-	if (traits->__ut_title != 0 &&
-	    traits->__ut_title != traits->__ut_upper &&
-	    traits->__ut_title != traits->__ut_lower) {
+	if (unitraits_try_title(traits, what)) {
 		if (nth == 0) {
 			result[0] = (char32_t)(uni_ch + traits->__ut_title);
 			return 1;
@@ -8526,7 +8527,7 @@ NOTHROW_NCX(CC libiconv_transliterate)(char32_t result[ICONV_TRANSLITERATE_MAXLE
 
 	/* Try to casefold the character and then try all
 	 * combinations  of casings on the folded string. */
-	if (traits->__ut_fold != 0xff) {
+	if (unitraits_try_fold(traits, what)) {
 		size_t i, len, total_variations;
 		byte_t variations[UNICODE_FOLDED_MAX]; /* # of variations per character */
 		STATIC_ASSERT(ICONV_TRANSLITERATE_MAXLEN >= UNICODE_FOLDED_MAX);
@@ -8540,14 +8541,11 @@ NOTHROW_NCX(CC libiconv_transliterate)(char32_t result[ICONV_TRANSLITERATE_MAXLE
 		for (i = 0; i < len; ++i) {
 			byte_t count = 1;
 			traits = __unicode_descriptor(result[i]);
-			if (traits->__ut_lower != 0)
+			if (unitraits_try_lower(traits, what))
 				++count;
-			if (traits->__ut_upper != 0 &&
-			    traits->__ut_upper != traits->__ut_lower)
+			if (unitraits_try_upper(traits, what))
 				++count;
-			if (traits->__ut_title != 0 &&
-			    traits->__ut_title != traits->__ut_upper &&
-			    traits->__ut_title != traits->__ut_lower)
+			if (unitraits_try_title(traits, what))
 				++count;
 			variations[i] = count;
 			total_variations *= count;
@@ -8570,15 +8568,14 @@ NOTHROW_NCX(CC libiconv_transliterate)(char32_t result[ICONV_TRANSLITERATE_MAXLE
 					continue; /* Leave unchanged. */
 				--variation;
 				traits = __unicode_descriptor(result[i]);
-				if (traits->__ut_lower != 0) {
+				if (unitraits_try_lower(traits, what)) {
 					if (variation == 0) {
 						result[i] += traits->__ut_lower; /* tolower */
 						continue;
 					}
 					--variation;
 				}
-				if (traits->__ut_upper != 0 &&
-				    traits->__ut_upper != traits->__ut_lower) {
+				if (unitraits_try_upper(traits, what)) {
 					if (variation == 0) {
 						result[i] += traits->__ut_upper; /* toupper */
 						continue;
@@ -8586,9 +8583,7 @@ NOTHROW_NCX(CC libiconv_transliterate)(char32_t result[ICONV_TRANSLITERATE_MAXLE
 					--variation;
 				}
 				assert(variation == 0);
-				assert(traits->__ut_title != 0);
-				assert(traits->__ut_title != traits->__ut_upper);
-				assert(traits->__ut_title != traits->__ut_lower);
+				assert(unitraits_try_title(traits, what));
 				result[i] += traits->__ut_title; /* totitle */
 			}
 			return len;
@@ -8618,7 +8613,7 @@ after_fold:
 	 *
 	 * As such, we also don't support *real* transliteration but only the same
 	 * kind of functionality also seen in gLibc! */
-	{
+	if (what & ICONV_TRANSLITERATE_F_TRANSLIT) {
 		char const *translit;
 		STATIC_ASSERT(ICONV_TRANSLITERATE_MAXLEN >= LIBICONV_TRANSLIT_LONGEST_FOLDED_REPLACEMENT_LENGTH);
 		translit = libiconv_transdb_lookup(uni_ch);
@@ -8626,7 +8621,7 @@ after_fold:
 			do {
 				size_t tlen;
 				/* Try to use this transliteration. */
-				tlen = libiconv_handle_trans(result, translit, &nth);
+				tlen = libiconv_handle_trans(result, translit, &nth, what);
 				if (tlen != (size_t)-1)
 					return tlen;
 				/* Enumerate all other transliterations. */

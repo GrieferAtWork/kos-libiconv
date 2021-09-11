@@ -637,7 +637,9 @@ libiconv_cp_encode(struct iconv_encode *__restrict self,
 				DO_encode_output(buf, (size_t)(ptr - buf));
 				ptr = buf;
 			}
-			for (nth = 0; (len = libiconv_transliterate(transbuf, c32, nth)) != (size_t)-1; ++nth) {
+			for (nth = 0; (len = libiconv_transliterate(transbuf, c32, nth,
+			                                            ICONV_TRANSLITERATE_F_ALL)) != (size_t)-1;
+			     ++nth) {
 				if (libiconv_cp_encode_buf(self, ptr, transbuf, len)) {
 					ptr += len;
 					goto next_c32;
@@ -795,7 +797,9 @@ libiconv_cp7l_encode(struct iconv_encode *__restrict self,
 				DO_encode_output(buf, (size_t)(ptr - buf));
 				ptr = buf;
 			}
-			for (nth = 0; (len = libiconv_transliterate(transbuf, c32, nth)) != (size_t)-1; ++nth) {
+			for (nth = 0; (len = libiconv_transliterate(transbuf, c32, nth,
+			                                            ICONV_TRANSLITERATE_F_ALL)) != (size_t)-1;
+			     ++nth) {
 				if (libiconv_cp7l_encode_buf(self, ptr, transbuf, len)) {
 					ptr += len;
 					goto next_c32;
@@ -931,7 +935,9 @@ libiconv_cp646_encode(struct iconv_encode *__restrict self,
 				DO_encode_output(buf, (size_t)(ptr - buf));
 				ptr = buf;
 			}
-			for (nth = 0; (len = libiconv_transliterate(transbuf, c32, nth)) != (size_t)-1; ++nth) {
+			for (nth = 0; (len = libiconv_transliterate(transbuf, c32, nth,
+			                                            ICONV_TRANSLITERATE_F_ALL)) != (size_t)-1;
+			     ++nth) {
 				if (libiconv_cp646_encode_buf(self, ptr, transbuf, len)) {
 					ptr += len;
 					goto next_c32;

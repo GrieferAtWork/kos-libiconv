@@ -46,11 +46,13 @@ DECL_BEGIN
  *                 generated, starting at `0' and ending as soon as  this
  *                 function returns `(size_t)-1' to indicate that no more
  *                 possible transliterations are available.
+ * @param: what:   What to try (set of `ICONV_TRANSLITERATE_F_*')
  * @return: (size_t)-1: No (more) transliterations available.
  * @return: * : The # of characters written to `result' (may be 0). */
 INTDEF WUNUSED NONNULL((1)) size_t
 NOTHROW_NCX(CC libiconv_transliterate)(char32_t result[ICONV_TRANSLITERATE_MAXLEN],
-                                       char32_t uni_ch, size_t nth);
+                                       char32_t uni_ch, size_t nth,
+                                       unsigned int what);
 
 DECL_END
 
