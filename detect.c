@@ -68,7 +68,7 @@ DECL_BEGIN
 /* Check if `ch' is allowed to appear within "text" */
 PRIVATE ATTR_CONST WUNUSED bool
 NOTHROW(CC istxtchar)(char32_t ch) {
-	uint16_t flags = __unicode_flags(ch);
+	uint16_t flags = __unicode_descriptor(ch)->__ut_flags;
 	if (flags & (__UNICODE_ISPRINT | __UNICODE_ISSPACE |
 	             __UNICODE_ISNUMERIC | __UNICODE_ISSYMSTRT |
 	             __UNICODE_ISSYMCONT)) {
