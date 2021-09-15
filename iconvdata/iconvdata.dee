@@ -277,7 +277,7 @@ function parseDBFilename(filename: string): {string: Object} {
 					} else {
 						currentTable = currentItem.map;
 						for (local b: firstByte) {
-							local newTab = currentTable.get(b);;
+							local newTab = currentTable.get(b);
 							if (newTab !is Dict)
 								currentTable[b] = newTab = Dict();
 							currentTable = newTab;

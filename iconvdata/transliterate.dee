@@ -177,7 +177,7 @@ again_string_in_line:
 					eol = data.find("\n", i);
 handle_eol:
 					if (stringsInLine) {
-						local currentIndent = i - (data.rfind("\n", 0, i) + 1);;
+						local currentIndent = i - (data.rfind("\n", 0, i) + 1);
 						if (currentIndent < currentBlockCommentIndent) {
 							newData << data[flushStart:i];
 							newData << " " * (currentBlockCommentIndent - currentIndent);
