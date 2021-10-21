@@ -2851,7 +2851,7 @@ err_ilseq_ch_start:
 			}
 			break;
 
-		case _ICONV_DECODE_XML_OSM: /* OptionalSeMicollon */
+		case _ICONV_DECODE_XML_OSM: /* OptionalSeMicolon */
 			self->icd_data.idd_xml.xe_mode = _ICONV_DECODE_XML_TXT;
 			if (ch != ';') {
 				/* Not a semicolon -> just handle it as a text character. */

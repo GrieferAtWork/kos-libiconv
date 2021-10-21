@@ -391,7 +391,7 @@ NOTHROW_NCX(CC libiconv_decode_isshiftzero)(struct iconv_decode const *__restric
 		/* Make sure that we're not inside of an XML escape sequence. */
 		return mbstate_isempty(&self->icd_data.idd_xml.xe_utf8) &&
 		       (self->icd_data.idd_xml.xe_mode == _ICONV_DECODE_XML_TXT ||
-		        /* OptionalSeMicollon also counts as a 0-shift state! */
+		        /* OptionalSeMicolon also counts as a 0-shift state! */
 		        self->icd_data.idd_xml.xe_mode == _ICONV_DECODE_XML_OSM);
 
 	case CODEC_URI_ESCAPE:
