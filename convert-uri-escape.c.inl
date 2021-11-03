@@ -159,7 +159,8 @@ libiconv_uri_escape_decode(struct iconv_decode *__restrict self,
 next_data:
 		++data;
 	}
-	DO_decode_output(flush_start, (size_t)(end - flush_start));
+	if likely(self->icd_data.idd_uri.ue_mode == _ICONV_DECODE_URI_TXT)
+		DO_decode_output(flush_start, (size_t)(end - flush_start));
 	return result;
 err:
 	return temp;
