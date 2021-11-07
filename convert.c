@@ -24,6 +24,7 @@ gcc_opt.append("-O3"); // Force _all_ optimizations because stuff in here is per
  */
 #ifndef GUARD_LIBICONV_CONVERT_C
 #define GUARD_LIBICONV_CONVERT_C 1
+#define _KOS_SOURCE 1
 
 #include "api.h"
 /**/
@@ -36,6 +37,7 @@ gcc_opt.append("-O3"); // Force _all_ optimizations because stuff in here is per
 
 #include <errno.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unicode.h>
 

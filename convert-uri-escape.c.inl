@@ -23,15 +23,6 @@
 
 DECL_BEGIN
 
-#ifndef UPPER_HEX_DEFINED
-#define UPPER_HEX_DEFINED
-PRIVATE char const upper_hex[16] = {
-	'0', '1', '2', '3', '4', '5', '6', '7',
-	'8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
-};
-#endif /* !UPPER_HEX_DEFINED */
-
-
 INTERN NONNULL((1, 2)) ssize_t FORMATPRINTER_CC
 libiconv_uri_escape_encode(struct iconv_encode *__restrict self,
                            /*bytes*/ char const *__restrict data,
@@ -64,8 +55,8 @@ libiconv_uri_escape_encode(struct iconv_encode *__restrict self,
 			char esc[3];
 			DO_encode_output(flush_start, (size_t)(data - flush_start));
 			esc[0] = '%';
-			esc[1] = upper_hex[(ch & 0xf0) >> 4];
-			esc[2] = upper_hex[ch & 0xf];
+			esc[1] = _itoa_upper_digits[(ch & 0xf0) >> 4];
+			esc[2] = _itoa_upper_digits[ch & 0xf];
 			DO_encode_output(esc, 3);
 			flush_start = data + 1;
 		}	break;

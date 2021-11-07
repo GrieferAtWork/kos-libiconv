@@ -23,23 +23,6 @@
 
 DECL_BEGIN
 
-#ifndef UPPER_HEX_DEFINED
-#define UPPER_HEX_DEFINED
-PRIVATE char const upper_hex[16] = {
-	'0', '1', '2', '3', '4', '5', '6', '7',
-	'8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
-};
-#endif /* !UPPER_HEX_DEFINED */
-
-#ifndef LOWER_HEX_DEFINED
-#define LOWER_HEX_DEFINED
-PRIVATE char const lower_hex[16] = {
-	'0', '1', '2', '3', '4', '5', '6', '7',
-	'8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
-};
-#endif /* !LOWER_HEX_DEFINED */
-
-
 INTERN NONNULL((1, 2)) ssize_t FORMATPRINTER_CC
 libiconv_hex_upper_encode(struct iconv_encode *__restrict self,
                           /*bytes*/ char const *__restrict data,
@@ -49,8 +32,8 @@ libiconv_hex_upper_encode(struct iconv_encode *__restrict self,
 		unsigned char ch;
 		char buf[2];
 		ch = (unsigned char)*data;
-		buf[0] = upper_hex[(ch & 0xf0) >> 4];
-		buf[1] = upper_hex[ch & 0x0f];
+		buf[0] = _itoa_upper_digits[(ch & 0xf0) >> 4];
+		buf[1] = _itoa_upper_digits[ch & 0x0f];
 		DO_encode_output(buf, 2);
 		++data;
 		--size;
@@ -69,8 +52,8 @@ libiconv_hex_lower_encode(struct iconv_encode *__restrict self,
 		unsigned char ch;
 		char buf[2];
 		ch = (unsigned char)*data;
-		buf[0] = lower_hex[(ch & 0xf0) >> 4];
-		buf[1] = lower_hex[ch & 0x0f];
+		buf[0] = _itoa_lower_digits[(ch & 0xf0) >> 4];
+		buf[1] = _itoa_lower_digits[ch & 0x0f];
 		DO_encode_output(buf, 2);
 		++data;
 		--size;

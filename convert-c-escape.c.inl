@@ -23,14 +23,6 @@
 
 DECL_BEGIN
 
-#ifndef UPPER_HEX_DEFINED
-#define UPPER_HEX_DEFINED
-PRIVATE char const upper_hex[16] = {
-	'0', '1', '2', '3', '4', '5', '6', '7',
-	'8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
-};
-#endif /* !UPPER_HEX_DEFINED */
-
 INTERN NONNULL((1, 2)) size_t
 NOTHROW(CC libiconv_c_escape_byte)(struct iconv_encode *__restrict self,
                                    char buf[4], unsigned char b) {
@@ -72,8 +64,8 @@ NOTHROW(CC libiconv_c_escape_byte)(struct iconv_encode *__restrict self,
 	default:
 		/* Fallback escape as a 2-character hex */
 		buf[1] = 'x';
-		buf[2] = upper_hex[(b >> 4) & 0xf];
-		buf[3] = upper_hex[b & 0xf];
+		buf[2] = _itoa_upper_digits[(b >> 4) & 0xf];
+		buf[3] = _itoa_upper_digits[b & 0xf];
 		result = 4;
 		self->ice_flags |= _ICONV_CENCODE_POSTHEX;
 		break;
@@ -196,22 +188,22 @@ force_escape_ch32:
 					if (ch32 <= 0xffff) {
 						/* Output as \uXXXX */
 						unibuf[1] = 'u';
-						unibuf[2] = upper_hex[(ch32 & UINT16_C(0xf000)) >> 12];
-						unibuf[3] = upper_hex[(ch32 & UINT16_C(0x0f00)) >> 8];
-						unibuf[4] = upper_hex[(ch32 & UINT16_C(0x00f0)) >> 4];
-						unibuf[5] = upper_hex[(ch32 & UINT16_C(0x000f)) >> 0];
+						unibuf[2] = _itoa_upper_digits[(ch32 & UINT16_C(0xf000)) >> 12];
+						unibuf[3] = _itoa_upper_digits[(ch32 & UINT16_C(0x0f00)) >> 8];
+						unibuf[4] = _itoa_upper_digits[(ch32 & UINT16_C(0x00f0)) >> 4];
+						unibuf[5] = _itoa_upper_digits[(ch32 & UINT16_C(0x000f)) >> 0];
 						status    = 6;
 					} else {
 						/* Output as \UXXXXXXXX */
 						unibuf[1] = 'U';
-						unibuf[2] = upper_hex[(ch32 & UINT32_C(0xf000)) >> 12];
-						unibuf[3] = upper_hex[(ch32 & UINT32_C(0x0f00)) >> 8];
-						unibuf[4] = upper_hex[(ch32 & UINT32_C(0x00f0)) >> 4];
-						unibuf[5] = upper_hex[(ch32 & UINT32_C(0x000f)) >> 0];
-						unibuf[6] = upper_hex[(ch32 & UINT32_C(0x000f)) >> 0];
-						unibuf[7] = upper_hex[(ch32 & UINT32_C(0x000f)) >> 0];
-						unibuf[8] = upper_hex[(ch32 & UINT32_C(0x000f)) >> 0];
-						unibuf[9] = upper_hex[(ch32 & UINT32_C(0x000f)) >> 0];
+						unibuf[2] = _itoa_upper_digits[(ch32 & UINT32_C(0xf000)) >> 12];
+						unibuf[3] = _itoa_upper_digits[(ch32 & UINT32_C(0x0f00)) >> 8];
+						unibuf[4] = _itoa_upper_digits[(ch32 & UINT32_C(0x00f0)) >> 4];
+						unibuf[5] = _itoa_upper_digits[(ch32 & UINT32_C(0x000f)) >> 0];
+						unibuf[6] = _itoa_upper_digits[(ch32 & UINT32_C(0x000f)) >> 0];
+						unibuf[7] = _itoa_upper_digits[(ch32 & UINT32_C(0x000f)) >> 0];
+						unibuf[8] = _itoa_upper_digits[(ch32 & UINT32_C(0x000f)) >> 0];
+						unibuf[9] = _itoa_upper_digits[(ch32 & UINT32_C(0x000f)) >> 0];
 						status    = 10;
 					}
 				}
