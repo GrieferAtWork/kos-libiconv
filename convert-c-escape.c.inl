@@ -48,7 +48,7 @@ NOTHROW(CC libiconv_c_escape_byte)(struct iconv_encode *__restrict self,
 		break;
 
 	case 0 ... 6:
-		buf[1] = '0' + b;
+		buf[1] = itoa_decimal(b);
 		self->ice_flags |= _ICONV_CENCODE_POSTOCT;
 		break;
 
@@ -56,8 +56,8 @@ NOTHROW(CC libiconv_c_escape_byte)(struct iconv_encode *__restrict self,
 	case 0x1c ... 0x1f:
 		/* Encode as a 3-character octal */
 		buf[1] = '0';
-		buf[2] = '0' + ((b >> 3) & 7);
-		buf[3] = '0' + (b & 7);
+		buf[2] = itoa_decimal((b >> 3) & 7);
+		buf[3] = itoa_decimal(b & 7);
 		result = 4;
 		break;
 
