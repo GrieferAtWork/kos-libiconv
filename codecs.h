@@ -504,7 +504,7 @@ NOTHROW_NCX(CC libiconv_codecbynamez)(char const *__restrict name, size_t namele
  * least 1 valid name. As such, supported codecs as well as their names can
  * be enumerated as:
  * >> iconv_codec_t id;
- * >> for (id = ICONV_CODEC_FIRST;;++id) {
+ * >> for (id = ICONV_CODEC_FIRST;; ++id) {
  * >>     char const *name;
  * >>     if ((name = iconv_getcodecnames(id)) == NULL)
  * >>         break;
