@@ -54,7 +54,7 @@ DECL_BEGIN
  * Codec: IBM1390  [*]
  * Codec: IBM1399  [*]
  *
- * [*] The DOUBLE_BYTE_LOOKUP_TABLE contains entires that decode to 2 unicode characters
+ * [*] The DOUBLE_BYTE_LOOKUP_TABLE contains entries that decode to 2 unicode characters
  *
  * NOTE: Each codec has a different <SINGLE_BYTE_LOOKUP_TABLE> / <DOUBLE_BYTE_LOOKUP_TABLE>
  *

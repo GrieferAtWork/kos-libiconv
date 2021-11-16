@@ -1001,7 +1001,7 @@ do_add_identity_range:
 				/* Random access range. */
 				local is32 = content.first > 0xffff;
 				for (local x: content)
-					assert (x > 0xffff) == is32, "All entires must share the same is32 property!";
+					assert (x > 0xffff) == is32, "All entries must share the same is32 property!";
 				exCodec.isc_db_ranges.append((cp_min, largestRangeStart + #exCodec.isc_rab));
 				if (is32) {
 					exCodec.isc_rab.append(0x80000000 + #exCodec.isc_u32);
