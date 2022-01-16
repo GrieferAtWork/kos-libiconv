@@ -222,7 +222,7 @@ NOTHROW_NCX(CC calculate_ascii_fuzzyness)(char16_t const decode[/*decode_count*/
 	size_t i;
 	/* Step #1: Check  that  all  bytes  that  _did_  appear can
 	 *          actually appear in text when encoded using `cp'. */
-	memset(cp_heuristic, 0, sizeof(cp_heuristic));
+	bzero(cp_heuristic, sizeof(cp_heuristic));
 	cp_heuristic_sum = 0;
 	for (i = 0; i < decode_count; ++i) {
 		char16_t encoded;
@@ -330,7 +330,7 @@ typedef uintptr_t cp7h_bitset_t[CEILDIV(CODEC_CP7H_COUNT, sizeof(uintptr_t) * NB
 #define _cp7h_bitset_mask(codec)  ((uintptr_t)1 << _cp7h_bitset_index(codec))
 #define cp7h_bitset_insert(self, codec)   ((self)[_cp7h_bitset_index(codec)] |= _cp7h_bitset_mask(codec))
 #define cp7h_bitset_contains(self, codec) ((self)[_cp7h_bitset_index(codec)] & _cp7h_bitset_mask(codec))
-#define cp7h_bitset_clear(self)           memset(self, 0, sizeof(cp7h_bitset_t))
+#define cp7h_bitset_clear(self)           bzero(self, sizeof(cp7h_bitset_t))
 
 
 
@@ -340,7 +340,7 @@ typedef uintptr_t cp8_bitset_t[CEILDIV(CODEC_CP_COUNT, sizeof(uintptr_t) * NBBY)
 #define _cp8_bitset_mask(codec)  ((uintptr_t)1 << _cp8_bitset_index(codec))
 #define cp8_bitset_insert(self, codec)   ((self)[_cp8_bitset_index(codec)] |= _cp8_bitset_mask(codec))
 #define cp8_bitset_contains(self, codec) ((self)[_cp8_bitset_index(codec)] & _cp8_bitset_mask(codec))
-#define cp8_bitset_clear(self)           memset(self, 0, sizeof(cp8_bitset_t))
+#define cp8_bitset_clear(self)           bzero(self, sizeof(cp8_bitset_t))
 
 
 
@@ -684,7 +684,7 @@ NOTHROW_NCX(CC libiconv_detect_codec)(void const *__restrict data, size_t size) 
 			size_t i, h_size = size;
 			if (h_size > HUNCH_CHECK_MAXCHARS)
 				h_size = HUNCH_CHECK_MAXCHARS;
-			memset(heuristic, 0, sizeof(heuristic));
+			bzero(heuristic, sizeof(heuristic));
 			for (i = 0; i < h_size; ++i) {
 				byte_t b = ((byte_t const *)data)[i];
 				++heuristic[b];
