@@ -45,46 +45,12 @@ DECL_BEGIN
 
 /* Opaque object used by the functions below. */
 struct stdiconv {
-	struct iconv_decode  si_decode;        /* Decoder */
-	struct iconv_encode  si_encode;        /* Encoder */
-	struct iconv_printer si_decode_input;  /* [const] Input printer for decoding. */
-	struct iconv_printer si_encode_input;  /* [const] Input printer for encoding. */
-	mbstate_t            si_converted_mbs; /* Internal mb-state used for `si_converted' */
-	size_t               si_converted;     /* # of characters converted. */
-	char                *si_outbuf;        /* [0..si_outsiz] Pointer to the output buffer. */
-	size_t               si_outsiz;        /* # of bytes left in the output buffer. */
+	struct iconv_decode  si_decode;       /* Decoder */
+	struct iconv_encode  si_encode;       /* Encoder */
+	struct iconv_printer si_decode_input; /* [const] Input printer for decoding. */
+	char                *si_outbuf;       /* [0..si_outsiz] Pointer to the output buffer. */
+	size_t               si_outsiz;       /* # of bytes left in the output buffer. */
 };
-
-PRIVATE ssize_t FORMATPRINTER_CC
-stdiconv_count_characters_and_forward(struct stdiconv *__restrict self,
-                                      /*utf-8*/ char const *__restrict data,
-                                      size_t datalen) {
-	/* While  also supporting byte-wise processing through use of
-	 * a shift-state, counter the # of unicode characters as data
-	 * is passed to out function  before forwarding said data  to
-	 * the input printer of the encoder. */
-	char const *ptr = data;
-	size_t len      = datalen;
-	while (len) {
-		char32_t c32;
-		size_t status;
-		status = unicode_c8toc32(&c32, ptr, len, &self->si_converted_mbs);
-		if unlikely((ssize_t)status < 0) {
-			if (status == (size_t)-1) {
-				self->si_encode.ice_flags |= ICONV_HASERR;
-				errno = EILSEQ;
-				return -(ssize_t)len;
-			} else if (status == (size_t)-2) {
-				break;
-			}
-		}
-		ptr += status;
-		len -= status;
-		++self->si_converted;
-	}
-	return (*self->si_encode_input.ii_printer)(self->si_encode_input.ii_arg,
-	                                           data, datalen);
-}
 
 PRIVATE ssize_t FORMATPRINTER_CC
 stdiconv_copy_to_outbuf(struct stdiconv *__restrict self,
@@ -114,7 +80,6 @@ NOTHROW_NCX(LIBCCALL libiconv_stdiconv_open)(const char *tocode,
 	output_codec = libiconv_codec_and_flags_byname(tocode, &encode_flags);
 	if (input_codec == 0 || output_codec == 0)
 		return NULL;
-
 	result = (struct stdiconv *)malloc(sizeof(struct stdiconv));
 	if unlikely(!result)
 		goto err;
@@ -125,17 +90,14 @@ NOTHROW_NCX(LIBCCALL libiconv_stdiconv_open)(const char *tocode,
 	result->si_encode.ice_output.ii_printer = (pformatprinter)&stdiconv_copy_to_outbuf;
 	result->si_encode.ice_output.ii_arg     = result;
 	result->si_encode.ice_flags             = encode_flags;
-	result->si_decode.icd_output.ii_printer = (pformatprinter)&stdiconv_count_characters_and_forward;
-	result->si_decode.icd_output.ii_arg     = result;
 	result->si_decode.icd_flags             = decode_flags;
-	mbstate_init(&result->si_converted_mbs);
 
 	/* Initialize the decoder and encoder. */
+	result->si_encode.ice_codec = output_codec;
+	if unlikely(libiconv_encode_init(&result->si_encode, &result->si_decode.icd_output) != 0)
+		goto err_r;
 	result->si_decode.icd_codec = input_codec;
 	if unlikely(libiconv_decode_init(&result->si_decode, &result->si_decode_input) != 0)
-		goto err_r;
-	result->si_encode.ice_codec = output_codec;
-	if unlikely(libiconv_encode_init(&result->si_encode, &result->si_encode_input) != 0)
 		goto err_r;
 
 	/* And that's it! */
@@ -184,10 +146,8 @@ NOTHROW_NCX(LIBCCALL libiconv_stdiconv_close)(struct stdiconv *self) {
  *                       filled with data to-be converted.
  * @param: outbytesleft: [1..1][valid_if(inbuf)] # of bytes available in `outbuf'.
  *                       Updated over the course of the call.
- * @return: * : The # of decoded+encoded unicode characters. (technically only the
- *              # of decoded characters, but that  should normally equal the #  of
- *              encoded ones, and should they not match, the specs don't say  what
- *              should be returned then, so...)
+ * @return: 0 : The conversion went without any problems.
+ * @return: * : The # of replacement characters inserted into `*outbuf'
  * @return: (size_t)-1: [errno=EILSEQ] Invalid sequence  in input  (*inbuf now  points
  *                                     to the start of said sequence, but *inbytesleft
  *                                     is left unchanged)
@@ -202,23 +162,42 @@ INTERN size_t
 NOTHROW_NCX(LIBCCALL libiconv_stdiconv)(struct stdiconv *self,
                                         char **__restrict inbuf, size_t *__restrict inbytesleft,
                                         char **__restrict outbuf, size_t *__restrict outbytesleft) {
+	/* WARNING: The man-pages lied about this function:
+	 * >>> A positive return value indicates the # of replacement ("?") characters <<<
+	 * >>> inserted into the output buffer; not the # of fully decoded characters! <<<
+	 *
+	 * For reference, the man page says this:
+	 * """
+	 *     The iconv() function returns the number of characters converted
+	 *     in a nonreversible way during this call; reversible conversions
+	 *     are not counted.
+	 * """
+	 *
+	 * Call me stupid, but even  knowing what it's "trying" to  say now, I still  feel
+	 * like "nonreversible" is referring to characters that cannot be reversed because
+	 * they were fully decoded and their length may not have been fixed.
+	 *
+	 * What the man page _wanted_ to say is this:
+	 * """
+	 *     The iconv() function returns the number of characters --converted--[substituted]
+	 *     in a nonreversible way  during this call; --reversible  conversions--[characters
+	 *     that can be converted back] are not counted.
+	 * """
+	 */
 	uintptr_t saved_encode_flags;
 	uintptr_t saved_decode_flags;
 	union iconv_decode_data saved_decode_data;
 	union iconv_encode_data saved_encode_data;
-	mbstate_t saved_converted_mbs;
-#define STDICONV_SAVE()                               \
-	(saved_decode_flags  = self->si_decode.icd_flags, \
-	 saved_decode_data   = self->si_decode.icd_data,  \
-	 saved_encode_flags  = self->si_encode.ice_flags, \
-	 saved_encode_data   = self->si_encode.ice_data,  \
-	 saved_converted_mbs = self->si_converted_mbs)
+#define STDICONV_SAVE()                              \
+	(saved_decode_flags = self->si_decode.icd_flags, \
+	 saved_decode_data  = self->si_decode.icd_data,  \
+	 saved_encode_flags = self->si_encode.ice_flags, \
+	 saved_encode_data  = self->si_encode.ice_data)
 #define STDICONV_LOAD()                              \
 	(self->si_decode.icd_flags = saved_decode_flags, \
 	 self->si_decode.icd_data  = saved_decode_data,  \
 	 self->si_encode.ice_flags = saved_encode_flags, \
-	 self->si_encode.ice_data  = saved_encode_data,  \
-	 self->si_converted_mbs    = saved_converted_mbs)
+	 self->si_encode.ice_data  = saved_encode_data)
 
 	ssize_t status;
 	if unlikely(!self || self == (struct stdiconv *)(iconv_t)-1) {
@@ -233,13 +212,19 @@ NOTHROW_NCX(LIBCCALL libiconv_stdiconv)(struct stdiconv *self,
 		if (libiconv_decode_isshiftzero(&self->si_decode))
 			goto err_incomplete_input;
 
-		/* Like documentd, `libiconv_decode_isshiftzero()' doesn't work when the
-		 * associated codec is UTF-8. But as it  would be, we also have our  own
-		 * multi-byte state to keep track of the complete-ness of incoming UTF-8
-		 * data, so we can handle the case  where the decoder can't tell us  for
-		 * certain by checking our own state. */
-		if (!mbstate_isempty(&self->si_converted_mbs))
-			goto err_incomplete_input;
+		/* Like documentd, `libiconv_decode_isshiftzero()'  doesn't work  when
+		 * decoding from a UTF-8 input source. For this case, we have to check
+		 * if the utf-8 input mbstate of the encoder is in a zero-shift state.
+		 *
+		 * Note that said function also doesn't  work if the output is  utf-8,
+		 * but if you combine both of those criteria, you'll see that the only
+		 * case where we can't detect  incomplete utf-8 sequences is when  you
+		 * try to convert utf-8 to utf-8, which in itself can already be  seen
+		 * as a sort-of no-op. -- Iow: that case shouldn't matter! */
+		if (self->si_decode.icd_codec == CODEC_UTF8) {
+			if (!libiconv_encode_isinputshiftzero(&self->si_encode))
+				goto err_incomplete_input;
+		}
 
 		if (!outbuf || !*outbuf) {
 			pformatprinter saved_encode_output;
@@ -270,7 +255,7 @@ err_incomplete_input:
 			}
 			return (size_t)-1;
 		}
-		/* Without any input data, we didn't actually  */
+		/* Without any input data, we didn't actually do anything. */
 		return 0;
 	}
 
@@ -280,9 +265,6 @@ err_incomplete_input:
 
 	/* Save a couple of fields we may need if we have to rewind. */
 	STDICONV_SAVE();
-
-	/* Reset the conversion counter because we only care about the current instance. */
-	self->si_converted = 0;
 
 	/* (try) to do the actual conversion all in one step. */
 	status = (*self->si_decode_input.ii_printer)(self->si_decode_input.ii_arg,
@@ -317,7 +299,6 @@ return_with_EILSEQ:
 			 * result in an overflow of the output buffer. */
 			self->si_outbuf = *outbuf;
 			self->si_outsiz = *outbytesleft;
-			self->si_converted = 0;
 			for (;;) {
 				if unlikely(!*inbytesleft)
 					goto success; /* Shouldn't happen... */
@@ -370,8 +351,14 @@ success:
 	*outbuf       = self->si_outbuf;
 	*outbytesleft = self->si_outsiz;
 
-	/* Must return the # of converted unicode characters. */
-	return self->si_converted;
+	/* We're supposed to return the # of replacement characters that were inserted,
+	 * but for now our implementation  doesn't have a proper  way to keep track  of
+	 * something like this...
+	 *
+	 * Also: substitution only happens under `ICONV_ERR_REPLACE', which is a mode
+	 *       that cannot actually  be enabled though  "//FLAG" suffixes  appended
+	 *       to codec names passed to `stdiconv_open()' */
+	return 0;
 #undef STDICONV_LOAD
 #undef STDICONV_SAVE
 }

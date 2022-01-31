@@ -732,6 +732,40 @@ NOTHROW_NCX(CC libiconv_encode_flush)(struct iconv_encode *__restrict self) {
 	return result;
 }
 
+/* Check if UTF-8 input taken by the given encoder is in its default (zero) shift
+ * state. If it isn't, then that must mean that it's still waiting for more UTF-8
+ * data to arrive, and that you should either feed it said data, or deal with the
+ * fact that there's something missing in your input.
+ * WARNING: This function DOESN'T work when  the given encoder is targeting  UTF-8.
+ *          This is because special optimizations are performed when encoding UTF-8
+ *          (since  encoder also always  takes UTF-8 as input).  In this case, this
+ *          function will always return `true';
+ * - s.a. `union iconv_encode_data::ied_utf8'
+ * @return: true:  UTF-8 input is in a zero-shift state.
+ * @return: false: The encoder is still expecting more UTF-8 input. */
+INTERN ATTR_PURE WUNUSED NONNULL((1)) bool
+NOTHROW_NCX(CC libiconv_encode_isinputshiftzero)(struct iconv_encode const *__restrict self) {
+	/* Special handling for  codecs that don't  use
+	 * the standard UTF-8 decoder multi-byte state. */
+	switch (self->ice_codec) {
+
+		/* Encoding as utf-8 is a no-op (since the decoder
+		 * already supplies the encoder with a utf-8 stream) */
+	case CODEC_UTF8:
+		/* Yes: the UTF-8-BOM generator also doesn't decode input. */
+	case CODEC_UTF8_BOM:
+		/* These codecs encodes raw bytes, so it doesn't care about UTF-8 input. */
+	case CODEC_URI_ESCAPE:
+	case CODEC_HEX_LOWER:
+	case CODEC_HEX_UPPER:
+		return true;
+
+	default: break;
+	}
+	return mbstate_isempty(&self->ice_data.ied_utf8);
+}
+
+
 
 
 

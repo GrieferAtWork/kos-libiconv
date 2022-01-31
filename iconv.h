@@ -87,6 +87,21 @@ NOTHROW_NCX(CC _libiconv_encode_init)(/*in|out*/ struct iconv_encode *__restrict
 INTDEF NONNULL((1)) ssize_t
 NOTHROW_NCX(CC libiconv_encode_flush)(struct iconv_encode *__restrict self);
 
+/* Check if UTF-8 input taken by the given encoder is in its default (zero) shift
+ * state. If it isn't, then that must mean that it's still waiting for more UTF-8
+ * data to arrive, and that you should either feed it said data, or deal with the
+ * fact that there's something missing in your input.
+ * WARNING: This function DOESN'T work when  the given encoder is targeting  UTF-8.
+ *          This is because special optimizations are performed when encoding UTF-8
+ *          (since  encoder also always  takes UTF-8 as input).  In this case, this
+ *          function will always return `true';
+ * - s.a. `union iconv_encode_data::ied_utf8'
+ * @return: true:  UTF-8 input is in a zero-shift state.
+ * @return: false: The encoder is still expecting more UTF-8 input. */
+INTDEF ATTR_PURE WUNUSED NONNULL((1)) bool
+NOTHROW_NCX(CC libiconv_encode_isinputshiftzero)(struct iconv_encode const *__restrict self);
+
+
 
 
 /* The  combination  of the  encode+decode functions  into  a single  one which
