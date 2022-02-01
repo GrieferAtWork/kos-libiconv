@@ -749,7 +749,7 @@ NOTHROW_NCX(CC libiconv_encode_isinputshiftzero)(struct iconv_encode const *__re
 	 * the standard UTF-8 decoder multi-byte state. */
 	switch (self->ice_codec) {
 
-		/* Encoding as utf-8 is a no-op (since the decoder
+		/* Encoding as utf-8 is  a no-op (since the  decoder
 		 * already supplies the encoder with a utf-8 stream) */
 	case CODEC_UTF8:
 		/* Yes: the UTF-8-BOM generator also doesn't decode input. */
