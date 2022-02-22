@@ -8574,7 +8574,7 @@ NOTHROW_NCX(CC libiconv_same_codec_name)(char const *__restrict a,
 	if (!libiconv_normalize_codec_name(norm_b, b, lenb))
 		goto nope;
 
-	/* Check of the normalized names are identical. */
+	/* Check if the normalized names are identical. */
 	return strcasecmp(norm_a, norm_b) == 0;
 nope:
 	return false;
