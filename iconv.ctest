@@ -137,33 +137,33 @@ DEFINE_TEST(iconv) {
 
 
 	convert("latin-1", "de", ICONV_ERR_ERRNO, "aou: \xE4\xF6\xFC!", buf);
-	assertf(strcmp(buf, "aou: \x7B\x7C\x7D!") == 0, "buf = %q", buf);
+	EQstr("aou: \x7B\x7C\x7D!", buf);
 
 	convert("de", "ascii", ICONV_ERR_ERRNO | ICONV_ERR_TRANSLIT, "ss: \x7E!", buf);
-	assertf(strcmp(buf, "ss: ss!") == 0, "buf = %q", buf);
+	EQstr("ss: ss!", buf);
 
 	convert("de", "ascii", ICONV_ERR_ERRNO | ICONV_ERR_TRANSLIT, "aou: \x7B\x7C\x7D!", buf);
-	assertf(strcmp(buf, "aou: aou!") == 0, "buf = %q", buf);
+	EQstr("aou: aou!", buf);
 	convert("latin-1", "ascii", ICONV_ERR_ERRNO | ICONV_ERR_TRANSLIT, "aou: \xE4\xF6\xFC!", buf);
-	assertf(strcmp(buf, "aou: aou!") == 0, "buf = %q", buf);
+	EQstr("aou: aou!", buf);
 
 	convert("utf-8", "iso-ir-182", ICONV_ERR_ERRNO, "Yy: \u0176\u0177!", buf);
-	assertf(strcmp(buf, "Yy: \xDE\xFE!") == 0, "buf = %q", buf);
+	EQstr("Yy: \xDE\xFE!", buf);
 	convert("iso-ir-182", "utf-8", ICONV_ERR_ERRNO, "Yy: \xDE\xFE!", buf);
-	assertf(strcmp(buf, "Yy: \u0176\u0177!") == 0, "buf = %q", buf);
+	EQstr("Yy: \u0176\u0177!", buf);
 
 	{
 		char buf2[64];
 		convert("utf-8", "bcdic", ICONV_ERR_ERRNO, "ABCD", buf2);
-		assertf(strcmp(buf2, "\x31\x32\x33\x34") == 0, "buf2 = %q", buf2);
+		EQstr("\x31\x32\x33\x34", buf2);
 		convert("bcdic", "utf-8", ICONV_ERR_ERRNO, buf2, buf);
-		assertf(strcmp(buf, "ABCD") == 0, "buf = %q", buf);
+		EQstr("ABCD", buf);
 	}
 
 
 	/* Also test multi-byte decode functionality. */
 	convertz("utf-16", "utf-8", ICONV_ERR_ERRNO, (char *)u"Hello", 10, buf);
-	assertf(strcmp(buf, "Hello") == 0, "buf = %q", buf);
+	EQstr("Hello", buf);
 
 
 #define ASSERT_DETECTED_CODEC(name, data) \
@@ -230,69 +230,69 @@ DEFINE_TEST(iconv) {
 
 	/* When encoding a unicode character that isn't printable, it will be escaped in output. */
 	convert("utf-8", "c-escape", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf);
-	assertf(strcmp(buf, "Hello\\uFFFF\\nWorld") == 0, "buf = %q", buf);
+	EQstr("Hello\\uFFFF\\nWorld", buf);
 	convert("utf-8", "c-escape-chr", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf);
-	assertf(strcmp(buf, "'Hello\\uFFFF\\nWorld'") == 0, "buf = %q", buf);
+	EQstr("'Hello\\uFFFF\\nWorld'", buf);
 	convert("utf-8", "c-escape-str", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf);
-	assertf(strcmp(buf, "\"Hello\\uFFFF\\nWorld\"") == 0, "buf = %q", buf);
+	EQstr("\"Hello\\uFFFF\\nWorld\"", buf);
 	convert("utf-8", "c-escape-bytes", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf);
-	assertf(strcmp(buf, "Hello\\xEF\\xBF\\xBF\\nWorld") == 0, "buf = %q", buf);
+	EQstr("Hello\\xEF\\xBF\\xBF\\nWorld", buf);
 	convert("utf-8", "c-escape-bytes-chr", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf);
-	assertf(strcmp(buf, "'Hello\\xEF\\xBF\\xBF\\nWorld'") == 0, "buf = %q", buf);
+	EQstr("'Hello\\xEF\\xBF\\xBF\\nWorld'", buf);
 	convert("utf-8", "c-escape-bytes-str", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf);
-	assertf(strcmp(buf, "\"Hello\\xEF\\xBF\\xBF\\nWorld\"") == 0, "buf = %q", buf);
+	EQstr("\"Hello\\xEF\\xBF\\xBF\\nWorld\"", buf);
 
 	/* When a unicode character is printable, it's simply re-printed as-is
 	 * HINT: '\u263A' == '☺' (which is considered printable, and should show up as a smiley) */
 	convert("utf-8", "c-escape", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf);
-	assertf(strcmp(buf, "Hello\u263A\\nWorld") == 0, "buf = %q", buf);
+	EQstr("Hello\u263A\\nWorld", buf);
 	convert("utf-8", "c-escape-chr", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf);
-	assertf(strcmp(buf, "'Hello\u263A\\nWorld'") == 0, "buf = %q", buf);
+	EQstr("'Hello\u263A\\nWorld'", buf);
 	convert("utf-8", "c-escape-str", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf);
-	assertf(strcmp(buf, "\"Hello\u263A\\nWorld\"") == 0, "buf = %q", buf);
+	EQstr("\"Hello\u263A\\nWorld\"", buf);
 	convert("utf-8", "c-escape-bytes", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf);
-	assertf(strcmp(buf, "Hello\\xE2\\x98\\xBA\\nWorld") == 0, "buf = %q", buf);
+	EQstr("Hello\\xE2\\x98\\xBA\\nWorld", buf);
 	convert("utf-8", "c-escape-bytes-chr", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf);
-	assertf(strcmp(buf, "'Hello\\xE2\\x98\\xBA\\nWorld'") == 0, "buf = %q", buf);
+	EQstr("'Hello\\xE2\\x98\\xBA\\nWorld'", buf);
 	convert("utf-8", "c-escape-bytes-str", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf);
-	assertf(strcmp(buf, "\"Hello\\xE2\\x98\\xBA\\nWorld\"") == 0, "buf = %q", buf);
+	EQstr("\"Hello\\xE2\\x98\\xBA\\nWorld\"", buf);
 
 	convert("utf-8", "c-escape-bytes", ICONV_ERR_ERRNO, "\xAB" "AB", buf);
-	assertf(strcmp(buf, "\\xAB\\x41\\x42") == 0, "buf = %q", buf);
+	EQstr("\\xAB\\x41\\x42", buf);
 	convert("utf-8", "c-escape-bytes-str", ICONV_ERR_ERRNO, "\xAB" "AB", buf);
-	assertf(strcmp(buf, "\"\\xAB\" \"AB\"") == 0, "buf = %q", buf);
+	EQstr("\"\\xAB\" \"AB\"", buf);
 	convert("utf-8", "c-escape-bytes-chr", ICONV_ERR_ERRNO, "\xAB" "AB", buf);
-	assertf(strcmp(buf, "\'\\xAB\' \'AB\'") == 0, "buf = %q", buf);
+	EQstr("\'\\xAB\' \'AB\'", buf);
 
 	convert("utf-8", "c-escape", ICONV_ERR_ERRNO, "\\", buf);
-	assertf(strcmp(buf, "\\\\") == 0, "buf = %q", buf);
+	EQstr("\\\\", buf);
 	convert("utf-8", "c-escape-str", ICONV_ERR_ERRNO, "\\", buf);
-	assertf(strcmp(buf, "\"\\\\\"") == 0, "buf = %q", buf);
+	EQstr("\"\\\\\"", buf);
 	convert("utf-8", "c-escape-chr", ICONV_ERR_ERRNO, "\\", buf);
-	assertf(strcmp(buf, "\'\\\\\'") == 0, "buf = %q", buf);
+	EQstr("\'\\\\\'", buf);
 	convert("utf-8", "c-escape-bytes", ICONV_ERR_ERRNO, "\\", buf);
-	assertf(strcmp(buf, "\\\\") == 0, "buf = %q", buf);
+	EQstr("\\\\", buf);
 	convert("utf-8", "c-escape-bytes-str", ICONV_ERR_ERRNO, "\\", buf);
-	assertf(strcmp(buf, "\"\\\\\"") == 0, "buf = %q", buf);
+	EQstr("\"\\\\\"", buf);
 	convert("utf-8", "c-escape-bytes-chr", ICONV_ERR_ERRNO, "\\", buf);
-	assertf(strcmp(buf, "\'\\\\\'") == 0, "buf = %q", buf);
+	EQstr("\'\\\\\'", buf);
 
 	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\u263A\\nWorld", buf);
-	assertf(strcmp(buf, "Hello\u263A\nWorld") == 0, "buf = %q", buf);
+	EQstr("Hello\u263A\nWorld", buf);
 	convert("c-escape", "c-escape-bytes", ICONV_ERR_ERRNO, "Hello\\u263A\\nWorld", buf);
-	assertf(strcmp(buf, "Hello\\xE2\\x98\\xBA\\nWorld") == 0, "buf = %q", buf);
+	EQstr("Hello\\xE2\\x98\\xBA\\nWorld", buf);
 
 	/* The c-escape parser is also able to correctly deal with escaped line-feeds */
-	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\nWorld", buf); /* Not escaped */
-	assertf(strcmp(buf, "Hello\nWorld") == 0, "buf = %q", buf);
-	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\\nWorld", buf); /* Escaped */
-	assertf(strcmp(buf, "HelloWorld") == 0, "buf = %q", buf);
-	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\\rWorld", buf); /* Escaped */
-	assertf(strcmp(buf, "HelloWorld") == 0, "buf = %q", buf);
-	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\\r\nWorld", buf); /* Escaped */
-	assertf(strcmp(buf, "HelloWorld") == 0, "buf = %q", buf);
-	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "\"Hello\\\r\nWorld\"", buf); /* Escaped */
-	assertf(strcmp(buf, "HelloWorld") == 0, "buf = %q", buf);
+	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\nWorld", buf); /* Linefeed is not escaped */
+	EQstr("Hello\nWorld", buf);
+	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\\nWorld", buf); /* Linefeed is escaped */
+	EQstr("HelloWorld", buf);
+	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\\rWorld", buf); /* Linefeed is escaped */
+	EQstr("HelloWorld", buf);
+	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\\r\nWorld", buf); /* Linefeed is escaped */
+	EQstr("HelloWorld", buf);
+	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "\"Hello\\\r\nWorld\"", buf); /* Linefeed is escaped */
+	EQstr("HelloWorld", buf);
 
 
 	/* Test the zero-shift integration for decoding c-escape */
@@ -340,13 +340,13 @@ DEFINE_TEST(iconv) {
 		*ptr = 0;
 
 		/* Ensure that the correct data was decoded. */
-		assertf(strcmp(buf, "HelloWorld") == 0, "buf = %q", buf);
+		EQstr("HelloWorld", buf);
 	}
 
 
 	/* Test the xml-escape codec. */
 	convert("xml-escape", "utf-8", ICONV_ERR_ERRNO, "Foo&quot;&amp;&apos;&lt;&gt;Bar", buf);
-	assertf(strcmp(buf, "Foo\"&\'<>Bar") == 0, "buf = %q", buf);
+	EQstr("Foo\"&\'<>Bar", buf);
 	convert("utf-8", "xml-escape", ICONV_ERR_ERRNO, "Foo\"&\'<>Bar", buf);
 	/* Depending on  configuration, libiconv  may either  use
 	 * entity names or (where doing so is shorter), decimals. */
@@ -354,33 +354,33 @@ DEFINE_TEST(iconv) {
 	        strcmp(buf, "Foo&#34;&#38;&#39;&#60;&#62;Bar") == 0,
 	        "buf = %q", buf);
 	convert("xml-escape", "utf-8", ICONV_ERR_ERRNO, "A&nbspB", buf); /* The trailing ';' is optional for '&nbsp' */
-	assertf(strcmp(buf, "A\u00A0B") == 0, "buf = %q", buf);
+	EQstr("A\u00A0B", buf);
 	convert("xml-escape", "utf-8", ICONV_ERR_ERRNO, "A&nbsp;B", buf);
-	assertf(strcmp(buf, "A\u00A0B") == 0, "buf = %q", buf);
+	EQstr("A\u00A0B", buf);
 	convert("xml-escape", "utf-8", ICONV_ERR_ERRNO, "A&nbsp", buf);
-	assertf(strcmp(buf, "A\u00A0") == 0, "buf = %q", buf);
+	EQstr("A\u00A0", buf);
 	convert("xml-escape", "utf-8", ICONV_ERR_ERRNO, "A&nbsp;", buf);
-	assertf(strcmp(buf, "A\u00A0") == 0, "buf = %q", buf);
+	EQstr("A\u00A0", buf);
 
 
 	/* Test the uri-escape codec. */
 	convert("ascii", "uri-escape", ICONV_ERR_ERRNO, "Hello World", buf);
-	assertf(strcmp(buf, "Hello%20World") == 0, "buf = %q", buf);
+	EQstr("Hello%20World", buf);
 	convert("uri-escape", "ascii", ICONV_ERR_ERRNO, "Hello%20World", buf);
-	assertf(strcmp(buf, "Hello World") == 0, "buf = %q", buf);
+	EQstr("Hello World", buf);
 
 
 	/* Test the hex codec. */
 	convert("ascii", "hex", ICONV_ERR_ERRNO, "Hello World", buf);
-	assertf(strcmp(buf, "48656C6C6F20576F726C64") == 0, "buf = %q", buf);
+	EQstr("48656C6C6F20576F726C64", buf);
 	convert("ascii", "hex-upper", ICONV_ERR_ERRNO, "Hello World", buf);
-	assertf(strcmp(buf, "48656C6C6F20576F726C64") == 0, "buf = %q", buf);
+	EQstr("48656C6C6F20576F726C64", buf);
 	convert("ascii", "hex-lower", ICONV_ERR_ERRNO, "Hello World", buf);
-	assertf(strcmp(buf, "48656c6c6f20576f726c64") == 0, "buf = %q", buf);
+	EQstr("48656c6c6f20576f726c64", buf);
 	convert("hex", "ascii", ICONV_ERR_ERRNO, "48656C6C6F20576F726C64", buf);
-	assertf(strcmp(buf, "Hello World") == 0, "buf = %q", buf);
+	EQstr("Hello World", buf);
 	convert("hex", "ascii", ICONV_ERR_ERRNO, "48656c6c6f20576f726c64", buf);
-	assertf(strcmp(buf, "Hello World") == 0, "buf = %q", buf);
+	EQstr("Hello World", buf);
 
 
 
