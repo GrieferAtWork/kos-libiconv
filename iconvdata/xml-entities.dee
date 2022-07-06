@@ -38,13 +38,13 @@ function loadXmlEntities(): {string: (int, bool)} {
 		ord, none, l = l.partition(" ")...;
 		l = l.lstrip();
 		if (l) {
-			throw Error("Unexpected trailing data {!r} (name: {!r}, ord: {!r})"
-				.format({ l, name, ord }));
+			throw Error(
+				f"Unexpected trailing data {repr l} "
+				f"(name: {repr name}, ord: {repr ord})"
+			);
 		}
-		if (!name.startswith("&")) {
-			throw Error("Name {!r} doesn't start with '&'"
-				.format({ name }));
-		}
+		if (!name.startswith("&"))
+			throw Error(f"Name {repr name} doesn't start with '&'");
 		name = name[1:];
 		local semicolonIsOptional = true;
 		if (name.endswith(";")) {

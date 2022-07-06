@@ -626,7 +626,7 @@ function printCodecNameDB() {
 					print("#if ", alias.ppCond);
 				prevPpCond = alias.ppCond;
 			}
-			local dbName = "{}_{}".format({ base, i });
+			local dbName = f"{base}_{i}";
 			if (longestDbNameLength < #dbName)
 				longestDbNameLength = #dbName;
 			print("	char ", dbName, "[", lenPlusOne, "]; ",
@@ -696,7 +696,7 @@ function printCodecNameDB() {
 				print("#elif ", ppCond);
 			}
 			local index = (codec.aliases.each.name as Sequence).index(name);
-			local dbName = "{}_{}".format({ dbFieldName(codec.name), index });
+			local dbName = f"{dbFieldName(codec.name)}_{index}";
 			print("	{ offsetof(struct codec_name_db_struct, ", dbName, "),",
 				" /* ", " " * (longestDbNameLength - #dbName),
 				repr name, " " * (longestAliasLength - #name),
@@ -1659,9 +1659,9 @@ function createExMbcsCodec(codec: MbcsCodec): ExMbcsCodec {
 function firstByteToStr(b: {int...}): string {
 	if (#b == 1)
 		return b.first.hex()[2:].zfill(2) + "h";
-	return "[{}]".format({
+	return f"[{
 		",".join(for (local x: b) x.hex()[2:].zfill(2) + "h")
-	});
+	}]";
 }
 
 function printCpMbcsDatabase() {
@@ -1780,7 +1780,7 @@ function printCpMbcsDatabase() {
 					/* "._", b2_i, "r", range_i, "_A" */
 					print("		{"),;
 					printCompressed((for (local x: range.imc_arr)
-						"E({},{})".format({ x >> 16, x & 0xffff })
+						f"E({x >> 16},{x & 0xffff})"
 					), "		 ");
 					print("},");
 				}	break;

@@ -379,7 +379,7 @@ function printTranslitDatabase() {
 		++count;
 		if (i != #entries - 1)
 			line += "\0";
-		line = "\"{}\"".format({ fixedCharEncode(line) });
+		line = f'"{fixedCharEncode(line)}"';
 		lines.append(line);
 	}
 	print("#define LIBICONV_TRANSLIT_LONGEST_REPLACEMENT_LENGTH        ", longestReplLen);
