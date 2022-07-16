@@ -49,13 +49,20 @@ gcc_opt.append("-O3"); // Force _all_ optimizations because stuff in here is per
 
 DECL_BEGIN
 
-#ifdef CONFIG_NO_XML_FANCY_ENCODE
-#undef CONFIG_XML_FANCY_ENCODE
-#elif !defined(CONFIG_XML_FANCY_ENCODE)
+/*[[[config CONFIG_HAVE_LIBICONV_XML_FANCY_ENCODE: bool = !defined(__OPTIMIZE_SIZE__)]]]*/
+#ifdef CONFIG_NO_LIBICONV_XML_FANCY_ENCODE
+#undef CONFIG_HAVE_LIBICONV_XML_FANCY_ENCODE
+#elif !defined(CONFIG_HAVE_LIBICONV_XML_FANCY_ENCODE)
 #ifndef __OPTIMIZE_SIZE__
-#define CONFIG_XML_FANCY_ENCODE
-#endif /* !__OPTIMIZE_SIZE__ */
+#define CONFIG_HAVE_LIBICONV_XML_FANCY_ENCODE
+#else /* !__OPTIMIZE_SIZE__ */
+#define CONFIG_NO_LIBICONV_XML_FANCY_ENCODE
+#endif /* __OPTIMIZE_SIZE__ */
+#elif (-CONFIG_HAVE_LIBICONV_XML_FANCY_ENCODE - 1) == -1
+#undef CONFIG_HAVE_LIBICONV_XML_FANCY_ENCODE
+#define CONFIG_NO_LIBICONV_XML_FANCY_ENCODE
 #endif /* ... */
+/*[[[end]]]*/
 
 
 #define IS_ICONV_ERR_ERRNO(flags)                     (((flags) & ICONV_ERRMASK) == ICONV_ERR_ERRNO)
@@ -200,7 +207,7 @@ uni16ToEntity[0x003E] = "gt";
 
 // Generate the encode database
 print;
-print("#ifdef CONFIG_XML_FANCY_ENCODE");
+print("#ifdef CONFIG_HAVE_LIBICONV_XML_FANCY_ENCODE");
 print("struct xml_encode16_entry {");
 print("	char16_t xe16_chr; /" "* Unicode character. *" "/");
 print("	", dbOffsetType, " xe16_offset; /" "* Offset into `xml_entity_db' *" "/");
@@ -232,7 +239,7 @@ for (local ord: uni32ToEntity.keys.sorted()) {
 print("};");
 
 
-print("#endif /" "* CONFIG_XML_FANCY_ENCODE *" "/");
+print("#endif /" "* CONFIG_HAVE_LIBICONV_XML_FANCY_ENCODE *" "/");
 ]]]*/
 PRIVATE char const xml_entity_db[0x5f23] = "\
 \1AElig\0\xC3\x86\0\1AMP\0&\0\1Aacute\0\xC3\x81\0Abre\
@@ -999,7 +1006,7 @@ ml\0\xC3\xBF\0zacute\0\xC5\xBA\0zcaron\0\xC5\xBE\0zcy\0\xD0\xB7\
 \0.\
 ";
 
-#ifdef CONFIG_XML_FANCY_ENCODE
+#ifdef CONFIG_HAVE_LIBICONV_XML_FANCY_ENCODE
 struct xml_encode16_entry {
 	char16_t xe16_chr; /* Unicode character. */
 	uint16_t xe16_offset; /* Offset into `xml_entity_db' */
@@ -2459,7 +2466,7 @@ PRIVATE struct xml_encode32_entry const xml_encode32_db[133] = {
 	{ 0x1D56A, 0x5e81 }, /* "yopf" */
 	{ 0x1D56B, 0x5ef9 }, /* "zopf" */
 };
-#endif /* CONFIG_XML_FANCY_ENCODE */
+#endif /* CONFIG_HAVE_LIBICONV_XML_FANCY_ENCODE */
 /*[[[end]]]*/
 
 
@@ -2559,7 +2566,7 @@ NOTHROW_NCX(CC xml_entity_lookup_startswith_plus1)(char const *__restrict name,
 }
 
 
-#ifdef CONFIG_XML_FANCY_ENCODE
+#ifdef CONFIG_HAVE_LIBICONV_XML_FANCY_ENCODE
 PRIVATE ATTR_CONST WUNUSED xml_entity_t const *
 NOTHROW_NCX(CC xml_entity_bychr16)(char16_t ch) {
 	size_t lo, hi;
@@ -2603,7 +2610,7 @@ NOTHROW_NCX(CC xml_entity_bychr32)(char32_t ch) {
 	}
 	return NULL;
 }
-#endif /* CONFIG_XML_FANCY_ENCODE */
+#endif /* CONFIG_HAVE_LIBICONV_XML_FANCY_ENCODE */
 
 
 
@@ -2619,7 +2626,7 @@ NOTHROW_NCX(CC xml_escape)(char *__restrict buf, char32_t ch) {
 		return buf;
 	}
 
-#ifdef CONFIG_XML_FANCY_ENCODE
+#ifdef CONFIG_HAVE_LIBICONV_XML_FANCY_ENCODE
 	/* If we have fancy encode escapes, then use actual strings! */
 	{
 		xml_entity_t const *ent;
@@ -2628,7 +2635,7 @@ NOTHROW_NCX(CC xml_escape)(char *__restrict buf, char32_t ch) {
 		if (ent != NULL)
 			return xml_entity_name(ent);
 	}
-#endif /* CONFIG_XML_FANCY_ENCODE */
+#endif /* CONFIG_HAVE_LIBICONV_XML_FANCY_ENCODE */
 
 	/* Manually escape as either decimal or hex. */
 	if (ch <= 9 || (ch >= 16 && ch <= 99) || (ch >= 256 && ch <= 999) ||
