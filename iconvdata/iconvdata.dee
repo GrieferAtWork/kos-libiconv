@@ -167,9 +167,9 @@ function parseDBFilename(filename: string): {string: Object} {
 		}
 		if (ch == "#") {
 			i = data.find("\n", i);
-			if (i < 0)
+			if (i < 0) {
 				i = len;
-			else {
+			} else {
 				++i;
 			}
 			continue;
@@ -428,9 +428,9 @@ function parseDBFilename(filename: string): {string: Object} {
 					if (i >= len || !data.isalnum(i))
 						errAt(i, "Expected digit after 'ABCD=6789,'");
 				}
-				if (#uniOrds <= 1)
+				if (#uniOrds <= 1) {
 					uniOrds = uniOrds.first;
-				else {
+				} else {
 					uniOrds = Tuple(uniOrds);
 				}
 				if (count == 1) {
@@ -789,9 +789,9 @@ function printCodepageDatabase(kind: int) {
 				print(", 0x", repl_char.hex()[2:].zfill(2)),;
 			}
 			print(" },"),;
-			if ((i % 4) == 3)
+			if ((i % 4) == 3) {
 				print;
-			else if (i != #encode_table - 1) {
+			} else if (i != #encode_table - 1) {
 				print(" "),;
 			}
 		}
@@ -1245,9 +1245,9 @@ do_add_encode_identity_range:
 		local numIdentity = 0;
 		for (local isr_cp_ord, isr_uni_off: exCodec.isc_db_ranges) {
 			if (isr_uni_off >= exCodec.isc_rab_minoff &&
-			    isr_uni_off <= exCodec.isc_rab_maxoff)
+			    isr_uni_off <= exCodec.isc_rab_maxoff) {
 				++numRandomAccess;
-			else {
+			} else {
 				++numIdentity;
 			}
 		}
@@ -1551,15 +1551,15 @@ again_range:
 
 	range.imc_cpmax = i - 1;
 	/* Calculate range size */
-	if (range.imc_type == ICONV_MBCS_BYTE2_RANGE_TYPE_LIN)
+	if (range.imc_type == ICONV_MBCS_BYTE2_RANGE_TYPE_LIN) {
 		range.imc_size = (4 + 2) / 2;
-	else if (range.imc_type == ICONV_MBCS_BYTE2_RANGE_TYPE_ARR)
+	} else if (range.imc_type == ICONV_MBCS_BYTE2_RANGE_TYPE_ARR) {
 		range.imc_size = (4 + 2 * #range.imc_arr) / 2;
-	else if (range.imc_type == ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32)
+	} else if (range.imc_type == ICONV_MBCS_BYTE2_RANGE_TYPE_ARR32) {
 		range.imc_size = (4 + 4 * #range.imc_arr) / 2;
-	else if (range.imc_type == ICONV_MBCS_BYTE2_RANGE_TYPE_TAB)
+	} else if (range.imc_type == ICONV_MBCS_BYTE2_RANGE_TYPE_TAB) {
 		range.imc_size = (4 + 2) / 2;
-	else {
+	} else {
 		assert false, "Bad type";
 	}
 	assert range.imc_size <= 0xff, "Internal error: range too large";

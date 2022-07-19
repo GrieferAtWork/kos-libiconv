@@ -654,9 +654,9 @@ libiconv_cp_encode(struct iconv_encode *__restrict self,
 			goto err_ilseq;
 		}
 		if (!IS_ICONV_ERR_DISCARD(self->ice_flags)) {
-			if (IS_ICONV_ERR_REPLACE(self->ice_flags))
+			if (IS_ICONV_ERR_REPLACE(self->ice_flags)) {
 				*ptr++ = cp->icp_replacement;
-			else {
+			} else {
 				*ptr++ = (char)(unsigned char)(uint32_t)c32;
 			}
 		}
@@ -814,9 +814,9 @@ libiconv_cp7l_encode(struct iconv_encode *__restrict self,
 			goto err_ilseq;
 		}
 		if (!IS_ICONV_ERR_DISCARD(self->ice_flags)) {
-			if (IS_ICONV_ERR_REPLACE(self->ice_flags))
+			if (IS_ICONV_ERR_REPLACE(self->ice_flags)) {
 				*ptr++ = cp->i7lcp_replacement;
-			else {
+			} else {
 				*ptr++ = (char)(unsigned char)(uint32_t)c32;
 			}
 		}
@@ -952,9 +952,9 @@ libiconv_cp646_encode(struct iconv_encode *__restrict self,
 			goto err_ilseq;
 		}
 		if (!IS_ICONV_ERR_DISCARD(self->ice_flags)) {
-			if (IS_ICONV_ERR_REPLACE(self->ice_flags))
+			if (IS_ICONV_ERR_REPLACE(self->ice_flags)) {
 				*ptr++ = iconv_iso646_codepage_qmark(cp);
-			else {
+			} else {
 				*ptr++ = (char)(unsigned char)(uint32_t)c32;
 			}
 		}

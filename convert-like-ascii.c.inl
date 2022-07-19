@@ -294,9 +294,9 @@ LOCAL_libiconv_decode(struct iconv_decode *__restrict self,
 
 		/* NOTE: No need to handle `IS_ICONV_ERR_IGNORE()'; our function
 		 *       isn't  used when converting  text in error-ignore mode. */
-		if (IS_ICONV_ERR_REPLACE(self->icd_flags))
+		if (IS_ICONV_ERR_REPLACE(self->icd_flags)) {
 			DO_decode_output("?", 1);
-		else if (IS_ICONV_ERR_IGNORE(self->icd_flags)) {
+		} else if (IS_ICONV_ERR_IGNORE(self->icd_flags)) {
 			flush_start = iter - 1; /* Simply re-emit the bad character. */
 		}
 #else /* LOCAL_HAS_UNDEFINED_CODEPOINTS */
