@@ -24,7 +24,7 @@ function normalizeCodecName(name: string): string {
 	name = name.lower().replace("_", "-").replace(" ", "-");
 	assert " " !in name, repr name;
 	assert "--" !in name, repr name;
-	final local PREFIX_REPLACEMENTS = { "oem", "ibm", "iso", "cp", "latin", "koi", "l" };
+	local final PREFIX_REPLACEMENTS = { "oem", "ibm", "iso", "cp", "latin", "koi", "l" };
 	for (local pr: PREFIX_REPLACEMENTS) {
 		if (name.startswith(pr) && #name >= #pr+2 &&
 		    name[#pr] == "-" && name.isdigit(#pr + 1))
