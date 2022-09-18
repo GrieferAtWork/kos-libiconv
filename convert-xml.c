@@ -2543,7 +2543,7 @@ NOTHROW_NCX(CC xml_entity_lookup_startswith)(char const *__restrict name, size_t
 		size_t i = (lo + hi) / 2;
 		int cmp;
 		entry = xml_entity_fromptr(xml_entity_db + i);
-		cmp   = memcmp(entry, name, namelen * sizeof(char));
+		cmp   = memcmpc(entry, name, namelen, sizeof(char));
 		if (cmp > 0) {
 			hi = i;
 		} else if (cmp < 0) {
