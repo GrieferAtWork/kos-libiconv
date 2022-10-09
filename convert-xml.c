@@ -47,6 +47,9 @@ gcc_opt.append("-O3"); // Force _all_ optimizations because stuff in here is per
 
 #include "convert.h"
 
+#undef lengthof
+#define lengthof COMPILER_LENOF
+
 DECL_BEGIN
 
 /*[[[config CONFIG_HAVE_LIBICONV_XML_FANCY_ENCODE: bool = !defined(__OPTIMIZE_SIZE__)]]]*/
@@ -2571,7 +2574,7 @@ PRIVATE ATTR_CONST WUNUSED xml_entity_t const *
 NOTHROW_NCX(CC xml_entity_bychr16)(char16_t ch) {
 	size_t lo, hi;
 	lo = 0;
-	hi = COMPILER_LENOF(xml_encode16_db);
+	hi = lengthof(xml_encode16_db);
 	while (lo < hi) {
 		size_t i;
 		char16_t ord;
@@ -2593,7 +2596,7 @@ PRIVATE ATTR_CONST WUNUSED xml_entity_t const *
 NOTHROW_NCX(CC xml_entity_bychr32)(char32_t ch) {
 	size_t lo, hi;
 	lo = 0;
-	hi = COMPILER_LENOF(xml_encode32_db);
+	hi = lengthof(xml_encode32_db);
 	while (lo < hi) {
 		size_t i;
 		char32_t ord;

@@ -52,6 +52,9 @@
 #include "detect.h"
 #include "iconv.h"
 
+#undef lengthof
+#define lengthof COMPILER_LENOF
+
 DECL_BEGIN
 
 /* Max # of characters to check before believing that a "hunch" is correct. */
@@ -196,7 +199,7 @@ NOTHROW(CC is_ascii_heuristic)(uint16_t const heuristic[128]) {
 		0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
 		0x07, 0x08, 0x0b, 0x0e, 0x0f, 0x7f
 	};
-	for (i = 0; i < COMPILER_LENOF(nontext_ascii); ++i) {
+	for (i = 0; i < lengthof(nontext_ascii); ++i) {
 		if (heuristic[nontext_ascii[i]] != 0) {
 			/* If the heuristic were ASCII, it'd contain
 			 * characters that  can't  appear  in  text! */

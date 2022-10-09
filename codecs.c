@@ -43,6 +43,9 @@ gcc_opt.remove("-g"); // Disable debug informations for this file!
 
 #include "codecs.h"
 
+#undef lengthof
+#define lengthof COMPILER_LENOF
+
 DECL_BEGIN
 
 typedef uint16_t codec_name_db_offset_t;
@@ -8334,7 +8337,7 @@ NOTHROW_NCX(FCALL libiconv_normalize_codec_name)(char buf[CODE_NAME_MAXLEN + 1],
 
 	/* Remove <SEP> characters are certain prefixes if those
 	 * prefixes  are  followed  up with  a  digit character. */
-	for (i = 0; i < COMPILER_LENOF(remove_sep_prefixes); ++i) {
+	for (i = 0; i < lengthof(remove_sep_prefixes); ++i) {
 		size_t len = strlen(remove_sep_prefixes[i]);
 		if (memcasecmp(name, remove_sep_prefixes[i], len * sizeof(char)) == 0 &&
 		    issep(name[len]) && isdigit(name[len + 1])) {
@@ -8384,7 +8387,7 @@ NOTHROW_NCX(CC libiconv_codecbyname)(char const *__restrict name) {
 	char normal_name[CODE_NAME_MAXLEN + 1];
 again:
 	lo = 0;
-	hi = COMPILER_LENOF(codec_db);
+	hi = lengthof(codec_db);
 	while (lo < hi) {
 		size_t i;
 		int cmp;
@@ -8441,7 +8444,7 @@ NOTHROW_NCX(CC libiconv_getcodecnames)(iconv_codec_t id) {
 	 * If done, this function could be implemented on O(1) time, though that
 	 * would also add a bunch to the file size of the library, so this isn't
 	 * being done (for now). */
-	for (i = 0; i < COMPILER_LENOF(codec_db); ++i) {
+	for (i = 0; i < lengthof(codec_db); ++i) {
 		char const *result;
 		if (codec_db[i].cdbe_codec != id)
 			continue;
