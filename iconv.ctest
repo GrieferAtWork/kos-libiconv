@@ -48,9 +48,10 @@ PRIVATE PICONV_GETCODECNAMES iconv_getcodecnames = NULL;
 PRIVATE PICONV_DETECT_CODEC iconv_detect_codec = NULL;
 PRIVATE PICONV_TRANSLITERATE iconv_transliterate = NULL;
 
-PRIVATE void convertz(char const *from_codec, char const *to_codec,
-                      unsigned int error_mode, char const *from_text,
-                      size_t from_len, char *to_buf) {
+PRIVATE char *convertz(char const *from_codec, char const *to_codec,
+                       unsigned int error_mode, char const *from_text,
+                       size_t from_len, char *to_buf) {
+	char *result = to_buf;
 	struct iconv_transcode tc;
 	struct iconv_printer in;
 	int error;
@@ -61,11 +62,11 @@ PRIVATE void convertz(char const *from_codec, char const *to_codec,
 
 	/* Initialize the transcoder */
 	error = (*_iconv_transcode_init)(&tc, &in, from_codec, to_codec);
-	assertf(error == 0, "error = %d", error);
+	EQ(0, error);
 
 	/* Print data */
 	status = (*in.ii_printer)(in.ii_arg, from_text, from_len);
-	assertf(status >= 0, "status = %" PRIdSIZ, status);
+	ISpos(status);
 
 	/* Make sure that the decoder is left in a 0-shift state. */
 	assertf((*iconv_decode_isshiftzero)(&tc.it_decode),
@@ -74,16 +75,17 @@ PRIVATE void convertz(char const *from_codec, char const *to_codec,
 
 	/* As per recommendations, flush data once everything has been printed. */
 	status = (*iconv_encode_flush)(&tc.it_encode);
-	assertf(status >= 0, "status = %" PRIdSIZ, status);
+	ISpos(status);
 
 	/* NUL-terminate. */
 	*to_buf = 0;
+	return result;
 }
 
-PRIVATE void convert(char const *from_codec, char const *to_codec,
-                     unsigned int error_mode, char const *from_text,
-                     char *to_buf) {
-	convertz(from_codec, to_codec, error_mode, from_text, strlen(from_text), to_buf);
+PRIVATE char *convert(char const *from_codec, char const *to_codec,
+                      unsigned int error_mode, char const *from_text,
+                      char *to_buf) {
+	return convertz(from_codec, to_codec, error_mode, from_text, strlen(from_text), to_buf);
 }
 
 PRIVATE bool has_transliteration(char32_t ch, char const *translit) {
@@ -128,42 +130,28 @@ DEFINE_TEST(iconv) {
 	 * test that folding works as a stand-alone operation! */
 	{
 		size_t len;
-		char32_t buf[UNICODE_FOLDED_MAX];
-		len = (size_t)(unicode_fold(0xdf, buf) - buf);
-		EQs(len, 2);
-		EQu32(buf[0], 's');
-		EQu32(buf[1], 's');
+		char32_t foldbuf[UNICODE_FOLDED_MAX];
+		EQ(2, (len = (size_t)(unicode_fold(0xdf, foldbuf) - foldbuf))); /* ß */
+		EQ('s', foldbuf[0]);
+		EQ('s', foldbuf[1]);
 	}
 
-
-	convert("latin-1", "de", ICONV_ERR_ERRNO, "aou: \xE4\xF6\xFC!", buf);
-	EQstr("aou: \x7B\x7C\x7D!", buf);
-
-	convert("de", "ascii", ICONV_ERR_ERRNO | ICONV_ERR_TRANSLIT, "ss: \x7E!", buf);
-	EQstr("ss: ss!", buf);
-
-	convert("de", "ascii", ICONV_ERR_ERRNO | ICONV_ERR_TRANSLIT, "aou: \x7B\x7C\x7D!", buf);
-	EQstr("aou: aou!", buf);
-	convert("latin-1", "ascii", ICONV_ERR_ERRNO | ICONV_ERR_TRANSLIT, "aou: \xE4\xF6\xFC!", buf);
-	EQstr("aou: aou!", buf);
-
-	convert("utf-8", "iso-ir-182", ICONV_ERR_ERRNO, "Yy: \u0176\u0177!", buf);
-	EQstr("Yy: \xDE\xFE!", buf);
-	convert("iso-ir-182", "utf-8", ICONV_ERR_ERRNO, "Yy: \xDE\xFE!", buf);
-	EQstr("Yy: \u0176\u0177!", buf);
+	EQstr("aou: \x7B\x7C\x7D!", convert("latin-1", "de", ICONV_ERR_ERRNO, "aou: \xE4\xF6\xFC!", buf));
+	EQstr("ss: ss!", convert("de", "ascii", ICONV_ERR_ERRNO | ICONV_ERR_TRANSLIT, "ss: \x7E!", buf));
+	EQstr("aou: aou!", convert("de", "ascii", ICONV_ERR_ERRNO | ICONV_ERR_TRANSLIT, "aou: \x7B\x7C\x7D!", buf));
+	EQstr("aou: aou!", convert("latin-1", "ascii", ICONV_ERR_ERRNO | ICONV_ERR_TRANSLIT, "aou: \xE4\xF6\xFC!", buf));
+	EQstr("Yy: \xDE\xFE!", convert("utf-8", "iso-ir-182", ICONV_ERR_ERRNO, "Yy: \u0176\u0177!", buf));
+	EQstr("Yy: \u0176\u0177!", convert("iso-ir-182", "utf-8", ICONV_ERR_ERRNO, "Yy: \xDE\xFE!", buf));
 
 	{
 		char buf2[64];
-		convert("utf-8", "bcdic", ICONV_ERR_ERRNO, "ABCD", buf2);
-		EQstr("\x31\x32\x33\x34", buf2);
-		convert("bcdic", "utf-8", ICONV_ERR_ERRNO, buf2, buf);
-		EQstr("ABCD", buf);
+		EQstr("\x31\x32\x33\x34", convert("utf-8", "bcdic", ICONV_ERR_ERRNO, "ABCD", buf2));
+		EQstr("ABCD", convert("bcdic", "utf-8", ICONV_ERR_ERRNO, buf2, buf));
 	}
 
 
 	/* Also test multi-byte decode functionality. */
-	convertz("utf-16", "utf-8", ICONV_ERR_ERRNO, (char *)u"Hello", 10, buf);
-	EQstr("Hello", buf);
+	EQstr("Hello", convertz("utf-16", "utf-8", ICONV_ERR_ERRNO, (char *)u"Hello", 10, buf));
 
 
 #define ASSERT_DETECTED_CODEC(name, data) \
@@ -180,10 +168,10 @@ DEFINE_TEST(iconv) {
 
 
 	/* Test special cases. */
-	assert(iconv_detect_codec("", 0) == ICONV_CODEC_UNKNOWN);
+	EQ(ICONV_CODEC_UNKNOWN, iconv_detect_codec("", 0));
 	{
 		void *volatile null = NULL;
-		assert(iconv_detect_codec(null, 0) == ICONV_CODEC_UNKNOWN);
+		EQ(ICONV_CODEC_UNKNOWN, iconv_detect_codec(null, 0));
 	}
 
 	/* Test simple input data. Anything beyond this would rely too much on the
@@ -213,14 +201,12 @@ DEFINE_TEST(iconv) {
 	                                 "</html>\n");
 
 #define ICONV_DETECT_CODEC(s) iconv_detect_codec(s, sizeof(s) - 1)
-	EQu(ICONV_DETECT_CODEC("<meta charset=\xE4\"latin-1\"/>\n"
-	                       "<html>\n"
-	                       "\tHello World! aou: \xE4\xF6\xFC\n"
-	                       "</html>\n"),
-	    ICONV_CODEC_UNKNOWN);
-	EQu(ICONV_DETECT_CODEC("\xE4#codec l1\n"
-	                       "Hello World! aou: \xE4\xF6\xFC\n"),
-	    ICONV_CODEC_UNKNOWN);
+	EQ(ICONV_CODEC_UNKNOWN, ICONV_DETECT_CODEC("<meta charset=\xE4\"latin-1\"/>\n"
+	                                           "<html>\n"
+	                                           "\tHello World! aou: \xE4\xF6\xFC\n"
+	                                           "</html>\n"));
+	EQ(ICONV_CODEC_UNKNOWN, ICONV_DETECT_CODEC("\xE4#codec l1\n"
+	                                           "Hello World! aou: \xE4\xF6\xFC\n"));
 	ASSERT_DETECTED_CODEC("l1",
 	                      "#codec l1\n\xE4"
 	                      "Hello World! aou: \xE4\xF6\xFC\n");
@@ -229,70 +215,42 @@ DEFINE_TEST(iconv) {
 
 
 	/* When encoding a unicode character that isn't printable, it will be escaped in output. */
-	convert("utf-8", "c-escape", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf);
-	EQstr("Hello\\uFFFF\\nWorld", buf);
-	convert("utf-8", "c-escape-chr", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf);
-	EQstr("'Hello\\uFFFF\\nWorld'", buf);
-	convert("utf-8", "c-escape-str", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf);
-	EQstr("\"Hello\\uFFFF\\nWorld\"", buf);
-	convert("utf-8", "c-escape-bytes", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf);
-	EQstr("Hello\\xEF\\xBF\\xBF\\nWorld", buf);
-	convert("utf-8", "c-escape-bytes-chr", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf);
-	EQstr("'Hello\\xEF\\xBF\\xBF\\nWorld'", buf);
-	convert("utf-8", "c-escape-bytes-str", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf);
-	EQstr("\"Hello\\xEF\\xBF\\xBF\\nWorld\"", buf);
+	EQstr("Hello\\uFFFF\\nWorld", convert("utf-8", "c-escape", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf));
+	EQstr("'Hello\\uFFFF\\nWorld'", convert("utf-8", "c-escape-chr", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf));
+	EQstr("\"Hello\\uFFFF\\nWorld\"", convert("utf-8", "c-escape-str", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf));
+	EQstr("Hello\\xEF\\xBF\\xBF\\nWorld", convert("utf-8", "c-escape-bytes", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf));
+	EQstr("'Hello\\xEF\\xBF\\xBF\\nWorld'", convert("utf-8", "c-escape-bytes-chr", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf));
+	EQstr("\"Hello\\xEF\\xBF\\xBF\\nWorld\"", convert("utf-8", "c-escape-bytes-str", ICONV_ERR_ERRNO, "Hello\uFFFF\nWorld", buf));
 
 	/* When a unicode character is printable, it's simply re-printed as-is
 	 * HINT: '\u263A' == '☺' (which is considered printable, and should show up as a smiley) */
-	convert("utf-8", "c-escape", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf);
-	EQstr("Hello\u263A\\nWorld", buf);
-	convert("utf-8", "c-escape-chr", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf);
-	EQstr("'Hello\u263A\\nWorld'", buf);
-	convert("utf-8", "c-escape-str", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf);
-	EQstr("\"Hello\u263A\\nWorld\"", buf);
-	convert("utf-8", "c-escape-bytes", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf);
-	EQstr("Hello\\xE2\\x98\\xBA\\nWorld", buf);
-	convert("utf-8", "c-escape-bytes-chr", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf);
-	EQstr("'Hello\\xE2\\x98\\xBA\\nWorld'", buf);
-	convert("utf-8", "c-escape-bytes-str", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf);
-	EQstr("\"Hello\\xE2\\x98\\xBA\\nWorld\"", buf);
+	EQstr("Hello\u263A\\nWorld", convert("utf-8", "c-escape", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf));
+	EQstr("'Hello\u263A\\nWorld'", convert("utf-8", "c-escape-chr", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf));
+	EQstr("\"Hello\u263A\\nWorld\"", convert("utf-8", "c-escape-str", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf));
+	EQstr("Hello\\xE2\\x98\\xBA\\nWorld", convert("utf-8", "c-escape-bytes", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf));
+	EQstr("'Hello\\xE2\\x98\\xBA\\nWorld'", convert("utf-8", "c-escape-bytes-chr", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf));
+	EQstr("\"Hello\\xE2\\x98\\xBA\\nWorld\"", convert("utf-8", "c-escape-bytes-str", ICONV_ERR_ERRNO, "Hello\u263A\nWorld", buf));
 
-	convert("utf-8", "c-escape-bytes", ICONV_ERR_ERRNO, "\xAB" "AB", buf);
-	EQstr("\\xAB\\x41\\x42", buf);
-	convert("utf-8", "c-escape-bytes-str", ICONV_ERR_ERRNO, "\xAB" "AB", buf);
-	EQstr("\"\\xAB\" \"AB\"", buf);
-	convert("utf-8", "c-escape-bytes-chr", ICONV_ERR_ERRNO, "\xAB" "AB", buf);
-	EQstr("\'\\xAB\' \'AB\'", buf);
+	EQstr("\\xAB\\x41\\x42", convert("utf-8", "c-escape-bytes", ICONV_ERR_ERRNO, "\xAB" "AB", buf));
+	EQstr("\"\\xAB\" \"AB\"", convert("utf-8", "c-escape-bytes-str", ICONV_ERR_ERRNO, "\xAB" "AB", buf));
+	EQstr("\'\\xAB\' \'AB\'", convert("utf-8", "c-escape-bytes-chr", ICONV_ERR_ERRNO, "\xAB" "AB", buf));
 
-	convert("utf-8", "c-escape", ICONV_ERR_ERRNO, "\\", buf);
-	EQstr("\\\\", buf);
-	convert("utf-8", "c-escape-str", ICONV_ERR_ERRNO, "\\", buf);
-	EQstr("\"\\\\\"", buf);
-	convert("utf-8", "c-escape-chr", ICONV_ERR_ERRNO, "\\", buf);
-	EQstr("\'\\\\\'", buf);
-	convert("utf-8", "c-escape-bytes", ICONV_ERR_ERRNO, "\\", buf);
-	EQstr("\\\\", buf);
-	convert("utf-8", "c-escape-bytes-str", ICONV_ERR_ERRNO, "\\", buf);
-	EQstr("\"\\\\\"", buf);
-	convert("utf-8", "c-escape-bytes-chr", ICONV_ERR_ERRNO, "\\", buf);
-	EQstr("\'\\\\\'", buf);
+	EQstr("\\\\", convert("utf-8", "c-escape", ICONV_ERR_ERRNO, "\\", buf));
+	EQstr("\"\\\\\"", convert("utf-8", "c-escape-str", ICONV_ERR_ERRNO, "\\", buf));
+	EQstr("\'\\\\\'", convert("utf-8", "c-escape-chr", ICONV_ERR_ERRNO, "\\", buf));
+	EQstr("\\\\", convert("utf-8", "c-escape-bytes", ICONV_ERR_ERRNO, "\\", buf));
+	EQstr("\"\\\\\"", convert("utf-8", "c-escape-bytes-str", ICONV_ERR_ERRNO, "\\", buf));
+	EQstr("\'\\\\\'", convert("utf-8", "c-escape-bytes-chr", ICONV_ERR_ERRNO, "\\", buf));
 
-	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\u263A\\nWorld", buf);
-	EQstr("Hello\u263A\nWorld", buf);
-	convert("c-escape", "c-escape-bytes", ICONV_ERR_ERRNO, "Hello\\u263A\\nWorld", buf);
-	EQstr("Hello\\xE2\\x98\\xBA\\nWorld", buf);
+	EQstr("Hello\u263A\nWorld", convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\u263A\\nWorld", buf));
+	EQstr("Hello\\xE2\\x98\\xBA\\nWorld", convert("c-escape", "c-escape-bytes", ICONV_ERR_ERRNO, "Hello\\u263A\\nWorld", buf));
 
 	/* The c-escape parser is also able to correctly deal with escaped line-feeds */
-	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\nWorld", buf); /* Linefeed is not escaped */
-	EQstr("Hello\nWorld", buf);
-	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\\nWorld", buf); /* Linefeed is escaped */
-	EQstr("HelloWorld", buf);
-	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\\rWorld", buf); /* Linefeed is escaped */
-	EQstr("HelloWorld", buf);
-	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\\r\nWorld", buf); /* Linefeed is escaped */
-	EQstr("HelloWorld", buf);
-	convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "\"Hello\\\r\nWorld\"", buf); /* Linefeed is escaped */
-	EQstr("HelloWorld", buf);
+	EQstr("Hello\nWorld", convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\nWorld", buf));      /* Linefeed is not escaped */
+	EQstr("HelloWorld", convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\\nWorld", buf));       /* Linefeed is escaped */
+	EQstr("HelloWorld", convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\\rWorld", buf));       /* Linefeed is escaped */
+	EQstr("HelloWorld", convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "Hello\\\r\nWorld", buf));     /* Linefeed is escaped */
+	EQstr("HelloWorld", convert("c-escape", "utf-8", ICONV_ERR_ERRNO, "\"Hello\\\r\nWorld\"", buf)); /* Linefeed is escaped */
 
 
 	/* Test the zero-shift integration for decoding c-escape */
@@ -307,9 +265,7 @@ DEFINE_TEST(iconv) {
 		tc.it_encode.ice_flags             = ICONV_ERR_ERRNO;
 		error = (*_iconv_transcode_init)(&tc, &in, "c-escape", "utf-8");
 		assertf(error == 0, "error = %d", error);
-#define PRINT(s)                                                      \
-		(status = (*in.ii_printer)(in.ii_arg, s, COMPILER_STRLEN(s)), \
-		 assertf(status >= 0, "status = %" PRIdSIZ, status))
+#define PRINT(s) ISpos((status = (*in.ii_printer)(in.ii_arg, s, COMPILER_STRLEN(s))))
 
 		/* The c-escape decoder is only is 0-shift state while outside of a string literal!
 		 * NOTE: This also tests that feeding the codec its data piece-wise works correctly. */
@@ -333,8 +289,7 @@ DEFINE_TEST(iconv) {
 		PRINT("\"");
 
 		/* As per recommendations, flush data once everything has been printed. */
-		status = (*iconv_encode_flush)(&tc.it_encode);
-		assertf(status >= 0, "status = %" PRIdSIZ, status);
+		ISpos((status = (*iconv_encode_flush)(&tc.it_encode)));
 
 		/* NUL-terminate. */
 		*ptr = 0;
@@ -345,46 +300,35 @@ DEFINE_TEST(iconv) {
 
 
 	/* Test the xml-escape codec. */
-	convert("xml-escape", "utf-8", ICONV_ERR_ERRNO, "Foo&quot;&amp;&apos;&lt;&gt;Bar", buf);
-	EQstr("Foo\"&\'<>Bar", buf);
-	convert("utf-8", "xml-escape", ICONV_ERR_ERRNO, "Foo\"&\'<>Bar", buf);
+	EQstr("Foo\"&\'<>Bar", convert("xml-escape", "utf-8", ICONV_ERR_ERRNO, "Foo&quot;&amp;&apos;&lt;&gt;Bar", buf));
+
 	/* Depending on  configuration, libiconv  may either  use
 	 * entity names or (where doing so is shorter), decimals. */
+	convert("utf-8", "xml-escape", ICONV_ERR_ERRNO, "Foo\"&\'<>Bar", buf);
 	assertf(strcmp(buf, "Foo&quot;&amp;&apos;&lt;&gt;Bar") == 0 ||
 	        strcmp(buf, "Foo&#34;&#38;&#39;&#60;&#62;Bar") == 0,
 	        "buf = %q", buf);
-	convert("xml-escape", "utf-8", ICONV_ERR_ERRNO, "A&nbspB", buf); /* The trailing ';' is optional for '&nbsp' */
-	EQstr("A\u00A0B", buf);
-	convert("xml-escape", "utf-8", ICONV_ERR_ERRNO, "A&nbsp;B", buf);
-	EQstr("A\u00A0B", buf);
-	convert("xml-escape", "utf-8", ICONV_ERR_ERRNO, "A&nbsp", buf);
-	EQstr("A\u00A0", buf);
-	convert("xml-escape", "utf-8", ICONV_ERR_ERRNO, "A&nbsp;", buf);
-	EQstr("A\u00A0", buf);
+	EQstr("A\u00A0B", convert("xml-escape", "utf-8", ICONV_ERR_ERRNO, "A&nbspB", buf)); /* The trailing ';' is optional for '&nbsp' */
+	EQstr("A\u00A0B", convert("xml-escape", "utf-8", ICONV_ERR_ERRNO, "A&nbsp;B", buf));
+	EQstr("A\u00A0", convert("xml-escape", "utf-8", ICONV_ERR_ERRNO, "A&nbsp", buf));
+	EQstr("A\u00A0", convert("xml-escape", "utf-8", ICONV_ERR_ERRNO, "A&nbsp;", buf));
 
 
 	/* Test the uri-escape codec. */
-	convert("ascii", "uri-escape", ICONV_ERR_ERRNO, "Hello World", buf);
-	EQstr("Hello%20World", buf);
-	convert("uri-escape", "ascii", ICONV_ERR_ERRNO, "Hello%20World", buf);
-	EQstr("Hello World", buf);
+	EQstr("Hello%20World", convert("ascii", "uri-escape", ICONV_ERR_ERRNO, "Hello World", buf));
+	EQstr("Hello World", convert("uri-escape", "ascii", ICONV_ERR_ERRNO, "Hello%20World", buf));
 
 
 	/* Test the hex codec. */
-	convert("ascii", "hex", ICONV_ERR_ERRNO, "Hello World", buf);
-	EQstr("48656C6C6F20576F726C64", buf);
-	convert("ascii", "hex-upper", ICONV_ERR_ERRNO, "Hello World", buf);
-	EQstr("48656C6C6F20576F726C64", buf);
-	convert("ascii", "hex-lower", ICONV_ERR_ERRNO, "Hello World", buf);
-	EQstr("48656c6c6f20576f726c64", buf);
-	convert("hex", "ascii", ICONV_ERR_ERRNO, "48656C6C6F20576F726C64", buf);
-	EQstr("Hello World", buf);
-	convert("hex", "ascii", ICONV_ERR_ERRNO, "48656c6c6f20576f726c64", buf);
-	EQstr("Hello World", buf);
+	EQstr("48656C6C6F20576F726C64", convert("ascii", "hex", ICONV_ERR_ERRNO, "Hello World", buf));
+	EQstr("48656C6C6F20576F726C64", convert("ascii", "hex-upper", ICONV_ERR_ERRNO, "Hello World", buf));
+	EQstr("48656c6c6f20576f726c64", convert("ascii", "hex-lower", ICONV_ERR_ERRNO, "Hello World", buf));
+	EQstr("Hello World", convert("hex", "ascii", ICONV_ERR_ERRNO, "48656C6C6F20576F726C64", buf));
+	EQstr("Hello World", convert("hex", "ascii", ICONV_ERR_ERRNO, "48656c6c6f20576f726c64", buf));
 
 
-
-	dlclose(libiconv);
+	/* Cleanup */
+	EQ(0, dlclose(libiconv));
 }
 
 
