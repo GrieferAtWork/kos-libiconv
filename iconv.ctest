@@ -61,12 +61,10 @@ PRIVATE char *convertz(char const *from_codec, char const *to_codec,
 	tc.it_encode.ice_flags             = error_mode;
 
 	/* Initialize the transcoder */
-	error = (*_iconv_transcode_init)(&tc, &in, from_codec, to_codec);
-	EQ(0, error);
+	EQ(0, (error = (*_iconv_transcode_init)(&tc, &in, from_codec, to_codec)));
 
 	/* Print data */
-	status = (*in.ii_printer)(in.ii_arg, from_text, from_len);
-	ISpos(status);
+	ISpos((status = (*in.ii_printer)(in.ii_arg, from_text, from_len)));
 
 	/* Make sure that the decoder is left in a 0-shift state. */
 	assertf((*iconv_decode_isshiftzero)(&tc.it_decode),
@@ -74,8 +72,7 @@ PRIVATE char *convertz(char const *from_codec, char const *to_codec,
 	        from_codec, from_len, from_text);
 
 	/* As per recommendations, flush data once everything has been printed. */
-	status = (*iconv_encode_flush)(&tc.it_encode);
-	ISpos(status);
+	ISpos((status = (*iconv_encode_flush)(&tc.it_encode)));
 
 	/* NUL-terminate. */
 	*to_buf = 0;
@@ -107,9 +104,8 @@ PRIVATE bool has_transliteration(char32_t ch, char const *translit) {
 DEFINE_TEST(iconv) {
 	char buf[256];
 	void *libiconv;
-	libiconv = dlopen(LIBICONV_LIBRARY_NAME, RTLD_LOCAL);
-	assertf(libiconv, "dlerror(): %s", dlerror());
-#define DLSYM(x) (*(void **)&x = dlsym(libiconv, #x), assertf(x, "dlerror(): %s", dlerror()))
+	ISnonnullf((libiconv = dlopen(LIBICONV_LIBRARY_NAME, RTLD_LOCAL)), "%s", dlerror());
+#define DLSYM(x) ISnonnullf((*(void **)&x = dlsym(libiconv, #x)), "%s", dlerror())
 	DLSYM(_iconv_transcode_init);
 	DLSYM(iconv_decode_isshiftzero);
 	DLSYM(iconv_encode_flush);
