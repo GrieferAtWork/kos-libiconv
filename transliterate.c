@@ -8594,7 +8594,7 @@ after_fold:
 	/* Support for *actual* transliteration, as described by unicode:
 	 * http://cldr.unicode.org/index/cldr-spec/transliteration-guidelines
 	 *
-	 * NOTE: After doing some more research, gLibc's "transliteration" only
+	 * NOTE: After doing some more research, Glibc's "transliteration" only
 	 *       looks at "UnicodeData.txt", which  it uses to generate  tables
 	 *       for special characters:
 	 * - <circle>     (e.g. 🄐  -->  (A))
@@ -8612,7 +8612,7 @@ after_fold:
 	 * Latin character sequences (or at least trying to do so).
 	 *
 	 * As such, we also don't support *real* transliteration but only the same
-	 * kind of functionality also seen in gLibc! */
+	 * kind of functionality also seen in Glibc! */
 	if (what & ICONV_TRANSLITERATE_F_TRANSLIT) {
 		char const *translit;
 		STATIC_ASSERT(ICONV_TRANSLITERATE_MAXLEN >= LIBICONV_TRANSLIT_LONGEST_FOLDED_REPLACEMENT_LENGTH);

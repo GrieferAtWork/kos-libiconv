@@ -46,7 +46,7 @@
 #  - https://www.iana.org/assignments/character-sets/character-sets.xhtml
 #  - https://www.ibm.com/docs/en/ibm-mq/8.0?topic=administering-available-code-pages  (WARNING: Contains errors!)
 #  - https://github.com/unicode-org/icu                                               (Really good source!)
-#  - GLibc
+#  - Glibc
 ###################################################################################################
 
 

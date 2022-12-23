@@ -1229,7 +1229,7 @@
 
 
 
-# This actually isn't *pure* latin2, but "cp912" which is an extension. But glibc
+# This actually isn't *pure* latin2, but "cp912" which is an extension. But Glibc
 # defines the same codec for both of them, so in the interest of compatibility as
 # well as saving a bit of space, we also do the same.
 @CP(CODEC_ISO_8859_2: "ISO_8859-2:1987", "iso-ir-101", "ISO_8859-2", "latin2", "l2",
@@ -1293,7 +1293,7 @@
 
 
 
-# This actually isn't *pure* iso-8859-5, but "cp915" which is an extension. But glibc
+# This actually isn't *pure* iso-8859-5, but "cp915" which is an extension. But Glibc
 # defines the same codec for both of them, so in the interest of compatibility as
 # well as saving a bit of space, we also do the same.
 @CP(CODEC_ISO_8859_5: "ISO_8859-5:1988", "iso-ir-144", "ISO_8859-5", "cyrillic",
@@ -5263,7 +5263,7 @@
 
 
 
-# Fun fact: even though glibc supports both "cp921" and "ISO_8859-13", it doesn't
+# Fun fact: even though Glibc supports both "cp921" and "ISO_8859-13", it doesn't
 #           notice that they actually use the exact same tables and doesn't alias
 #           them onto each other ;)
 @CP(CODEC_CP921: "cp921", "IBM921", "csIBM921", "8859-13",
@@ -9133,7 +9133,7 @@
 
 
 
-# Fun fact: even though glibc supports both "cp9448" and "cp1256", it doesn't
+# Fun fact: even though Glibc supports both "cp9448" and "cp1256", it doesn't
 #           notice that they actually use the exact same tables and doesn't
 #           alias them onto each other ;)
 @CP(CODEC_CP1256: "cp1256", "IBM1256", "Windows-1256", "cswindows1256",

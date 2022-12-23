@@ -11,7 +11,7 @@ Currently, only KOSmk4 uses this library, but that might change in the future (I
 
 A: Because it's way more efficient, and before you get any wrong idea about how big this library is as a result, you should know that at the time of this being written, it's `582596` bytes (`569KiB`; which includes `.debug_info`) large (and sports support for `374` different codecs with `1502` different aliases). So no: this doesn't result in some insanely large data blobs, but rather a single very managable blob.
 
-For comparison, glibc uses individual `*.so` files for every codec is supports (on my test Linux machine the're in `/usr/lib/i386-linux-gnu/gconv`). `ls | wc -l` tells me that there are `254`, and a quick glance at `ls -l` shows the smallest to be `9644` bytes large (though some go as far as `464188` bytes).
+For comparison, Glibc uses individual `*.so` files for every codec is supports (on my test Linux machine the're in `/usr/lib/i386-linux-gnu/gconv`). `ls | wc -l` tells me that there are `254`, and a quick glance at `ls -l` shows the smallest to be `9644` bytes large (though some go as far as `464188` bytes).
 
 Nevertheless, assuming that they're all really small, let's do some quick maths: `9644 * 254 = 2449576`, which equates to `2.44MiB` of shared libraries (it's much more than that, but for now let's give the benefit of the doubt and work with the smallest values, especially since KOS's `374` codecs are mostly *simple* codecs)
 
@@ -19,7 +19,7 @@ Let's see what KOS needs per codec: `582596 / 374 = 1558` (rounded up)
 
 <center>...</center>
 
-I think you can see where I'm going with this: as per usual, glibc is anything but efficient or concerned about performance.
+I think you can see where I'm going with this: as per usual, Glibc is anything but efficient or concerned about performance.
 
 Now you might say: "but what about configurability?"  
 To which I will say: "when was the last time you reconfigured your iconv database? Have you ever even heard about `iconvconfig(8)`? Because I'm not lying if I say I hadn't until I set off to write my own libiconv."

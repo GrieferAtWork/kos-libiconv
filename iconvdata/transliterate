@@ -26,7 +26,7 @@
 
 
 ###################################################################################################
-# NOTE: Data in this file matches that what is done by gLibc for the purpose of transliteration!
+# NOTE: Data in this file matches that what is done by Glibc for the purpose of transliteration!
 ###################################################################################################
 
 
@@ -5475,7 +5475,7 @@ FB29    {002B} # ﬩ → {+} #
 
 
 ###################################################################################################
-# Misc stuff not found in gLibc
+# Misc stuff not found in Glibc
 201D    {0022}           # ” → {"} #
 2019    {0027}           # ’ → {'} #
 27F7    {003C 002D 002D 002D 003E} # ⟷ → {<--->} #
