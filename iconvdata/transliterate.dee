@@ -300,43 +300,6 @@ global final TRANSLIT: {int: {string...}} = parseDB();
 }*/
 
 
-/* FIXME: This  is a workaround  for a problem  where deemon doesn't understand
- *        that there's a difference between \xFF and \u00FF. I'm sorry. I wrote
- *        the string escape/unescape portion of  deemon ages ago when I  didn't
- *        yet  know how they're  supposed to work. This  is something that will
- *        get  fixed sooner  or later within  deemon itself, but  until then we
- *        have this work-around... */
-function fixedCharEncode(s: string) {
-	local fp = File.Writer();
-	local i, len = #s;
-	for (i = 0; i < len;) {
-		local ch = s[i];
-		local ord = ch.ord();
-		if (ord >= 0x20 && ord <= 0x7E) {
-			if (ch in "\"\'\\")
-				fp << "\\";
-			fp << ch;
-			++i;
-		} else if (ord <= 7) {
-			fp << "\\" << ord;
-			++i;
-			if (i < len && s[i] in "01234567") {
-				ord = s.ord(i);
-				goto force_encode_hex;
-			}
-		} else {
-force_encode_hex:
-			fp << "\\x" << ord.tostr(16, 2, "X");
-			++i;
-			if (i < len && s[i] in "0123456789abcdefABCDEF") {
-				ord = s.ord(i);
-				goto force_encode_hex;
-			}
-		}
-	}
-	return fp.string;
-}
-
 function printTranslitDatabase() {
 	local entries: {{string...}...} = [];
 	local longestReplLen = 0;
@@ -375,7 +338,7 @@ function printTranslitDatabase() {
 		++count;
 		if (i != #entries - 1)
 			line += "\0";
-		line = f'"{fixedCharEncode(line)}"';
+		line = f'"{line.bytes().encode("c-escape")}"';
 		lines.append(line);
 	}
 	print("#define LIBICONV_TRANSLIT_LONGEST_REPLACEMENT_LENGTH        ", longestReplLen);
