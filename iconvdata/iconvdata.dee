@@ -354,10 +354,10 @@ function parseDBFilename(filename: string): {string: Object} {
 						i = len;
 					newData << data[flushStart:lineStart];
 					for (local uni: lineIds)
-						newData << uni.hex()[2:].upper().zfill(4) << " ";
+						newData << uni.tostr(16, 4, "X") << " ";
 					newData << "  # "
-						<< (currentIndex - #lineIds).hex()[2:].upper().zfill(2)
-						<< "-" << (currentIndex - 1).hex()[2:].upper().zfill(2)
+						<< (currentIndex - #lineIds).tostr(16, 2, "X")
+						<< "-" << (currentIndex - 1).tostr(16, 2, "X")
 						<< "  ";
 					for (local uni: lineIds)
 						newData << " " << uniEscape(uni);
@@ -766,16 +766,15 @@ function printCodepageDatabase(kind: int) {
 		print("	/* .", dbFieldName(cp.name), " = */ { {");
 		for (local i, l: util.enumerate(table.segments(8))) {
 			local lo = shift + (i * 8);
-			print("		", ", ".join(for (local x: l) "0x" + x.hex()[2:].zfill(4)), ", /* ",
-				lo.hex()[2:].zfill(2), "h-",
-				(lo + 7).hex()[2:].zfill(2), "h */");
+			print("		", ", ".join(for (local x: l) x.hex(4)), ", /* ",
+				lo.tostr(16, 2), "h-", (lo + 7).tostr(16, 2), "h */");
 		}
 		print("	}, {");
 		for (local i, ord: util.enumerate(encode_table.keys.sorted())) {
 			if ((i % 4) == 0)
 				print("		"),;
 			local cp_ord = encode_table[ord];
-			print("{ 0x", ord.hex()[2:].zfill(4), ", 0x", cp_ord.hex()[2:].zfill(2)),;
+			print("{ ", ord.hex(4), ", ", cp_ord.hex(2)),;
 			if (i == 0) {
 				local count = #encode_table;
 				if (kind == CP_CLASS_8)
@@ -786,7 +785,7 @@ function printCodepageDatabase(kind: int) {
 				if (repl_char is none) repl_char = encode_table.get(".".ord());
 				if (repl_char is none) repl_char = encode_table.get("-".ord());
 				if (repl_char is none) repl_char = 0;
-				print(", 0x", repl_char.hex()[2:].zfill(2)),;
+				print(", ", repl_char.hex(2)),;
 			}
 			print(" },"),;
 			if ((i % 4) == 3) {
@@ -822,7 +821,7 @@ function printCpIso646Database() {
 			" " * (longestNameLen - #codec.name), " = */ { { ",
 			", ".join(
 				for (local x: ISO646_OVERRIDE_ORDINALS)
-					"0x" + codec.table[x].hex()[2:].zfill(4)),
+					codec.table[x].hex(4)),
 			" } },");
 	}
 	print("};");
@@ -1658,9 +1657,9 @@ function createExMbcsCodec(codec: MbcsCodec): ExMbcsCodec {
 
 function firstByteToStr(b: {int...}): string {
 	if (#b == 1)
-		return b.first.hex()[2:].zfill(2) + "h";
+		return b.first.tostr(16, 2) + "h";
 	return f"[{
-		",".join(for (local x: b) x.hex()[2:].zfill(2) + "h")
+		",".join(for (local x: b) x.tostr(16, 2) + "h")
 	}]";
 }
 
@@ -1689,8 +1688,8 @@ function printCpMbcsDatabase() {
 	for (local exCodec: exCodecs) {
 		print("	struct {");
 		print("		char16_t _1[256];");
-		print("		char16_t _oi; /* U+", exCodec.imc_offidx_min.hex()[2:].upper().zfill(4), " */");
-		print("		char16_t _ox; /* U+", exCodec.imc_offidx_max.hex()[2:].upper().zfill(4), " */");
+		print("		char16_t _oi; /* U+", exCodec.imc_offidx_min.tostr(16, 4, "X"), " */");
+		print("		char16_t _ox; /* U+", exCodec.imc_offidx_max.tostr(16, 4, "X"), " */");
 		print("		uint16_t _ot[", (#exCodec.imc_offtab).hex(), "];");
 		for (local b2_i, b2: util.enumerate(exCodec.byte2_tables)) {
 			print("		/* First byte: ", firstByteToStr(b2._firstbyte), " */");

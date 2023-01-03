@@ -166,7 +166,7 @@ for (local key: keys) {
 }
 
 fp << "..\0.\0";
-fp = fp.string[:-1]; // Implicit trailing NUL isn't needed
+fp = fp.string.bytes()[:-1]; // Implicit trailing NUL isn't needed
 local dbSize = #fp + 1;
 print("PRIVATE char const xml_entity_db[", dbSize.hex(), "] = \"\\");
 for (local line: fp.segments(32))
@@ -224,18 +224,18 @@ local largestStringOffsetLen = #(stringToOffset.values > ...).hex();
 for (local ord: uni16ToEntity.keys.sorted()) {
 	local name = uni16ToEntity[ord];
 	local offset = stringToOffset[name].hex();
-	print("	{ 0x", ord.hex()[2:].upper().zfill(4), ", ", offset, " }, ",
+	print("	{ 0x", ord.tostr(16, 4, "X"), ", ", offset, " }, ",
 		" " * (largestStringOffsetLen - #offset),
 		"/" "* ", repr(name), " *" "/");
 }
 print("};");
 print("PRIVATE struct xml_encode32_entry const xml_encode32_db[", #uni32ToEntity, "] = {");
-local largestOrd32Len = #(uni32ToEntity.keys > ...).hex() - 2;
+local largestOrd32Len = #(uni32ToEntity.keys > ...).tostr(16);
 local largestStringOffsetLen = #(stringToOffset.values > ...).hex();
 for (local ord: uni32ToEntity.keys.sorted()) {
 	local name = uni32ToEntity[ord];
 	local offset = stringToOffset[name].hex();
-	print("	{ 0x", ord.hex()[2:].upper().zfill(largestOrd32Len), ", ", offset, " }, ",
+	print("	{ 0x", ord.tostr(16, largestOrd32Len, "X"), ", ", offset, " }, ",
 		" " * (largestStringOffsetLen - #offset),
 		"/" "* ", repr(name), " *" "/");
 }
