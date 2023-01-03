@@ -2485,7 +2485,7 @@ PRIVATE ATTR_PURE WUNUSED NONNULL((1)) xml_entity_t const *
 NOTHROW_NCX(CC xml_entity_fromptr)(char const *__restrict ptr) {
 	char const *iter;
 	iter = strend(ptr) + 1;
-	unicode_readutf8(&iter);
+	iter += unicode_utf8seqlen[(unsigned char)*iter];
 	if (*iter == '\0') {
 		/* `ptr' points into the first string! */
 		if (*ptr == 0x01)
