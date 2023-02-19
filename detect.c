@@ -102,8 +102,8 @@ NOTHROW_NCX(CC hunch_check_utf32)(void const *__restrict data, size_t size, bool
 		size = HUNCH_CHECK_MAXCHARS * 4;
 	while (size) {
 		char32_t ch;
-		ch = be ? (char32_t)UNALIGNED_GETBE32((uint32_t const *)data)
-		        : (char32_t)UNALIGNED_GETLE32((uint32_t const *)data);
+		ch = be ? (char32_t)UNALIGNED_GETBE32(data)
+		        : (char32_t)UNALIGNED_GETLE32(data);
 		if (!istxtchar(ch))
 			goto nope;
 		data = (byte_t const *)data + 4;
@@ -123,8 +123,8 @@ NOTHROW_NCX(CC hunch_check_utf16)(void const *__restrict data, size_t size, bool
 	num_chars = HUNCH_CHECK_MAXCHARS;
 	while (size && num_chars) {
 		char16_t ch16;
-		ch16 = be ? (char16_t)UNALIGNED_GETBE16((uint16_t const *)data)
-		          : (char16_t)UNALIGNED_GETLE16((uint16_t const *)data);
+		ch16 = be ? (char16_t)UNALIGNED_GETBE16(data)
+		          : (char16_t)UNALIGNED_GETLE16(data);
 		if (ch16 >= UTF16_LOW_SURROGATE_MIN && ch16 <= UTF16_LOW_SURROGATE_MAX)
 			goto nope; /* Unmatched low surrogate (wrong!) */
 		if (ch16 >= UTF16_HIGH_SURROGATE_MIN && ch16 <= UTF16_HIGH_SURROGATE_MAX) {
@@ -135,8 +135,8 @@ NOTHROW_NCX(CC hunch_check_utf16)(void const *__restrict data, size_t size, bool
 			size -= 2;
 			if (!size)
 				goto nope;
-			ch16_2 = be ? (char16_t)UNALIGNED_GETBE16((uint16_t const *)data)
-			            : (char16_t)UNALIGNED_GETLE16((uint16_t const *)data);
+			ch16_2 = be ? (char16_t)UNALIGNED_GETBE16(data)
+			            : (char16_t)UNALIGNED_GETLE16(data);
 			if (!(ch16_2 >= UTF16_LOW_SURROGATE_MIN && ch16_2 <= UTF16_LOW_SURROGATE_MAX))
 				goto nope;
 			ch32 = ch16 - UTF16_HIGH_SURROGATE_MIN;
@@ -612,7 +612,7 @@ NOTHROW_NCX(CC libiconv_detect_codec)(void const *__restrict data, size_t size) 
 			uint8_t bytes[4];
 			uint32_t word;
 		} hdr;
-		hdr.word = UNALIGNED_GET32((uint32_t const *)data);
+		hdr.word = UNALIGNED_GET32(data);
 		/* Check for unicode ByteOrderMarker(s) */
 		if (hdr.bytes[0] == 0xEF && hdr.bytes[1] == 0xBB && hdr.bytes[2] == 0xBF)
 			return CODEC_UTF8_BOM; /* Special UTF-8 BOM marker. */

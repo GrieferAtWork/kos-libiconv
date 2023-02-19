@@ -141,9 +141,9 @@ libiconv_utf16be_decode(struct iconv_decode *__restrict self,
 			ptr = buf;
 		}
 #if UTF_BYTEORDER == 1234
-		c16 = (char16_t)UNALIGNED_GETLE16((uint16_t const *)data);
+		c16 = (char16_t)UNALIGNED_GETLE16(data);
 #else /* UTF_BYTEORDER == 1234 */
-		c16 = (char16_t)UNALIGNED_GETBE16((uint16_t const *)data);
+		c16 = (char16_t)UNALIGNED_GETBE16(data);
 #endif /* UTF_BYTEORDER != 1234 */
 		error = unicode_c16toc8(ptr, c16, &self->icd_data.idd_utf.u_16);
 		if unlikely(error == (size_t)-1) {
@@ -234,9 +234,9 @@ libiconv_utf32be_decode(struct iconv_decode *__restrict self,
 			ptr = buf;
 		}
 #if UTF_BYTEORDER == 1234
-		c32 = (char32_t)UNALIGNED_GETLE32((uint32_t const *)data);
+		c32 = (char32_t)UNALIGNED_GETLE32(data);
 #else /* UTF_BYTEORDER == 1234 */
-		c32 = (char32_t)UNALIGNED_GETBE32((uint32_t const *)data);
+		c32 = (char32_t)UNALIGNED_GETBE32(data);
 #endif /* UTF_BYTEORDER != 1234 */
 		ptr = unicode_writeutf8(ptr, c32);
 		data = (byte_t const *)data + 4;
