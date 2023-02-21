@@ -19,15 +19,16 @@
  */
 #ifndef GUARD_LIBICONV_ICONV_C
 #define GUARD_LIBICONV_ICONV_C 1
+#define _KOS_SOURCE 1
 
 #include "api.h"
 /**/
 
-#include <hybrid/atomic.h>
 #include <hybrid/byteorder.h>
 
 #include <kos/types.h>
 
+#include <atomic.h>
 #include <dlfcn.h>
 #include <errno.h>
 #include <stdbool.h>
@@ -59,11 +60,11 @@ STATIC_ASSERT(sizeof(union iconv_encode_data) == (_ICONV_ENCODE_OPAQUE_POINTERS 
 	PRIVATE _PSUPDECODE_INIT_##name pdyn_iconv_##name##_decode_init = NULL;                                                                           \
 	PRIVATE void *pdyn_libiconv_##name                                = NULL;                                                                         \
 	PRIVATE WUNUSED bool CC load_libiconv_##name(void) {                                                                                              \
-		if (pdyn_libiconv_##name == NULL) {                                                                                                           \
+		if (atomic_read(&pdyn_libiconv_##name) == NULL) {                                                                                             \
 			void *lib = dlopen("libiconv-" #name ".so", RTLD_LOCAL);                                                                                  \
 			if (!lib) {                                                                                                                               \
 not_available:                                                                                                                                        \
-				ATOMIC_CMPXCH(pdyn_libiconv_##name, NULL, (void *)-1);                                                                                \
+				atomic_cmpxch(&pdyn_libiconv_##name, NULL, (void *)-1);                                                                               \
 			} else {                                                                                                                                  \
 				_PSUPENCODE_INIT_##name sencode_init;                                                                                                 \
 				_PSUPDECODE_INIT_##name sdecode_init;                                                                                                 \
@@ -76,11 +77,11 @@ not_available:                                                                  
 				pdyn_iconv_##name##_encode_init = sencode_init;                                                                                       \
 				pdyn_iconv_##name##_decode_init = sdecode_init;                                                                                       \
 				COMPILER_WRITE_BARRIER();                                                                                                             \
-				if (!ATOMIC_CMPXCH(pdyn_libiconv_##name, NULL, lib))                                                                                  \
+				if (!atomic_cmpxch(&pdyn_libiconv_##name, NULL, lib))                                                                                 \
 					dlclose(lib); /* Another thread already succeeded */                                                                              \
 			}                                                                                                                                         \
 		}                                                                                                                                             \
-		return pdyn_libiconv_##name != (void *)-1;                                                                                                    \
+		return atomic_read(&pdyn_libiconv_##name) != (void *)-1;                                                                                      \
 	}
 /* Create supplemental library bindings. */
 #if CODEC_STATEFUL_COUNT != 0
