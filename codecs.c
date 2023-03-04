@@ -8355,12 +8355,14 @@ NOTHROW_NCX(FCALL libiconv_normalize_codec_name)(char buf[CODE_NAME_MAXLEN + 1],
 	while (name < nameend) {
 		char ch;
 		ch = *name++;
+
 		/* Generally, if `name' contains a sequence of numbers that starts
 		 * with at least  one leading `0',  re-attempt the search  without
 		 * those leading zero-digits. */
 		if (ch == '0' && isdigit(*name) &&
 		    (ptr == buf || !isdigit(ptr[-1])))
 			continue; /* Skip leading 0s in number-strings. */
+
 		/* '-', '_' and ' ' work interchangeably. */
 		if (ch == '_' || ch == ' ')
 			ch = '-';
@@ -8438,6 +8440,7 @@ again:
 INTERN ATTR_CONST WUNUSED char const *
 NOTHROW_NCX(CC libiconv_getcodecnames)(iconv_codec_t id) {
 	size_t i;
+
 	/* NOTE: If it ever becomes an issue, this function could be sped up by
 	 *       pre-computing an mapping:
 	 * CODEC_ID->OFFSET_OF_START_OF_STRING_LIST
@@ -8448,6 +8451,7 @@ NOTHROW_NCX(CC libiconv_getcodecnames)(iconv_codec_t id) {
 		char const *result;
 		if (codec_db[i].cdbe_codec != id)
 			continue;
+
 		/* Find the start of the string list. */
 		result = codec_name_str(codec_db[i].cdbe_name);
 		while (result[-2] != '\0')
@@ -8490,6 +8494,7 @@ INTERN WUNUSED NONNULL((1)) iconv_codec_t
 NOTHROW_NCX(CC libiconv_codec_and_flags_byname)(char const *__restrict name,
                                                 /*[in|out]*/ uintptr_half_t *__restrict pflags) {
 	iconv_codec_t result;
+
 	/* Check for the simple case where the name doesn't contain any flags. */
 	result = libiconv_codecbyname(name);
 	if (result == CODEC_UNKNOWN) {
@@ -8508,6 +8513,7 @@ NOTHROW_NCX(CC libiconv_codec_and_flags_byname)(char const *__restrict name,
 				next_flag = strstr(flags_start, "//");
 				if (!next_flag)
 					next_flag = strend(flags_start);
+
 				/* Strip leading and trailing spaces from the flag name. */
 				while (isspace(*flags_start))
 					++flags_start;

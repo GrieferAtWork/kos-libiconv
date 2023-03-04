@@ -8262,6 +8262,7 @@ NOTHROW(CC libiconv_transdb_lookup)(char32_t ch) {
 		size_t i;
 		i     = (lo + hi) / 2;
 		entry = &libiconv_translit_db[i];
+
 		/* Find the start of the entry. */
 		if (!*entry) {
 			/* When we point at the third NUL of an entry that ends with
@@ -8281,6 +8282,7 @@ NOTHROW(CC libiconv_transdb_lookup)(char32_t ch) {
 				break;
 			--entry;
 		}
+
 		/* `entry' now points at the <ch> field. */
 		cmp = strcmp(utf8, entry);
 		if (cmp < 0) {
@@ -8428,11 +8430,13 @@ NOTHROW_NCX(CC libiconv_handle_trans)(char32_t result[ICONV_TRANSLITERATE_MAXLEN
 			}
 			--variation;
 		}
+
 		/* Use case folding. */
 		assert(unitraits_try_fold(traits, what));
 		fold_len = (size_t)(unicode_fold(text[i], fold) - fold);
 		assert(fold_len != 0);
 		assert(fold_len != 1 || fold[len] != text[i]);
+
 		/* Apply variations on folded text. */
 		for (fold_i = 0; fold_i < fold_len; ++fold_i) {
 			byte_t fold_variation;
@@ -8534,8 +8538,8 @@ NOTHROW_NCX(CC libiconv_transliterate)(char32_t result[ICONV_TRANSLITERATE_MAXLE
 		len = (size_t)(unicode_fold(uni_ch, result) - result);
 		assert(len != 0);
 		if unlikely(len == 1 && result[0] == uni_ch) {
-			goto after_fold; /* Shouldn't happen (because __ut_fold_idx != 0xff, len
-			                  * should always  be  >=  2),  but  better  be  safe... */
+			goto after_fold; /* Shouldn't happen (because if `__ut_fold_idx != 0xff',
+			                  * len should always be  `>= 2'), but better be  safe... */
 		}
 		total_variations = 1;
 		for (i = 0; i < len; ++i) {
