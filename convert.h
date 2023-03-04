@@ -125,6 +125,9 @@ INTDEF NONNULL((1, 2)) ssize_t FORMATPRINTER_CC libiconv_uri_escape_decode(struc
 INTDEF NONNULL((1, 2)) ssize_t FORMATPRINTER_CC libiconv_hex_lower_encode(struct iconv_encode *__restrict self, /*bytes*/ char const *__restrict data, size_t size);
 INTDEF NONNULL((1, 2)) ssize_t FORMATPRINTER_CC libiconv_hex_upper_encode(struct iconv_encode *__restrict self, /*bytes*/ char const *__restrict data, size_t size);
 INTDEF NONNULL((1, 2)) ssize_t FORMATPRINTER_CC libiconv_hex_decode(struct iconv_decode *__restrict self, /*ascii*/ char const *__restrict data, size_t size);
+INTDEF NONNULL((1, 2)) ssize_t FORMATPRINTER_CC libiconv_base64_encode(struct iconv_encode *__restrict self, /*bytes*/ char const *__restrict data, size_t size);
+INTDEF NONNULL((1, 2)) ssize_t FORMATPRINTER_CC libiconv_base64_decode(struct iconv_decode *__restrict self, /*ascii*/ char const *__restrict data, size_t size);
+INTDEF NONNULL((1)) ssize_t NOTHROW_NCX(CC libiconv_base64_encode_flush)(struct iconv_encode *__restrict self);
 
 
 

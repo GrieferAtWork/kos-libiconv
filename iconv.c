@@ -294,6 +294,11 @@ NOTHROW_NCX(CC libiconv_decode_init)(/*in|out*/ struct iconv_decode *__restrict 
 		self->icd_data.idd_hex = 0x01;
 		break;
 
+	case CODEC_BASE64:
+		input->ii_printer = (pformatprinter)&libiconv_base64_decode;
+		self->icd_data.idd_base64.b64_state = _ICONV_DECODE_BASE64_T0;
+		break;
+
 	default:
 #ifdef WANT_default_case
 #undef WANT_default_case
@@ -404,6 +409,10 @@ NOTHROW_NCX(CC libiconv_decode_isshiftzero)(struct iconv_decode const *__restric
 		/* Make sure that we've parsed an even number of nibbles */
 		return self->icd_data.idd_hex == 0x01;
 
+	case CODEC_BASE64:
+		return (self->icd_data.idd_base64.b64_state == _ICONV_DECODE_BASE64_T0) ||
+		       (self->icd_data.idd_base64.b64_state == _ICONV_DECODE_BASE64_EOF);
+
 #if CODEC_STATEFUL_COUNT != 0
 	case CODEC_STATEFUL_MIN ... CODEC_STATEFUL_MAX:
 		/* XXX: Should DB0 count as a zero-shift state? Or does text have to end with ShiftIn? */
@@ -433,6 +442,7 @@ NOTHROW_NCX(CC libiconv_encode_init)(/*in|out*/ struct iconv_encode *__restrict 
                                      /*out*/ struct iconv_printer *__restrict input) {
 	/* By default, the iconv encoder is used as input cookie. */
 	input->ii_arg = self;
+
 	/* Almost all codecs use the utf-8 parser mbstate. */
 	mbstate_init(&self->ice_data.ied_utf8);
 	switch (self->ice_codec) {
@@ -607,6 +617,11 @@ NOTHROW_NCX(CC libiconv_encode_init)(/*in|out*/ struct iconv_encode *__restrict 
 		input->ii_printer = (pformatprinter)&libiconv_hex_upper_encode;
 		break;
 
+	case CODEC_BASE64:
+		input->ii_printer = (pformatprinter)&libiconv_base64_encode;
+		self->ice_data.ied_base64.b64_pend = _ICONV_ENCODE_BASE64_PEND_S0;
+		break;
+
 	default:
 #ifdef WANT_default_case
 #undef WANT_default_case
@@ -634,8 +649,8 @@ INTDEF unsigned char const libiconv_utf32be_bom_seq[4];
  * any unmatched shift-state changes.
  * Simply  call this once you're out of input  and treat its return value like you're
  * treating the return values of the input printer returned by `iconv_encode_init(3)' */
-INTERN NONNULL((1)) ssize_t
-NOTHROW_NCX(CC libiconv_encode_flush)(struct iconv_encode *__restrict self) {
+INTERN NONNULL((1)) ssize_t CC
+libiconv_encode_flush(struct iconv_encode *__restrict self) {
 	ssize_t result = 0;
 	switch (self->ice_codec) {
 
@@ -722,6 +737,9 @@ NOTHROW_NCX(CC libiconv_encode_flush)(struct iconv_encode *__restrict self) {
 	}	break;
 #endif /* CODEC_STATEFUL_COUNT != 0 */
 
+	case CODEC_BASE64:
+		return libiconv_base64_encode_flush(self);
+
 	default:
 		break;
 	}
@@ -759,6 +777,7 @@ NOTHROW_NCX(CC libiconv_encode_isinputshiftzero)(struct iconv_encode const *__re
 	case CODEC_URI_ESCAPE:
 	case CODEC_HEX_LOWER:
 	case CODEC_HEX_UPPER:
+	case CODEC_BASE64:
 		return true;
 
 	default: break;
@@ -870,6 +889,7 @@ DEFINE_PUBLIC_ALIAS(_iconv_decode_init, _libiconv_decode_init);
 DEFINE_PUBLIC_ALIAS(iconv_decode_isshiftzero, libiconv_decode_isshiftzero);
 DEFINE_PUBLIC_ALIAS(_iconv_encode_init, _libiconv_encode_init);
 DEFINE_PUBLIC_ALIAS(iconv_encode_flush, libiconv_encode_flush);
+DEFINE_PUBLIC_ALIAS(iconv_encode_isinputshiftzero, libiconv_encode_isinputshiftzero);
 DEFINE_PUBLIC_ALIAS(_iconv_transcode_init, _libiconv_transcode_init);
 
 DECL_END

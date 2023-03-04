@@ -242,6 +242,7 @@ NOTHROW_NCX(LIBCCALL libiconv_stdiconv)(struct stdiconv *self,
 				*outbytesleft = self->si_outsiz;
 			}
 		}
+
 		/* Check for errors that might have happened during the flush operation. */
 		if (status < 0) {
 			if (self->si_encode.ice_flags & ICONV_HASERR) {

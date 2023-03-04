@@ -114,6 +114,11 @@ struct codec_name_db_struct {
 	char db_ATARIST_0[8]; /* "atarist" */
 	char db_ATARIST_nul;
 
+	/* CODEC_BASE64 */
+	char db_BASE64_0[7]; /* "base64" */
+	char db_BASE64_1[8]; /* "base-64" */
+	char db_BASE64_nul;
+
 	/* CODEC_BCDIC */
 	char db_BCDIC_0[6]; /* "bcdic" */
 	char db_BCDIC_nul;
@@ -3234,6 +3239,11 @@ PRIVATE struct codec_name_db_struct const codec_name_db = {
 
 	/* CODEC_ATARIST */
 	"atarist",
+	0,
+
+	/* CODEC_BASE64 */
+	"base64",
+	"base-64",
 	0,
 
 	/* CODEC_BCDIC */
@@ -6392,6 +6402,8 @@ PRIVATE struct codec_db_entry const codec_db[] = {
 	{ offsetof(struct codec_name_db_struct, db_ISO_8859_6_4), /*              "asmo-708"                      */ CODEC_ISO_8859_6 },
 	{ offsetof(struct codec_name_db_struct, db_ATARIST_0), /*                 "atarist"                       */ CODEC_ATARIST },
 	{ offsetof(struct codec_name_db_struct, db_CP921_10), /*                  "baltic"                        */ CODEC_CP921 },
+	{ offsetof(struct codec_name_db_struct, db_BASE64_1), /*                  "base-64"                       */ CODEC_BASE64 },
+	{ offsetof(struct codec_name_db_struct, db_BASE64_0), /*                  "base64"                        */ CODEC_BASE64 },
 	{ offsetof(struct codec_name_db_struct, db_BCDIC_0), /*                   "bcdic"                         */ CODEC_BCDIC },
 	{ offsetof(struct codec_name_db_struct, db_BIG5_1), /*                    "big-5"                         */ CODEC_BIG5 },
 	{ offsetof(struct codec_name_db_struct, db_BIG5_3), /*                    "big-five"                      */ CODEC_BIG5 },

@@ -418,7 +418,8 @@
 @CODEC(CODEC_HEX_UPPER: "hex-upper", "hex")
 
 
-# TODO: base64
+# Code "base64" for PGJhc2U2ND4= escaping (https://de.wikipedia.org/wiki/Base64)
+@CODEC(CODEC_BASE64: "base64", "base-64")
 
 ###################################################################################################
 

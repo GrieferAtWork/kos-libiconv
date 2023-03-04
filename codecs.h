@@ -42,6 +42,7 @@ enum {
 /*[[[deemon (printCodecEnums from .iconvdata.iconvdata)();]]]*/
 	/* Custom codecs */
 	CODEC_ASCII,                /* "ansi-x3.4-1968", "iso-ir-6", "ansi-x3.4-1986", "iso646.irv:1991", "ascii", "iso646-us", "us-ascii", "us", "ibm367", "cp367", "ansi-x3.4", "csascii", "osf10020", "cp20127", "windows-20127", "ibm891", "cp891", "csibm891", "osf1002037b", "ibm903", "cp903", "csibm903", "osf10020387", "default", "646", "ascii7", "direct" */
+	CODEC_BASE64,               /* "base64", "base-64" */
 	CODEC_C_ESCAPE,             /* "c-escape" */
 	CODEC_C_ESCAPE_ALL,         /* "c-escape-all" */
 	CODEC_C_ESCAPE_BYTES,       /* "c-escape-bytes" */

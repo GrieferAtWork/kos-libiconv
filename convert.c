@@ -53,6 +53,12 @@ gcc_opt.append("-O3"); // Force _all_ optimizations because stuff in here is per
 
 DECL_BEGIN
 
+#if !defined(NDEBUG) && !defined(NDEBUG_FINI)
+#define DBG_memset memset
+#else /* !NDEBUG && !NDEBUG_FINI */
+#define DBG_memset(...) (void)0
+#endif /* NDEBUG || NDEBUG_FINI */
+
 #define IS_ICONV_ERR_ERRNO(flags)                     (((flags) & ICONV_ERRMASK) == ICONV_ERR_ERRNO)
 #define IS_ICONV_ERR_ERROR_OR_ERRNO(flags)            (((flags) & ICONV_ERRMASK) <= ICONV_ERR_ERROR)
 #define IS_ICONV_ERR_ERROR_OR_ERRNO_OR_DISCARD(flags) (((flags) & ICONV_ERRMASK) <= ICONV_ERR_DISCARD)
@@ -1048,6 +1054,7 @@ DECL_END
 #endif /* CODEC_CP7H_COUNT != 0 */
 
 /* Misc codecs. */
+#include "convert-base64.c.inl"
 #include "convert-c-escape.c.inl"
 #include "convert-hex.c.inl"
 #include "convert-uri-escape.c.inl"

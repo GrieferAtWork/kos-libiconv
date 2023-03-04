@@ -84,8 +84,8 @@ NOTHROW_NCX(CC _libiconv_encode_init)(/*in|out*/ struct iconv_encode *__restrict
  * any unmatched shift-state changes.
  * Simply  call this once you're out of input  and treat its return value like you're
  * treating the return values of the input printer returned by `iconv_encode_init(3)' */
-INTDEF NONNULL((1)) ssize_t
-NOTHROW_NCX(CC libiconv_encode_flush)(struct iconv_encode *__restrict self);
+INTDEF NONNULL((1)) ssize_t CC
+libiconv_encode_flush(struct iconv_encode *__restrict self);
 
 /* Check if UTF-8 input taken by the given encoder is in its default (zero) shift
  * state. If it isn't, then that must mean that it's still waiting for more UTF-8
