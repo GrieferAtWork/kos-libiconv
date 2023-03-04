@@ -773,7 +773,7 @@ NOTHROW_NCX(CC libiconv_encode_isinputshiftzero)(struct iconv_encode const *__re
 	case CODEC_UTF8:
 		/* Yes: the UTF-8-BOM generator also doesn't decode input. */
 	case CODEC_UTF8_BOM:
-		/* These codecs encodes raw bytes, so it doesn't care about UTF-8 input. */
+		/* These codecs encode raw bytes, so they doesn't care about UTF-8 input. */
 	case CODEC_URI_ESCAPE:
 	case CODEC_HEX_LOWER:
 	case CODEC_HEX_UPPER:
