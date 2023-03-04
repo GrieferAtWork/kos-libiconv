@@ -43,7 +43,7 @@ DECL_BEGIN
  *    0x00        // NUL
  *    0x00        // NUL
  *    {
- *        <ch>    // The character that is being transliterated (encoded as UTF-8; many not be empty)
+ *        <ch>    // The character that is being transliterated (encoded as UTF-8; may not be empty)
  *        0x00    // NUL
  *        {
  *            <repl>  // Replacement string (encoded as UTF-8; may be empty only iff this is the only replacement)

@@ -11,7 +11,7 @@ Currently, only KOSmk4 uses this library, but that might change in the future (I
 
 A: Because it's way more efficient, and before you get any wrong idea about how big this library is as a result, you should know that at the time of this being written, it's `582596` bytes (`569KiB`; which includes `.debug_info`) large (and sports support for `374` different codecs with `1502` different aliases). So no: this doesn't result in some insanely large data blobs, but rather a single very managable blob.
 
-For comparison, Glibc uses individual `*.so` files for every codec is supports (on my test Linux machine the're in `/usr/lib/i386-linux-gnu/gconv`). `ls | wc -l` tells me that there are `254`, and a quick glance at `ls -l` shows the smallest to be `9644` bytes large (though some go as far as `464188` bytes).
+For comparison, Glibc uses individual `*.so` files for every codec is supports (on my test Linux machine they're in `/usr/lib/i386-linux-gnu/gconv`). `ls | wc -l` tells me that there are `254`, and a quick glance at `ls -l` shows the smallest to be `9644` bytes large (though some go as far as `464188` bytes).
 
 Nevertheless, assuming that they're all really small, let's do some quick maths: `9644 * 254 = 2449576`, which equates to `2.44MiB` of shared libraries (it's much more than that, but for now let's give the benefit of the doubt and work with the smallest values, especially since KOS's `374` codecs are mostly *simple* codecs)
 
@@ -35,5 +35,5 @@ So as the end result, KOS is designed to work perfectly well with few large libr
 Finally, if you still think that `569KiB` is too large for a library like this, you should really get over it and instead complain about how large `libc`'s already gotten (because at the time of this writing its `.so` is `2.6MiB` large; oops...)
 
 
-A2: Alright, so there are *some* codecs so large that they would take up a significant portion of libiconv. So I've grouped them into separate sub-libraries that are lazily loaded when the associated codecs are first accessed. However, this is far from having one library for every supported codec!
+A2: Alright, so there are *some* codecs so large that they would take up a significant portion of libiconv. So I've grouped them into separate sub-libraries that are lazily loaded when the associated codecs are first accessed. However, this is far from having one library for each supported codec!
 

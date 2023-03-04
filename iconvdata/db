@@ -20,7 +20,7 @@
 
 
 ###################################################################################################
-# After making changes to this file, run:
+# After making changes to this file (or those included by it), run:
 #  $ deemon -F kos/src/libiconv/codecs.h
 #  $ deemon -F kos/src/libiconv/codecs.c
 #  $ deemon -F kos/src/libiconv/cp.c
@@ -395,9 +395,10 @@
 
 #
 # Finally, there's "c-escape-all" which behaves like "c-escape-raw", but allows both "
-# and ' to be used without needing them to be escaped. Note however that when this codec
-# will obviously not stop parsing data when something conventionally thought of as a string
-# end marker is encountered.
+# and ' to be used without needing them to be escaped. Note however that this codec will
+# obviously not stop parsing data when something conventionally thought of as a string
+# end marker is encountered (since there are no such markers when "all" characters are
+# allowed within a string).
 @CODEC(CODEC_C_ESCAPE_ALL: "c-escape-all")
 @CODEC(CODEC_C_ESCAPE_BYTES_ALL: "c-escape-all-bytes", "c-escape-bytes-all")
 
@@ -415,6 +416,10 @@
 # encode they produce different casings for A-F (aka. a-f)
 @CODEC(CODEC_HEX_LOWER: "hex-lower")
 @CODEC(CODEC_HEX_UPPER: "hex-upper", "hex")
+
+
+# TODO: base64
+
 ###################################################################################################
 
 
@@ -434,9 +439,9 @@
 # VAR SAVED_BYTE: unsigned char                                 = <undefined>
 #
 # decode(unsigned char ch) {
-#    if (ch == 0x0E)             // 0x0E = ascii.SO
+#    if (ch == 0x0E)             // 0x0E = ascii.SO  (ShiftOut)
 #        STATE = DOUBLE_BYTE_1;
-#    else if (ch == 0x0F)        // 0x0F = ascii.SI
+#    else if (ch == 0x0F)        // 0x0F = ascii.SI  (ShiftIn)
 #        STATE = SINGLE_BYTE;
 #    else {
 #        if (STATE == SINGLE_BYTE) {
@@ -449,6 +454,7 @@
 #        }
 #        assert(STATE == DOUBLE_BYTE_2);
 #        uint16_t ch16 = (SAVED_BYTE << 8) | ch;
+#        STATE = DOUBLE_BYTE_1;
 #        return <DOUBLE_BYTE_LOOKUP_TABLE>[ch];
 #    }
 # }
