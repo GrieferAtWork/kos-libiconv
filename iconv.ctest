@@ -322,7 +322,8 @@ DEFINE_TEST(iconv) {
 	EQstr("Hello World", convert("hex", "ascii", ICONV_ERR_ERRNO, "48656C6C6F20576F726C64", buf));
 	EQstr("Hello World", convert("hex", "ascii", ICONV_ERR_ERRNO, "48656c6c6f20576f726c64", buf));
 
-	/* Test the base64 codec. */
+	/* Test the base64 codec.
+	 * NOTE: Example take from `https://de.wikipedia.org/wiki/Base64' */
 	EQstr("Polyfon zwitschernd aßen Mäxchens Vögel Rüben, Joghurt und Quark",
 	      convert("base64", "utf-8", ICONV_ERR_ERRNO,
 	              "UG9seWZvbiB6d2l0c2NoZXJuZCBhw59lbiBNw6R4Y2hlbnMgVsO2Z2VsIFLDvGJl"
