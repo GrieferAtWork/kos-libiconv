@@ -70,7 +70,10 @@ function uniEscape(o: int): string {
 		local s = (o - 0x80) * 3;
 		return italic(x[s:s+3]);
 	}
-	local result = { 0x00A0 : "NBSP" }.get(o);
+	local result = {
+		0x00A0 : "NBSP",
+		0x00AD : "SHY",
+	}.get(o);
 	if (result !is none)
 		return italic(result);
 	if (o == 0x2028)
