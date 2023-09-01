@@ -323,7 +323,7 @@ function printTranslitDatabase() {
 		}
 		entries.append(strings);
 	}
-	entries.sort([](x) -> x.first);
+	entries.sort(x -> x.first);
 	local lines = [];
 	local count = 2;
 	for (local i: [:#entries]) {
