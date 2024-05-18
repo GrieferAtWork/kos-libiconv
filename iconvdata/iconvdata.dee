@@ -720,7 +720,7 @@ function printCodepageDatabase(kind: int) {
 		if (codec is CodePage && codec.getCpClass() == kind)
 			codecs.append(codec);
 	}
-	codecs.sort(CodePage.name);
+	codecs.sort(key: CodePage.name);
 	print("/* Codepage database blob. */");
 	print("struct iconv_cp", cpInsert, "_database {");
 	for (local cp: codecs) {
@@ -811,7 +811,7 @@ function printCpIso646Database() {
 		if (codec is CodePage && codec.getCpClass() == CP_CLASS_ISO646)
 			codecs.append(codec);
 	}
-	codecs.sort(CodePage.name);
+	codecs.sort(key: CodePage.name);
 	for (local i, codec: util.enumerate(codecs))
 		print("STATIC_ASSERT(CODEC_ISO646_MIN + ", i, " == ", codec.name, ");");
 	print("INTERN_CONST struct iconv_iso646_codepage const libiconv_iso646_pages[", #codecs, "] = {");
@@ -874,7 +874,7 @@ function printCpStatefulDatabase() {
 		if (codec is StatefulCodec)
 			codecs.append(codec);
 	}
-	codecs.sort(StatefulCodec.name);
+	codecs.sort(key: StatefulCodec.name);
 	local exCodecs: {ExStatefulCodec...} = [];
 
 	/* Generate extended codec data. */
@@ -1669,7 +1669,7 @@ function printCpMbcsDatabase() {
 		if (codec is MbcsCodec)
 			codecs.append(codec);
 	}
-	codecs.sort(MbcsCodec.name);
+	codecs.sort(key: MbcsCodec.name);
 
 	/* Generate extended codec data */
 	local exCodecs: {ExMbcsCodec...} = List(
