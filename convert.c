@@ -54,9 +54,9 @@ gcc_opt.append("-O3"); // Force _all_ optimizations because stuff in here is per
 DECL_BEGIN
 
 #if !defined(NDEBUG) && !defined(NDEBUG_FINI)
-#define DBG_memset memset
+#define DBG_memset(p, c, n) memset(p, c, n)
 #else /* !NDEBUG && !NDEBUG_FINI */
-#define DBG_memset(...) (void)0
+#define DBG_memset(p, c, n) (void)0
 #endif /* NDEBUG || NDEBUG_FINI */
 
 #define IS_ICONV_ERR_ERRNO(flags)                     (((flags) & ICONV_ERRMASK) == ICONV_ERR_ERRNO)
