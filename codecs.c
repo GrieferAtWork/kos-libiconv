@@ -8510,9 +8510,9 @@ NOTHROW_NCX(CC libiconv_codec_and_flags_byname)(char const *__restrict name,
 	/* Check for the simple case where the name doesn't contain any flags. */
 	result = libiconv_codecbyname(name);
 	if (result == CODEC_UNKNOWN) {
-		/* The codec couldn't be found. This  might be because the give  name
-		 * contains flags. If that's the  case, figure out where flags  begin
-		 * and re-try the lookup the the part before their starting position. */
+		/* The codec couldn't be found. This might be because the give name
+		 * contains flags. If that's the case, figure out where flags begin
+		 * and re-try the lookup the part before their starting position. */
 		char const *flags_start = strstr(name, "//");
 		if (flags_start) {
 			result = libiconv_codecbynamez(name, (size_t)(flags_start - name));
