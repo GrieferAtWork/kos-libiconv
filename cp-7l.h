@@ -23,12 +23,14 @@
 #include "api.h"
 /**/
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <hybrid/byteorder.h>
 
 #include <kos/types.h>
 
 #include <format-printer.h>
 #include <libiconv/iconv.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 #include "cp.h"
 

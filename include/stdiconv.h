@@ -20,6 +20,7 @@
 #ifndef _LIBICONV_STDICONV_H
 #define _LIBICONV_STDICONV_H 1
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <__crt.h>
 #include <__stdinc.h>
 
@@ -28,6 +29,7 @@
 #ifdef __INTELLISENSE__
 #include <bits/types/size_t.h>
 #endif /* __INTELLISENSE__ */
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 /* KOS's version of the <iconv.h> header!
  * NOTE: Link with `-liconv' to use this header! */

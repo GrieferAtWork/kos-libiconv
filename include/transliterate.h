@@ -22,9 +22,11 @@
 
 #include "api.h"
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <__stdinc.h>
 
 #include <bits/types.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 /* Transliteration is the process of enumerating alternative (possibly multi-character)
  * representations of some given unicode character. Using this, it is possible to  e.g.

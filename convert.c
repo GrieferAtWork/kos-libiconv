@@ -29,6 +29,7 @@ gcc_opt.append("-O3"); // Force _all_ optimizations because stuff in here is per
 #include "api.h"
 /**/
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <hybrid/byteswap.h>
 #include <hybrid/minmax.h>
 #include <hybrid/unaligned.h>
@@ -42,6 +43,7 @@ gcc_opt.append("-O3"); // Force _all_ optimizations because stuff in here is per
 #include <unicode.h>
 
 #include <libiconv/iconv.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 #include "convert.h"
 #include "cp-7h.h"

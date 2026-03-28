@@ -24,6 +24,7 @@
 #include "api.h"
 /**/
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <hybrid/align.h>
 #include <hybrid/byteorder.h>
 #include <hybrid/byteswap.h>
@@ -43,6 +44,7 @@
 
 #include <libiconv/codec.h>
 #include <libiconv/iconv.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 #include "codecs.h"
 #include "cp-7h.h"

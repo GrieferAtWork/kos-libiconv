@@ -23,8 +23,10 @@
 #include "api.h"
 /**/
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <format-printer.h>
 #include <kos/types.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 #include "codecs.h"
 

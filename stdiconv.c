@@ -24,6 +24,7 @@
 #include "api.h"
 /**/
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <__crt.h>
 
 #include <assert.h>
@@ -36,6 +37,7 @@
 
 #include <libiconv/iconv.h>
 #include <libiconv/stdiconv.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 #include "codecs.h"
 #include "iconv.h"

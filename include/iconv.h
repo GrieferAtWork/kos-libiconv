@@ -23,10 +23,12 @@
 #include "api.h"
 /**/
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <__stdinc.h>
 
 #include <bits/crt/format-printer.h>
 #include <bits/types.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 #ifdef GUARD_LIBICONV_API_H
 #define LIBICONV_EXPOSE_INTERNAL
@@ -34,7 +36,9 @@
 
 
 #ifdef LIBICONV_EXPOSE_INTERNAL
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <bits/crt/mbstate.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 #endif /* LIBICONV_EXPOSE_INTERNAL */
 
 __DECL_BEGIN

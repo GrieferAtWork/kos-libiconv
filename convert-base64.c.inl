@@ -21,7 +21,9 @@
 #include "convert.c"
 #endif /* __INTELLISENSE__ */
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <assert.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 DECL_BEGIN
 

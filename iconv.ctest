@@ -22,6 +22,7 @@
 #define _KOS_SOURCE 1
 #undef NDEBUG
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <hybrid/compiler.h>
 
 #include <kos/types.h>
@@ -36,6 +37,7 @@
 #include <libiconv/codec.h>
 #include <libiconv/iconv.h>
 #include <libiconv/transliterate.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 
 DECL_BEGIN

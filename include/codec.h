@@ -23,11 +23,13 @@
 #include "api.h"
 /**/
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <__stdinc.h>
 
 #include <hybrid/typecore.h>
 
 #include <bits/types.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 #ifdef __CC__
 __DECL_BEGIN

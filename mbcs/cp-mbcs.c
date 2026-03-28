@@ -23,6 +23,7 @@
 #include "../api.h"
 /**/
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <hybrid/byteorder.h>
 #include <hybrid/unaligned.h>
 
@@ -35,6 +36,7 @@
 #include <unicode.h>
 
 #include <libiconv/iconv.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 #include "../codecs.h"
 #include "cp-mbcs.h"

@@ -24,6 +24,7 @@
 #include "api.h"
 /**/
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <hybrid/byteorder.h>
 
 #include <kos/types.h>
@@ -35,6 +36,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <unicode.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 #include "codecs.h"
 #include "convert.h"

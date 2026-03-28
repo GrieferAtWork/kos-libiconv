@@ -20,12 +20,14 @@
 #ifndef GUARD_LIBICONV_API_H
 #define GUARD_LIBICONV_API_H 1
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <__crt.h>
 #include <hybrid/compiler.h>
 
 #include <kos/config/config.h> /* Pull in config-specific macro overrides */
 
 #include <libiconv/api.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 #define CC LIBICONV_CC
 

@@ -23,12 +23,14 @@
 #include "api.h"
 /**/
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <kos/types.h>
 
 #include <stdbool.h>
 
 #include <libiconv/codec.h>
 #include <libiconv/iconv.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 DECL_BEGIN
 

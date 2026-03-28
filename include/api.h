@@ -20,20 +20,25 @@
 #ifndef _LIBICONV_API_H
 #define _LIBICONV_API_H 1
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <__stdinc.h>
 
 #include <hybrid/host.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
+#ifndef LIBICONV_CC
 #if defined(__i386__) && !defined(__x86_64__)
 #define LIBICONV_CC __ATTR_FASTCALL
 #else /* ... */
 #define LIBICONV_CC /* nothing */
 #endif /* !... */
+#endif /* !LIBICONV_CC */
 
 #if 0
 #define LIBICONV_WANT_PROTOTYPES
 #endif
 
+#ifndef LIBICONV_DECL
 #if (defined(__KOS__) && defined(__KERNEL__) && \
      defined(BUILDING_KERNEL_CORE))
 #define LIBICONV_DECL __PUBDEF
@@ -42,8 +47,11 @@
 #else /* ... */
 #define LIBICONV_DECL __IMPDEF
 #endif /* !... */
+#endif /* !LIBICONV_DECL */
 
 /* Library name for use with `dlopen(3D)' */
+#ifndef LIBICONV_LIBRARY_NAME
 #define LIBICONV_LIBRARY_NAME "libiconv.so"
+#endif /* !LIBICONV_LIBRARY_NAME */
 
 #endif /* !_LIBICONV_API_H */

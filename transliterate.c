@@ -24,6 +24,7 @@
 #include "api.h"
 /**/
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <kos/types.h>
 
 #include <assert.h>
@@ -32,6 +33,7 @@
 #include <unicode.h>
 
 #include <libiconv/transliterate.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 #include "transliterate.h"
 

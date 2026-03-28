@@ -29,7 +29,9 @@ gcc_opt.remove("-g"); // Disable debug informations for this file!
 #include "../api.h"
 /**/
 
+#ifndef LIBICONV_NO_SYSTEM_INCLUDES
 #include <stddef.h>
+#endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 #include "../codecs.h"
 #include "cp-stateful.h"
