@@ -324,7 +324,11 @@ again:
 				data += 4;
 			}
 			rem = (size_t)(end - data);
+#if 1 /* Prevent "-Wtype-limits" warning */
+			assert(rem <= 3);
+#else
 			assert(rem >= 0 && rem <= 3);
+#endif
 			switch (rem) {
 
 			case 0:

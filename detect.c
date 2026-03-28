@@ -830,10 +830,9 @@ next_cp7h_codec:
 				if (candidates > 0) {
 					struct iconv_7h_codepage const *frst_cp = NULL;
 					iconv_codec_t frst_codec = CODEC_UNKNOWN;
-					for (cd = CODEC_CP7H_MIN;; ++cd) {
+					for (cd = CODEC_CP7H_MIN; cd <= CODEC_CP7H_MAX; ++cd) {
 						size_t i;
 						struct iconv_7h_codepage const *this_cp;
-						assert(cd <= CODEC_CP7H_MAX);
 						if (!cp7h_bitset_contains(codecs, cd))
 							continue;
 						this_cp = libiconv_cp7h_page(cd);
@@ -859,7 +858,6 @@ next_cp7h_codec:
 								goto_unknown;
 						}
 					}
-#if 0 /* FIXME: This is unreachable */
 					if (is_latin1_candidate) {
 						if (frst_cp) {
 							size_t i;
@@ -872,7 +870,6 @@ next_cp7h_codec:
 						return CODEC_ISO_8859_1;
 					}
 					return frst_codec;
-#endif
 				} /* if (candidates > 0) */
 			}     /* Scope... */
 		}         /* if (is_ascii_heuristic(heuristic)) */
@@ -935,10 +932,9 @@ next_cp8_codec:
 			if (best_codecs_count > 0) {
 				struct iconv_codepage const *frst_cp = NULL;
 				iconv_codec_t frst_codec = CODEC_UNKNOWN;
-				for (cd = CODEC_CP_MIN;; ++cd) {
+				for (cd = CODEC_CP_MIN; cd <= CODEC_CP7H_MAX; ++cd) {
 					size_t i;
 					struct iconv_codepage const *this_cp;
-					assert(cd <= CODEC_CP7H_MAX);
 					if (!cp8_bitset_contains(best_codecs, cd))
 						continue;
 					this_cp = libiconv_cp_page(cd);
@@ -964,9 +960,7 @@ next_cp8_codec:
 							goto_unknown;
 					}
 				}
-#if 0 /* FIXME: This is unreachable */
 				return frst_codec;
-#endif
 			} /* if (best_codecs_count > 0) */
 		}     /* Scope... */
 	}         /* Scope... */
