@@ -199,7 +199,7 @@ default_case:
 			result = 0;
 			break;
 		}
-		if unlikely((unsigned char)*data != 0xBB) {
+		if unlikely((unsigned char)*data != 0xBF) {
 			ssize_t temp;
 			/* Incorrect sequence (unconditionally ignore and re-emit what was already there) */
 			result = decode_output((char const *)libiconv_utf8_bom_seq, 2);
