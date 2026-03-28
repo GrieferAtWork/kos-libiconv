@@ -79,12 +79,13 @@ DECL_BEGIN
 #define encode_output_printer self->ice_output.ii_printer
 #define encode_output_arg     self->ice_output.ii_arg
 #define encode_output(p, s)   (*encode_output_printer)(encode_output_arg, p, s)
-#define DO(expr)                         \
+#define EDO(err, expr)                   \
 	do {                                 \
 		if unlikely((temp = (expr)) < 0) \
 			goto err;                    \
 		result += temp;                  \
 	}	__WHILE0
+#define DO(expr)               EDO(err, expr)
 #define DO_encode_output(p, s) DO(encode_output(p, s))
 #define DO_decode_output(p, s) DO(decode_output(p, s))
 

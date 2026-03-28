@@ -281,11 +281,14 @@ again:
 				if unlikely((v0 | v1 | v2 | v3) == 0xff) {
 					DO_decode_output((char *)buf, (size_t)(p - buf));
 					/* Handle error (and case where there is a line-feed) */
-					DO(libiconv_base64_decode(self, data + 0, 1));
-					DO(libiconv_base64_decode(self, data + 1, 1));
-					DO(libiconv_base64_decode(self, data + 2, 1));
-					DO(libiconv_base64_decode(self, data + 3, 1));
-					data += 4;
+					EDO(err_maybe_nest, libiconv_base64_decode(self, data, 1));
+					++data;
+					EDO(err_maybe_nest, libiconv_base64_decode(self, data, 1));
+					++data;
+					EDO(err_maybe_nest, libiconv_base64_decode(self, data, 1));
+					++data;
+					EDO(err_maybe_nest, libiconv_base64_decode(self, data, 1));
+					++data;
 					p = buf;
 					goto again;
 				}
@@ -488,6 +491,10 @@ again:
 	if likely(p > buf)
 		DO_decode_output((char *)buf, (size_t)(p - buf));
 	return result;
+err_maybe_nest:
+	/* Forward correct error position during nested calls */
+	if ((self->icd_flags & ICONV_HASERR) && (data < end))
+		temp = -(ssize_t)(size_t)(end - data);
 err:
 	return temp;
 err_ilseq_pm3:

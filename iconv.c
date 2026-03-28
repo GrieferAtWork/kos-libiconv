@@ -911,6 +911,9 @@ NOTHROW_NCX(CC _libiconv_transcode_init)(/*in|out*/ struct iconv_transcode *__re
 	    (self->it_decode.icd_codec != CODEC_UNKNOWN ||
 	     libiconv_same_codec_name(input_codec_name, output_codec_name))) {
 		*input = self->it_encode.ice_output;
+
+		/* Force `libiconv_encode_flush()' to be a no-op */
+		self->it_encode.ice_codec = CODEC_UNKNOWN;
 		return 0;
 	}
 
