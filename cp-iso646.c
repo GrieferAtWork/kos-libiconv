@@ -152,7 +152,7 @@ INTERN_CONST uint8_t const libiconv_iso646_override[128] = {
 import util;
 local overrides = [0x21, 0x22, 0x23, 0x24, 0x26, 0x3a, 0x3f, 0x40, 0x5b,
                    0x5c, 0x5d, 0x5e, 0x5f, 0x60, 0x7b, 0x7c, 0x7d, 0x7e];
-local indices = [#overrides] * 128;
+local indices = [({#overrides} * 128)...];
 for (local i, o: util.enumerate(overrides))
 	indices[o] = i;
 for (local i, o: util.enumerate(indices)) {

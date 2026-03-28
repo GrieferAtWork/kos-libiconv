@@ -50,7 +50,7 @@ class CodePage {
 	this = default;
 	public member name: string;
 	public member aliases: {CodecAlias...} = [];
-	public member table: {int...} = List([0] * 256);
+	public member table: {int...} = List({0} * 256);
 
 	@@Returns one of `CP_CLASS_*`
 	public function getCpClass(): int {
@@ -75,7 +75,7 @@ class StatefulCodec {
 	public member aliases: {CodecAlias...} = [];
 
 	@@Single-byte table
-	public member sb_table: {int...} = List([0] * 256);
+	public member sb_table: {int...} = List({0} * 256);
 
 	@@Double-byte table
 	public member db_table: {int: int | {int...}} = Dict();
@@ -1399,7 +1399,7 @@ class ExMbcsByte2Table {
 function createExMbcsByte2Table(map_table: {int: int | Object}): (ExMbcsByte2Table, {ExMbcsByte2Table...}) {
 	local result = ExMbcsByte2Table();
 	local recursiveTables = [];
-	local table: {int | Object...} = [0] * 256;
+	local table: {int | Object...} = List({0} * 256);
 	for (local cp, uni: map_table)
 		table[cp] = uni;
 	local i = 0;
@@ -1577,7 +1577,7 @@ again_range:
 class ExMbcsCodec {
 	this = default;
 	public member codec: MbcsCodec;
-	public member imc_1byte: {int...} = [0] * 256;
+	public member imc_1byte: {int...} = List({0} * 256);
 	public member imc_offidx_min: int;
 	public member imc_offidx_max: int;
 	public member imc_offtab: {int...} = [];

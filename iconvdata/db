@@ -21,16 +21,16 @@
 
 ###################################################################################################
 # After making changes to this file (or those included by it), run:
-#  $ deemon -F kos/src/libiconv/codecs.h
-#  $ deemon -F kos/src/libiconv/codecs.c
-#  $ deemon -F kos/src/libiconv/cp.c
-#  $ deemon -F kos/src/libiconv/cp-7l.c
-#  $ deemon -F kos/src/libiconv/cp-7h.c
-#  $ deemon -F kos/src/libiconv/cp-iso646.c
-#  $ deemon -F kos/src/libiconv/stateful/cpdb.c
-#  $ deemon -F kos/src/libiconv/mbcs/cpdb.c
+#  $ deemon -F codecs.h
+#  $ deemon -F codecs.c
+#  $ deemon -F cp.c
+#  $ deemon -F cp-7l.c
+#  $ deemon -F cp-7h.c
+#  $ deemon -F cp-iso646.c
+#  $ deemon -F stateful/cpdb.c
+#  $ deemon -F mbcs/cpdb.c
 # Or the one-liner:
-#  $ deemon -F kos/src/libiconv/codecs.h kos/src/libiconv/codecs.c kos/src/libiconv/cp.c kos/src/libiconv/cp-7l.c kos/src/libiconv/cp-7h.c kos/src/libiconv/cp-iso646.c kos/src/libiconv/stateful/cpdb.c kos/src/libiconv/mbcs/cpdb.c
+#  $ deemon -F codecs.h codecs.c cp.c cp-7l.c cp-7h.c cp-iso646.c stateful/cpdb.c mbcs/cpdb.c
 ###################################################################################################
 
 
@@ -408,7 +408,7 @@
 @CODEC(CODEC_XML_ESCAPE: "xml-escape", "html-escape")
 
 # Codec "uri-escape" for %3Curi-style%3E escaping (https://en.wikipedia.org/wiki/Percent-encoding)
-@CODEC(CODEC_URI_ESCAPE: "uri-escape", "url-escape", "Percent-encoding", "URL-encoding")
+@CODEC(CODEC_URI_ESCAPE: "uri-escape", "url-escape", "Percent-encoding", "URL-encoding", "url", "uri")
 
 # The "hex" family of codecs simply decodes input in pairs of hex nibbles,
 # where every first is the upper nibble and every second the lower one. For
