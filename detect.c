@@ -859,6 +859,7 @@ next_cp7h_codec:
 								goto_unknown;
 						}
 					}
+#if 0 /* FIXME: This is unreachable */
 					if (is_latin1_candidate) {
 						if (frst_cp) {
 							size_t i;
@@ -871,6 +872,7 @@ next_cp7h_codec:
 						return CODEC_ISO_8859_1;
 					}
 					return frst_codec;
+#endif
 				} /* if (candidates > 0) */
 			}     /* Scope... */
 		}         /* if (is_ascii_heuristic(heuristic)) */
@@ -962,7 +964,9 @@ next_cp8_codec:
 							goto_unknown;
 					}
 				}
+#if 0 /* FIXME: This is unreachable */
 				return frst_codec;
+#endif
 			} /* if (best_codecs_count > 0) */
 		}     /* Scope... */
 	}         /* Scope... */
