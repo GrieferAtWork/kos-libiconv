@@ -39,11 +39,8 @@
 #endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
 #include "../codecs.h"
+#include "../convert-utils.h"
 #include "cp-stateful.h"
-
-#ifndef LIBICONV_SETERRNO
-#define LIBICONV_SETERRNO(v) (errno = (v))
-#endif /* !LIBICONV_SETERRNO */
 
 #if CODEC_STATEFUL_COUNT != 0
 DECL_BEGIN
@@ -88,13 +85,6 @@ DECL_BEGIN
  * }
  *
  */
-
-#define IS_ICONV_ERR_ERRNO(flags)                     (((flags) & ICONV_ERRMASK) == ICONV_ERR_ERRNO)
-#define IS_ICONV_ERR_ERROR_OR_ERRNO(flags)            (((flags) & ICONV_ERRMASK) <= ICONV_ERR_ERROR)
-#define IS_ICONV_ERR_ERROR_OR_ERRNO_OR_DISCARD(flags) (((flags) & ICONV_ERRMASK) <= ICONV_ERR_DISCARD)
-#define IS_ICONV_ERR_DISCARD(flags)                   (((flags) & ICONV_ERRMASK) == ICONV_ERR_DISCARD)
-#define IS_ICONV_ERR_REPLACE(flags)                   (((flags) & ICONV_ERRMASK) == ICONV_ERR_REPLACE)
-#define IS_ICONV_ERR_IGNORE(flags)                    (((flags) & ICONV_ERRMASK) == ICONV_ERR_IGNORE)
 
 #define decode_output_printer self->icd_output.ii_printer
 #define decode_output_arg     self->icd_output.ii_arg
@@ -306,8 +296,10 @@ err:
 	return temp;
 err_ilseq:
 	self->icd_flags |= ICONV_HASERR;
+#ifdef IS_ICONV_ERR_ERRNO
 	if (IS_ICONV_ERR_ERRNO(self->icd_flags))
 		LIBICONV_SETERRNO(EILSEQ);
+#endif /* IS_ICONV_ERR_ERRNO */
 	return -(ssize_t)size;
 }
 
@@ -457,8 +449,10 @@ err:
 	return temp;
 err_ilseq:
 	self->ice_flags |= ICONV_HASERR;
+#ifdef IS_ICONV_ERR_ERRNO
 	if (IS_ICONV_ERR_ERRNO(self->ice_flags))
 		LIBICONV_SETERRNO(EILSEQ);
+#endif /* IS_ICONV_ERR_ERRNO */
 	return -(ssize_t)size;
 }
 

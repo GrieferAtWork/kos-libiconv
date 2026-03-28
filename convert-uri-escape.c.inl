@@ -21,9 +21,7 @@
 #include "convert.c"
 #endif /* __INTELLISENSE__ */
 
-#ifndef LIBICONV_SETERRNO
-#define LIBICONV_SETERRNO(v) (errno = (v))
-#endif /* !LIBICONV_SETERRNO */
+#include "convert-utils.h"
 
 DECL_BEGIN
 
@@ -238,8 +236,10 @@ err:
 	return temp;
 err_ilseq:
 	self->icd_flags |= ICONV_HASERR;
+#ifdef IS_ICONV_ERR_ERRNO
 	if (IS_ICONV_ERR_ERRNO(self->icd_flags))
 		LIBICONV_SETERRNO(EILSEQ);
+#endif /* IS_ICONV_ERR_ERRNO */
 	return -(ssize_t)(size_t)(end - data);
 }
 

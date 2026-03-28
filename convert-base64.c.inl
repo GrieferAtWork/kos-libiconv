@@ -25,9 +25,7 @@
 #include <assert.h>
 #endif /* !LIBICONV_NO_SYSTEM_INCLUDES */
 
-#ifndef LIBICONV_SETERRNO
-#define LIBICONV_SETERRNO(v) (errno = (v))
-#endif /* !LIBICONV_SETERRNO */
+#include "convert-utils.h"
 
 DECL_BEGIN
 
@@ -504,8 +502,10 @@ err_ilseq_pm2:
 err_ilseq:
 	DO_decode_output((char *)buf, (size_t)(p - buf));
 	self->icd_flags |= ICONV_HASERR;
+#ifdef IS_ICONV_ERR_ERRNO
 	if (IS_ICONV_ERR_ERRNO(self->icd_flags))
 		LIBICONV_SETERRNO(EILSEQ);
+#endif /* IS_ICONV_ERR_ERRNO */
 	return -(ssize_t)(size_t)(end - data);
 }
 
