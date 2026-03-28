@@ -3,15 +3,15 @@
 
 This repository is a sub-module for [KOS](https://github.com/GrieferAtWork/KOSmk4) and exists for the sole purpose to allow other projects to make use of the (admittedly very large) database that is included for the purpose of converting between different codecs.
 
-Currently, KOSmk4 and [deemon](https://github.com/GrieferAtWork/deemon)...) use this library
+Currently, KOSmk4 and [deemon](https://github.com/GrieferAtWork/deemon) use this library
 
 
 
 ### Q: Why are you hardcoding all of the codecs into a single library?
 
-A: Because it's way more efficient, and before you get any wrong idea about how big this library is as a result, you should know that at the time of this being written, it's `582596` bytes (`569KiB`; which includes `.debug_info`) large (and sports support for `374` different codecs with `1502` different aliases). So no: this doesn't result in some insanely large data blobs, but rather a single very managable blob.
+A: Because it's way more efficient, and before you get any wrong ideas about how big this library is as a result, you should know that at the time of this being written, it's `582596` bytes (`569KiB`; which includes `.debug_info`) large (and sports support for `374` different codecs with `1502` different aliases). So no: this doesn't result in some insanely large data blobs, but rather a single very managable blob.
 
-For comparison, Glibc uses individual `*.so` files for every codec is supports (on my test Linux machine they're in `/usr/lib/i386-linux-gnu/gconv`). `ls | wc -l` tells me that there are `254`, and a quick glance at `ls -l` shows the smallest to be `9644` bytes large (though some go as far as `464188` bytes).
+For comparison, Glibc uses individual `*.so` files for every codec it supports (on my test Linux machine they're in `/usr/lib/i386-linux-gnu/gconv`). `ls | wc -l` tells me that there are `254`, and a quick glance at `ls -l` shows the smallest to be `9644` bytes large (though some go as far as `464188` bytes).
 
 Nevertheless, assuming that they're all really small, let's do some quick maths: `9644 * 254 = 2449576`, which equates to `2.44MiB` of shared libraries (it's much more than that, but for now let's give the benefit of the doubt and work with the smallest values, especially since KOS's `374` codecs are mostly *simple* codecs)
 
