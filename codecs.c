@@ -8469,7 +8469,7 @@ NOTHROW_NCX(CC libiconv_getcodecnames)(iconv_codec_t id) {
 		/* Find the start of the string list. */
 		result = codec_name_str(codec_db[i].cdbe_name);
 		while (result[-2] != '\0')
-			result = (char const *)rawmemrchr(result - 1, '\0');
+			result = (char const *)rawmemrchr(result - 1, '\0') + 1;
 		return result;
 	}
 	return NULL;
