@@ -3,7 +3,7 @@
 
 This repository is a sub-module for [KOS](https://github.com/GrieferAtWork/KOSmk4) and exists for the sole purpose to allow other projects to make use of the (admittedly very large) database that is included for the purpose of converting between different codecs.
 
-Currently, only KOSmk4 uses this library, but that might change in the future (I'm looking at you, [deemon](https://github.com/GrieferAtWork/deemon)...)
+Currently, KOSmk4 and [deemon](https://github.com/GrieferAtWork/deemon)...) use this library
 
 
 
