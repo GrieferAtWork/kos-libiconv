@@ -43,6 +43,10 @@
 #include "iconv.h"
 #include "stdiconv.h"
 
+#ifndef LIBICONV_SETERRNO
+#define LIBICONV_SETERRNO(v) (errno = (v))
+#endif /* !LIBICONV_SETERRNO */
+
 DECL_BEGIN
 
 /* Opaque object used by the functions below. */
@@ -114,7 +118,7 @@ err:
 INTERN int
 NOTHROW_NCX(LIBCCALL libiconv_stdiconv_close)(struct stdiconv *self) {
 	if unlikely(!self || self == (struct stdiconv *)(iconv_t)-1) {
-		errno = EBADF;
+		LIBICONV_SETERRNO(EBADF);
 		return -1;
 	}
 	free(self);
@@ -203,7 +207,7 @@ NOTHROW_NCX(LIBCCALL libiconv_stdiconv)(struct stdiconv *self,
 
 	ssize_t status;
 	if unlikely(!self || self == (struct stdiconv *)(iconv_t)-1) {
-		errno = EBADF;
+		LIBICONV_SETERRNO(EBADF);
 		return -1;
 	}
 
@@ -251,10 +255,10 @@ NOTHROW_NCX(LIBCCALL libiconv_stdiconv)(struct stdiconv *self,
 				/* Special case: An incomplete multibyte sequence has been encountered in the input.
 				 * The specs require use to set EINVAL in this case. */
 err_incomplete_input:
-				errno = EINVAL;
+				LIBICONV_SETERRNO(EINVAL);
 			} else {
 				assert(status == SSIZE_MIN);
-				errno = E2BIG;
+				LIBICONV_SETERRNO(E2BIG);
 			}
 			return (size_t)-1;
 		}
@@ -342,7 +346,7 @@ return_with_EILSEQ:
 			*outbytesleft = self->si_outsiz;
 
 			/* Return with E2BIG. */
-			errno = E2BIG;
+			LIBICONV_SETERRNO(E2BIG);
 			return (size_t)-1;
 		}
 	}

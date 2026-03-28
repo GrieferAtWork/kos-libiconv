@@ -41,6 +41,10 @@
 #include "../codecs.h"
 #include "cp-stateful.h"
 
+#ifndef LIBICONV_SETERRNO
+#define LIBICONV_SETERRNO(v) (errno = (v))
+#endif /* !LIBICONV_SETERRNO */
+
 #if CODEC_STATEFUL_COUNT != 0
 DECL_BEGIN
 
@@ -302,7 +306,7 @@ err:
 err_ilseq:
 	self->icd_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->icd_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)size;
 }
 
@@ -366,7 +370,7 @@ libiconv_stateful_encode(struct iconv_encode *__restrict self,
 				isc_encode_tab = iconv_stateful_codepage__isc_encode_tab__from__isc_encode_rab(cp, isc_encode_rab);
 				rab_index      = ent->iser_cp_off - cp->isc_encode_rab_minoff;
 				cp_offset      = isc_encode_rab[rab_index];
-				cp_offset += ch - ent->iser_uni_ord;
+				cp_offset += (uint16_t)(ch - ent->iser_uni_ord);
 				if (cp_offset >= cp->isc_encode_tab_count) {
 					/* 2-char unicode sequence */
 					struct iconv_stateful_2char_encode const *entry, *isc_encode_2ch;
@@ -453,7 +457,7 @@ err:
 err_ilseq:
 	self->ice_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->ice_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)size;
 }
 

@@ -21,6 +21,10 @@
 #include "convert.c"
 #endif /* __INTELLISENSE__ */
 
+#ifndef LIBICONV_SETERRNO
+#define LIBICONV_SETERRNO(v) (errno = (v))
+#endif /* !LIBICONV_SETERRNO */
+
 DECL_BEGIN
 
 INTERN NONNULL((1, 2)) ssize_t FORMATPRINTER_CC
@@ -107,7 +111,7 @@ err:
 err_ilseq:
 	self->icd_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->icd_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)size;
 }
 

@@ -8355,7 +8355,7 @@ NOTHROW_NCX(FCALL libiconv_normalize_codec_name)(char buf[CODE_NAME_MAXLEN + 1],
 		size_t len = strlen(remove_sep_prefixes[i]);
 		if (memcasecmp(name, remove_sep_prefixes[i], len * sizeof(char)) == 0 &&
 		    issep(name[len]) && isdigit(name[len + 1])) {
-			ptr = (char *)mempcpy(ptr, remove_sep_prefixes[i], len, sizeof(char));
+			ptr = (char *)mempcpyc(ptr, remove_sep_prefixes[i], len, sizeof(char));
 			name += len + 1; /* Skip the <SEP> character. */
 			break;
 		}
@@ -8485,7 +8485,7 @@ NOTHROW_NCX(FCALL libiconv_codecbynamez)(char const *__restrict name,
 	 * string that is NUL-terminated at the proper position. */
 	if likely(namelen <= CODE_NAME_MAXLEN) {
 		buf = (char *)alloca((namelen + 1) * sizeof(char));
-		*(char *)mempcpy(buf, name, namelen, sizeof(char)) = '\0';
+		*(char *)mempcpyc(buf, name, namelen, sizeof(char)) = '\0';
 	} else {
 		/* In this case we know that the name won't be found as-is.
 		 * So rather than risk allocating a lot of stack memory, we

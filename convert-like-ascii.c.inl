@@ -24,6 +24,10 @@
 #define DEFINE_FOR_CP7H
 #endif /* __INTELLISENSE__ */
 
+#ifndef LIBICONV_SETERRNO
+#define LIBICONV_SETERRNO(v) (errno = (v))
+#endif /* !LIBICONV_SETERRNO */
+
 DECL_BEGIN
 
 /************************************************************************/
@@ -84,15 +88,15 @@ LOCAL_libiconv_encode_buf(char *__restrict result,
 			lo = 0;
 			hi = cp->i7hcp_encode_count;
 			while (lo < hi) {
-				size_t i;
-				i = (lo + hi) / 2;
-				if (c32 < cp->i7hcp_encode[i].icee_uni) {
-					hi = i;
-				} else if (c32 > cp->i7hcp_encode[i].icee_uni) {
-					lo = i + 1;
+				size_t j;
+				j = (lo + hi) / 2;
+				if (c32 < cp->i7hcp_encode[j].icee_uni) {
+					hi = j;
+				} else if (c32 > cp->i7hcp_encode[j].icee_uni) {
+					lo = j + 1;
 				} else {
 					/* Found it! */
-					*result++ = (char)(unsigned char)cp->i7hcp_encode[i].icee_cp;
+					*result++ = (char)(unsigned char)cp->i7hcp_encode[j].icee_cp;
 					goto next_c32;
 #define NEED_next_c32
 				}
@@ -233,7 +237,7 @@ err:
 err_ilseq:
 	self->ice_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->ice_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)(size_t)(end - data);
 }
 
@@ -317,7 +321,7 @@ err:
 err_ilseq:
 	self->icd_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->icd_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)(size_t)(end - iter);
 #endif /* LOCAL_HAS_UNDEFINED_CODEPOINTS */
 }

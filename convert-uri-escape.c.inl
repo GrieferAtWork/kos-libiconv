@@ -21,6 +21,10 @@
 #include "convert.c"
 #endif /* __INTELLISENSE__ */
 
+#ifndef LIBICONV_SETERRNO
+#define LIBICONV_SETERRNO(v) (errno = (v))
+#endif /* !LIBICONV_SETERRNO */
+
 DECL_BEGIN
 
 INTERN NONNULL((1, 2)) ssize_t FORMATPRINTER_CC
@@ -41,9 +45,48 @@ libiconv_uri_escape_encode(struct iconv_encode *__restrict self,
 		 *    0 1 2 3 4 5 6 7 8 9 - _ . ~ */
 		switch (ch) {
 
+#if 1
+		case 'a': case 'A':
+		case 'b': case 'B':
+		case 'c': case 'C':
+		case 'd': case 'D':
+		case 'e': case 'E':
+		case 'f': case 'F':
+		case 'g': case 'G':
+		case 'h': case 'H':
+		case 'i': case 'I':
+		case 'j': case 'J':
+		case 'k': case 'K':
+		case 'l': case 'L':
+		case 'm': case 'M':
+		case 'n': case 'N':
+		case 'o': case 'O':
+		case 'p': case 'P':
+		case 'q': case 'Q':
+		case 'r': case 'R':
+		case 's': case 'S':
+		case 't': case 'T':
+		case 'u': case 'U':
+		case 'v': case 'V':
+		case 'w': case 'W':
+		case 'x': case 'X':
+		case 'y': case 'Y':
+		case 'z': case 'Z':
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+#else
 		case 'A' ... 'Z':
 		case 'a' ... 'z':
 		case '0' ... '9':
+#endif
 		case '-':
 		case '_':
 		case '.':
@@ -117,10 +160,48 @@ libiconv_uri_escape_decode(struct iconv_decode *__restrict self,
 			 *    a b c d e f g h i j k l m n o p q r s t u v w x y z
 			 *    0 1 2 3 4 5 6 7 8 9 - _ . ~ */
 			switch (ch) {
-
+#if 1
+			case 'a': case 'A':
+			case 'b': case 'B':
+			case 'c': case 'C':
+			case 'd': case 'D':
+			case 'e': case 'E':
+			case 'f': case 'F':
+			case 'g': case 'G':
+			case 'h': case 'H':
+			case 'i': case 'I':
+			case 'j': case 'J':
+			case 'k': case 'K':
+			case 'l': case 'L':
+			case 'm': case 'M':
+			case 'n': case 'N':
+			case 'o': case 'O':
+			case 'p': case 'P':
+			case 'q': case 'Q':
+			case 'r': case 'R':
+			case 's': case 'S':
+			case 't': case 'T':
+			case 'u': case 'U':
+			case 'v': case 'V':
+			case 'w': case 'W':
+			case 'x': case 'X':
+			case 'y': case 'Y':
+			case 'z': case 'Z':
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+#else
 			case 'A' ... 'Z':
 			case 'a' ... 'z':
 			case '0' ... '9':
+#endif
 			case '-':
 			case '_':
 			case '.':
@@ -158,7 +239,7 @@ err:
 err_ilseq:
 	self->icd_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->icd_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)(size_t)(end - data);
 }
 

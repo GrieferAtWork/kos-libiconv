@@ -50,17 +50,27 @@
 #include "stateful/cp-stateful.h" /* for `struct iconv_stateful_2char_encode' */
 #endif /* CODEC_STATEFUL_COUNT != 0 */
 
+#ifdef LIBICONV_SINGLE_LIBRARY
+#include "mbcs/cp-mbcs.h"
+#include "stateful/cp-stateful.h"
+#endif /* LIBICONV_SINGLE_LIBRARY */
+
+#ifndef LIBICONV_SETERRNO
+#define LIBICONV_SETERRNO(v) (errno = (v))
+#endif /* !LIBICONV_SETERRNO */
+
 DECL_BEGIN
 
 STATIC_ASSERT(sizeof(union iconv_decode_data) == (_ICONV_DECODE_OPAQUE_POINTERS * sizeof(void *)));
 STATIC_ASSERT(sizeof(union iconv_encode_data) == (_ICONV_ENCODE_OPAQUE_POINTERS * sizeof(void *)));
 
+#ifndef LIBICONV_SINGLE_LIBRARY
 #define DEFINE_SUPPLEMENTAL_LIBICONV_LIBRARY_BINDING(name)                                                                                            \
 	typedef NONNULL((1, 2)) void (CC *_PSUPENCODE_INIT_##name)(struct iconv_encode *__restrict self, /*out*/ struct iconv_printer *__restrict input); \
 	typedef NONNULL((1, 2)) void (CC *_PSUPDECODE_INIT_##name)(struct iconv_decode *__restrict self, /*out*/ struct iconv_printer *__restrict input); \
 	PRIVATE _PSUPENCODE_INIT_##name pdyn_iconv_##name##_encode_init = NULL;                                                                           \
 	PRIVATE _PSUPDECODE_INIT_##name pdyn_iconv_##name##_decode_init = NULL;                                                                           \
-	PRIVATE void *pdyn_libiconv_##name                                = NULL;                                                                         \
+	PRIVATE void *pdyn_libiconv_##name                              = NULL;                                                                           \
 	PRIVATE WUNUSED bool CC load_libiconv_##name(void) {                                                                                              \
 		if (atomic_read(&pdyn_libiconv_##name) == NULL) {                                                                                             \
 			void *lib = dlopen("libiconv-" #name ".so", RTLD_LOCAL);                                                                                  \
@@ -109,8 +119,14 @@ INTERN void NOTHROW_NCX(libiconv_fini)(void) {
 	FREE_SUPPLEMENTAL_LIBRARY(mbcs)
 #endif /* CODEC_MBCS_COUNT != 0 */
 }
+#endif /* !LIBICONV_SINGLE_LIBRARY */
 
 
+#ifdef __GNUC__
+#define IF_CASE_RANGE(value, lo, hi) __IF0 case (lo) ... (hi):
+#else /* __GNUC__ */
+#define IF_CASE_RANGE(value, lo, hi) if ((value) >= (lo) && (value) <= (hi))
+#endif /* !__GNUC__ */
 
 INTERN NONNULL((1, 2)) int
 NOTHROW_NCX(CC libiconv_decode_init)(/*in|out*/ struct iconv_decode *__restrict self,
@@ -191,56 +207,6 @@ NOTHROW_NCX(CC libiconv_decode_init)(/*in|out*/ struct iconv_decode *__restrict 
 		input->ii_printer = (pformatprinter)&libiconv_latin1_decode;
 		break;
 
-#if CODEC_CP_COUNT != 0
-	case CODEC_CP_MIN ... CODEC_CP_MAX:
-		/* 8-bit codepage */
-		self->icd_data.idd_cp = libiconv_cp_page(self->icd_codec);
-		input->ii_printer     = (pformatprinter)&libiconv_cp_decode;
-		break;
-#endif /* CODEC_CP_COUNT != 0 */
-
-#if CODEC_CP7H_COUNT != 0
-	case CODEC_CP7H_MIN ... CODEC_CP7H_MAX:
-		/* 7h codepage */
-		self->icd_data.idd_cp7h = libiconv_cp7h_page(self->icd_codec);
-		input->ii_printer       = (pformatprinter)&libiconv_cp7h_decode;
-		break;
-#endif /* CODEC_CP7H_COUNT != 0 */
-
-#if CODEC_CP7L_COUNT != 0
-	case CODEC_CP7L_MIN ... CODEC_CP7L_MAX:
-		/* 7l codepage */
-		self->icd_data.idd_cp7l = libiconv_cp7l_page(self->icd_codec);
-		input->ii_printer       = (pformatprinter)&libiconv_cp7l_decode;
-		break;
-#endif /* CODEC_CP7L_COUNT != 0 */
-
-#if CODEC_ISO646_COUNT != 0
-	case CODEC_ISO646_MIN ... CODEC_ISO646_MAX:
-		/* iso646 codepage. */
-		self->icd_data.idd_cp646 = libiconv_iso646_page(self->icd_codec);
-		input->ii_printer        = (pformatprinter)&libiconv_cp646_decode;
-		break;
-#endif /* CODEC_ISO646_COUNT != 0 */
-
-#if CODEC_STATEFUL_COUNT != 0
-	case CODEC_STATEFUL_MIN ... CODEC_STATEFUL_MAX:
-		if (!load_libiconv_stateful())
-			goto default_case;
-#define WANT_default_case
-		(*pdyn_iconv_stateful_decode_init)(self, input);
-		break;
-#endif /* CODEC_STATEFUL_COUNT != 0 */
-
-#if CODEC_MBCS_COUNT != 0
-	case CODEC_MBCS_MIN ... CODEC_MBCS_MAX:
-		if (!load_libiconv_mbcs())
-			goto default_case;
-#define WANT_default_case
-		(*pdyn_iconv_mbcs_decode_init)(self, input);
-		break;
-#endif /* CODEC_MBCS_COUNT != 0 */
-
 		/* C-escape */
 	case CODEC_C_ESCAPE:
 	case CODEC_C_ESCAPE_RAW:
@@ -302,11 +268,75 @@ NOTHROW_NCX(CC libiconv_decode_init)(/*in|out*/ struct iconv_decode *__restrict 
 		break;
 
 	default:
+#if CODEC_CP_COUNT != 0
+		IF_CASE_RANGE(self->icd_codec, CODEC_CP_MIN, CODEC_CP_MAX) {
+			/* 8-bit codepage */
+			self->icd_data.idd_cp = libiconv_cp_page(self->icd_codec);
+			input->ii_printer     = (pformatprinter)&libiconv_cp_decode;
+			break;
+		}
+#endif /* CODEC_CP_COUNT != 0 */
+
+#if CODEC_CP7H_COUNT != 0
+		IF_CASE_RANGE(self->icd_codec, CODEC_CP7H_MIN, CODEC_CP7H_MAX) {
+			/* 7h codepage */
+			self->icd_data.idd_cp7h = libiconv_cp7h_page(self->icd_codec);
+			input->ii_printer       = (pformatprinter)&libiconv_cp7h_decode;
+			break;
+		}
+#endif /* CODEC_CP7H_COUNT != 0 */
+
+#if CODEC_CP7L_COUNT != 0
+		IF_CASE_RANGE(self->icd_codec, CODEC_CP7L_MIN, CODEC_CP7L_MAX) {
+			/* 7l codepage */
+			self->icd_data.idd_cp7l = libiconv_cp7l_page(self->icd_codec);
+			input->ii_printer       = (pformatprinter)&libiconv_cp7l_decode;
+			break;
+		}
+#endif /* CODEC_CP7L_COUNT != 0 */
+
+#if CODEC_ISO646_COUNT != 0
+		IF_CASE_RANGE(self->icd_codec, CODEC_ISO646_MIN, CODEC_ISO646_MAX) {
+			/* iso646 codepage. */
+			self->icd_data.idd_cp646 = libiconv_iso646_page(self->icd_codec);
+			input->ii_printer        = (pformatprinter)&libiconv_cp646_decode;
+			break;
+		}
+#endif /* CODEC_ISO646_COUNT != 0 */
+
+#if CODEC_STATEFUL_COUNT != 0
+		IF_CASE_RANGE(self->icd_codec, CODEC_STATEFUL_MIN, CODEC_STATEFUL_MAX) {
+#ifdef LIBICONV_SINGLE_LIBRARY
+			libiconv_stateful_decode_init(self, input);
+#else /* LIBICONV_SINGLE_LIBRARY */
+			if (!load_libiconv_stateful())
+				goto default_case;
+#define WANT_default_case
+			(*pdyn_iconv_stateful_decode_init)(self, input);
+#endif /* !LIBICONV_SINGLE_LIBRARY */
+			break;
+		}
+#endif /* CODEC_STATEFUL_COUNT != 0 */
+
+#if CODEC_MBCS_COUNT != 0
+		IF_CASE_RANGE(self->icd_codec, CODEC_MBCS_MIN, CODEC_MBCS_MAX) {
+#ifdef LIBICONV_SINGLE_LIBRARY
+			libiconv_mbcs_decode_init(self, input);
+#else /* LIBICONV_SINGLE_LIBRARY */
+			if (!load_libiconv_mbcs())
+				goto default_case;
+#define WANT_default_case
+			(*pdyn_iconv_mbcs_decode_init)(self, input);
+#endif /* !LIBICONV_SINGLE_LIBRARY */
+			break;
+		}
+#endif /* CODEC_MBCS_COUNT != 0 */
+
 #ifdef WANT_default_case
 #undef WANT_default_case
 default_case:
 #endif /* WANT_default_case */
-		errno = EINVAL;
+		LIBICONV_SETERRNO(EINVAL);
 		return -1;
 	}
 	return 0;
@@ -415,21 +445,21 @@ NOTHROW_NCX(CC libiconv_decode_isshiftzero)(struct iconv_decode const *__restric
 		return (self->icd_data.idd_base64.b64_state == _ICONV_DECODE_BASE64_T0) ||
 		       (self->icd_data.idd_base64.b64_state == _ICONV_DECODE_BASE64_EOF);
 
-#if CODEC_STATEFUL_COUNT != 0
-	case CODEC_STATEFUL_MIN ... CODEC_STATEFUL_MAX:
-		/* XXX: Should DB0 count as a zero-shift state? Or does text have to end with ShiftIn? */
-		return self->icd_data.idd_stateful.sf_state == _ICONV_DECODE_STATEFUL_SB ||
-		       self->icd_data.idd_stateful.sf_state == _ICONV_DECODE_STATEFUL_DB0;
-#endif /* CODEC_STATEFUL_COUNT != 0 */
-
-#if CODEC_MBCS_COUNT != 0
-	case CODEC_MBCS_MIN ... CODEC_MBCS_MAX:
-		/* MBCS is in a zero-shift state as long as we're
-		 * not expecting the second of a 2-byte sequence. */
-		return self->icd_data.idd_mbcs.mc_b2 == NULL;
-#endif /* CODEC_MBCS_COUNT != 0 */
-
 	default:
+#if CODEC_STATEFUL_COUNT != 0
+		IF_CASE_RANGE(self->icd_codec, CODEC_STATEFUL_MIN, CODEC_STATEFUL_MAX) {
+			/* XXX: Should DB0 count as a zero-shift state? Or does text have to end with ShiftIn? */
+			return self->icd_data.idd_stateful.sf_state == _ICONV_DECODE_STATEFUL_SB ||
+			       self->icd_data.idd_stateful.sf_state == _ICONV_DECODE_STATEFUL_DB0;
+		}
+#endif /* CODEC_STATEFUL_COUNT != 0 */
+#if CODEC_MBCS_COUNT != 0
+		IF_CASE_RANGE(self->icd_codec, CODEC_MBCS_MIN, CODEC_MBCS_MAX) {
+			/* MBCS is in a zero-shift state as long as we're
+			 * not expecting the second of a 2-byte sequence. */
+			return self->icd_data.idd_mbcs.mc_b2 == NULL;
+		}
+#endif /* CODEC_MBCS_COUNT != 0 */
 		break;
 	}
 	return true;
@@ -512,56 +542,6 @@ NOTHROW_NCX(CC libiconv_encode_init)(/*in|out*/ struct iconv_encode *__restrict 
 		input->ii_printer = (pformatprinter)&libiconv_utf32be_bom_encode;
 		break;
 
-#if CODEC_CP_COUNT != 0
-	case CODEC_CP_MIN ... CODEC_CP_MAX:
-		/* 8-bit codepage */
-		self->ice_data.ied_cp = libiconv_cp_page(self->ice_codec);
-		input->ii_printer     = (pformatprinter)&libiconv_cp_encode;
-		break;
-#endif /* CODEC_CP_COUNT != 0 */
-
-#if CODEC_CP7H_COUNT != 0
-	case CODEC_CP7H_MIN ... CODEC_CP7H_MAX:
-		/* 7h codepage */
-		self->ice_data.ied_cp7h = libiconv_cp7h_page(self->ice_codec);
-		input->ii_printer       = (pformatprinter)&libiconv_cp7h_encode;
-		break;
-#endif /* CODEC_CP7H_COUNT != 0 */
-
-#if CODEC_CP7L_COUNT != 0
-	case CODEC_CP7L_MIN ... CODEC_CP7L_MAX:
-		/* 7l codepage */
-		self->ice_data.ied_cp7l = libiconv_cp7l_page(self->ice_codec);
-		input->ii_printer       = (pformatprinter)&libiconv_cp7l_encode;
-		break;
-#endif /* CODEC_CP7L_COUNT != 0 */
-
-#if CODEC_ISO646_COUNT != 0
-	case CODEC_ISO646_MIN ... CODEC_ISO646_MAX:
-		/* iso646 codepage. */
-		self->ice_data.ied_cp646 = libiconv_iso646_page(self->ice_codec);
-		input->ii_printer        = (pformatprinter)&libiconv_cp646_encode;
-		break;
-#endif /* CODEC_ISO646_COUNT != 0 */
-
-#if CODEC_STATEFUL_COUNT != 0
-	case CODEC_STATEFUL_MIN ... CODEC_STATEFUL_MAX:
-		if (!load_libiconv_stateful())
-			goto default_case;
-#define WANT_default_case
-		(*pdyn_iconv_stateful_encode_init)(self, input);
-		break;
-#endif /* CODEC_STATEFUL_COUNT != 0 */
-
-#if CODEC_MBCS_COUNT != 0
-	case CODEC_MBCS_MIN ... CODEC_MBCS_MAX:
-		if (!load_libiconv_mbcs())
-			goto default_case;
-#define WANT_default_case
-		(*pdyn_iconv_mbcs_encode_init)(self, input);
-		break;
-#endif /* CODEC_MBCS_COUNT != 0 */
-
 		/* C-escape */
 	case CODEC_C_ESCAPE:
 	case CODEC_C_ESCAPE_RAW:
@@ -625,11 +605,75 @@ NOTHROW_NCX(CC libiconv_encode_init)(/*in|out*/ struct iconv_encode *__restrict 
 		break;
 
 	default:
+#if CODEC_CP_COUNT != 0
+		IF_CASE_RANGE(self->ice_codec, CODEC_CP_MIN, CODEC_CP_MAX) {
+			/* 8-bit codepage */
+			self->ice_data.ied_cp = libiconv_cp_page(self->ice_codec);
+			input->ii_printer     = (pformatprinter)&libiconv_cp_encode;
+			break;
+		}
+#endif /* CODEC_CP_COUNT != 0 */
+
+#if CODEC_CP7H_COUNT != 0
+		IF_CASE_RANGE(self->ice_codec, CODEC_CP7H_MIN, CODEC_CP7H_MAX) {
+			/* 7h codepage */
+			self->ice_data.ied_cp7h = libiconv_cp7h_page(self->ice_codec);
+			input->ii_printer       = (pformatprinter)&libiconv_cp7h_encode;
+			break;
+		}
+#endif /* CODEC_CP7H_COUNT != 0 */
+
+#if CODEC_CP7L_COUNT != 0
+		IF_CASE_RANGE(self->ice_codec, CODEC_CP7L_MIN, CODEC_CP7L_MAX) {
+			/* 7l codepage */
+			self->ice_data.ied_cp7l = libiconv_cp7l_page(self->ice_codec);
+			input->ii_printer       = (pformatprinter)&libiconv_cp7l_encode;
+			break;
+		}
+#endif /* CODEC_CP7L_COUNT != 0 */
+
+#if CODEC_ISO646_COUNT != 0
+		IF_CASE_RANGE(self->ice_codec, CODEC_ISO646_MIN, CODEC_ISO646_MAX) {
+			/* iso646 codepage. */
+			self->ice_data.ied_cp646 = libiconv_iso646_page(self->ice_codec);
+			input->ii_printer        = (pformatprinter)&libiconv_cp646_encode;
+			break;
+		}
+#endif /* CODEC_ISO646_COUNT != 0 */
+
+#if CODEC_STATEFUL_COUNT != 0
+		IF_CASE_RANGE(self->ice_codec, CODEC_STATEFUL_MIN, CODEC_STATEFUL_MAX) {
+#ifdef LIBICONV_SINGLE_LIBRARY
+			libiconv_stateful_encode_init(self, input);
+#else /* LIBICONV_SINGLE_LIBRARY */
+			if (!load_libiconv_stateful())
+				goto default_case;
+#define WANT_default_case
+			(*pdyn_iconv_stateful_encode_init)(self, input);
+#endif /* !LIBICONV_SINGLE_LIBRARY */
+			break;
+		}
+#endif /* CODEC_STATEFUL_COUNT != 0 */
+
+#if CODEC_MBCS_COUNT != 0
+		IF_CASE_RANGE(self->ice_codec, CODEC_MBCS_MIN, CODEC_MBCS_MAX) {
+#ifdef LIBICONV_SINGLE_LIBRARY
+			libiconv_mbcs_encode_init(self, input);
+#else /* LIBICONV_SINGLE_LIBRARY */
+			if (!load_libiconv_mbcs())
+				goto default_case;
+#define WANT_default_case
+			(*pdyn_iconv_mbcs_encode_init)(self, input);
+#endif /* !LIBICONV_SINGLE_LIBRARY */
+			break;
+		}
+#endif /* CODEC_MBCS_COUNT != 0 */
+
 #ifdef WANT_default_case
 #undef WANT_default_case
 default_case:
 #endif /* WANT_default_case */
-		errno = EINVAL;
+		LIBICONV_SETERRNO(EINVAL);
 		return -1;
 	}
 	return 0;
@@ -713,36 +757,37 @@ libiconv_encode_flush(struct iconv_encode *__restrict self) {
 		}
 		break;
 
-#if CODEC_STATEFUL_COUNT != 0
-	case CODEC_STATEFUL_MIN ... CODEC_STATEFUL_MAX: {
-		size_t buflen = 0;
-		unsigned char buf[3];
-		/* If necessary, flush the first character of a 2-uni sequence.
-		 * Also: switch to single-byte mode if we're still in 2-byte. */
-		if (self->ice_data.ied_stateful.sf_state == _ICONV_ENCODE_STATEFUL_DB_2CH) {
-			struct iconv_stateful_2char_encode const *twochar;
-			twochar = self->ice_data.ied_stateful.sf_2char;
-			while (twochar->is2ce_uni2)
-				++twochar;
-			buf[buflen++] = (unsigned char)((twochar->is2ce_cp & 0xff00) >> 8);
-			buf[buflen++] = (unsigned char)((twochar->is2ce_cp & 0x00ff));
-		}
-		if (self->ice_data.ied_stateful.sf_state == _ICONV_ENCODE_STATEFUL_DB)
-			buf[buflen++] = 0x0f; /* ShiftIn (ASCII) */
-		/* If we've got something to write, then do so now. */
-		if (buflen) {
-			result = (*self->ice_output.ii_printer)(self->ice_output.ii_arg,
-			                                        (char const *)buf, buflen);
-			if likely(result >= 0)
-				self->ice_data.ied_stateful.sf_state = _ICONV_ENCODE_STATEFUL_SB;
-		}
-	}	break;
-#endif /* CODEC_STATEFUL_COUNT != 0 */
-
 	case CODEC_BASE64:
 		return libiconv_base64_encode_flush(self);
 
 	default:
+#if CODEC_STATEFUL_COUNT != 0
+		IF_CASE_RANGE(self->ice_codec, CODEC_STATEFUL_MIN, CODEC_STATEFUL_MAX) {
+			size_t buflen = 0;
+			unsigned char buf[3];
+			/* If necessary, flush the first character of a 2-uni sequence.
+			 * Also: switch to single-byte mode if we're still in 2-byte. */
+			if (self->ice_data.ied_stateful.sf_state == _ICONV_ENCODE_STATEFUL_DB_2CH) {
+				struct iconv_stateful_2char_encode const *twochar;
+				twochar = self->ice_data.ied_stateful.sf_2char;
+				while (twochar->is2ce_uni2)
+					++twochar;
+				buf[buflen++] = (unsigned char)((twochar->is2ce_cp & 0xff00) >> 8);
+				buf[buflen++] = (unsigned char)((twochar->is2ce_cp & 0x00ff));
+			}
+			if (self->ice_data.ied_stateful.sf_state == _ICONV_ENCODE_STATEFUL_DB)
+				buf[buflen++] = 0x0f; /* ShiftIn (ASCII) */
+			/* If we've got something to write, then do so now. */
+			if (buflen) {
+				result = (*self->ice_output.ii_printer)(self->ice_output.ii_arg,
+				                                        (char const *)buf, buflen);
+				if likely(result >= 0)
+					self->ice_data.ied_stateful.sf_state = _ICONV_ENCODE_STATEFUL_SB;
+			}
+			break;
+		}
+#endif /* CODEC_STATEFUL_COUNT != 0 */
+
 		break;
 	}
 

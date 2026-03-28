@@ -67,6 +67,7 @@ DECL_BEGIN
  *
  */
 
+__pragma_GCC_diagnostic_push_ignored(MSdecimal_digit_terminates_ocal_escape_sequence)
 
 /*[[[deemon (printTranslitDatabase from .iconvdata.transliterate)();]]]*/
 #define LIBICONV_TRANSLIT_LONGEST_REPLACEMENT_LENGTH        8
@@ -8250,6 +8251,9 @@ PRIVATE char const libiconv_translit_db[0x131ae] =
 ;
 /*[[[end]]]*/
 
+__pragma_GCC_diagnostic_pop_ignored(MSdecimal_digit_terminates_ocal_escape_sequence)
+
+
 /* Lookup the transliteration database entry for `ch'
  * When no entry exists, return `NULL' */
 PRIVATE ATTR_CONST WUNUSED char const *
@@ -8386,7 +8390,7 @@ NOTHROW_NCX(CC libiconv_handle_trans)(char32_t result[ICONV_TRANSLITERATE_MAXLEN
 			fold_len = (size_t)(unicode_fold(text[i], fold) - fold);
 			assert(fold_len != 0);
 			if (fold_len != 1 || fold[i] != text[i])
-				i_variations += count_case_variations(fold, fold_len, what);
+				i_variations += (byte_t)count_case_variations(fold, fold_len, what);
 		}
 		variations[i] = i_variations;
 		total_variations *= i_variations;

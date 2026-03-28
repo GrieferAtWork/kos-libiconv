@@ -41,6 +41,10 @@
 #include "../codecs.h"
 #include "cp-mbcs.h"
 
+#ifndef LIBICONV_SETERRNO
+#define LIBICONV_SETERRNO(v) (errno = (v))
+#endif /* !LIBICONV_SETERRNO */
+
 #if CODEC_MBCS_COUNT != 0
 DECL_BEGIN
 
@@ -176,7 +180,7 @@ err:
 err_ilseq:
 	self->icd_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->icd_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)size;
 }
 

@@ -21,6 +21,10 @@
 #include "convert.c"
 #endif /* __INTELLISENSE__ */
 
+#ifndef LIBICONV_SETERRNO
+#define LIBICONV_SETERRNO(v) (errno = (v))
+#endif /* !LIBICONV_SETERRNO */
+
 DECL_BEGIN
 
 INTERN NONNULL((1, 2)) size_t
@@ -47,13 +51,44 @@ NOTHROW(CC libiconv_c_escape_byte)(struct iconv_encode *__restrict self,
 		buf[1] = (char)b;
 		break;
 
+#if 1
+	case 0:
+	case 1:
+	case 2:
+	case 3:
+	case 4:
+	case 5:
+	case 6:
+#else
 	case 0 ... 6:
+#endif
 		buf[1] = itoa_decimal(b);
 		self->ice_flags |= _ICONV_CENCODE_POSTOCT;
 		break;
 
+#if 1
+	case 0x0e:
+	case 0x0f:
+	case 0x10:
+	case 0x11:
+	case 0x12:
+	case 0x13:
+	case 0x14:
+	case 0x15:
+	case 0x16:
+	case 0x17:
+	case 0x18:
+	case 0x19:
+	case 0x1a:
+//	case 0x1b:
+	case 0x1c:
+	case 0x1d:
+	case 0x1e:
+	case 0x1f:
+#else
 	case 0x0e ... 0x1a:
 	case 0x1c ... 0x1f:
+#endif
 		/* Encode as a 3-character octal */
 		buf[1] = '0';
 		buf[2] = itoa_decimal((b >> 3) & 7);
@@ -148,7 +183,18 @@ parse_unicode:
 						goto force_escape_ch32;
 					break;
 
+#if 1
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+#else
 				case '0' ... '7':
+#endif
 					if (self->ice_flags & (_ICONV_CENCODE_POSTHEX | _ICONV_CENCODE_POSTOCT)) {
 						char seq[3];
 uni_handle_illegal_after_escape:
@@ -165,9 +211,20 @@ uni_handle_illegal_after_escape:
 					}
 					break;
 
+#if 1
+				case '8':
+				case '9':
+				case 'a': case 'A':
+				case 'b': case 'B':
+				case 'c': case 'C':
+				case 'd': case 'D':
+				case 'e': case 'E':
+				case 'f': case 'F':
+#else
 				case '8' ... '9':
 				case 'a' ... 'f':
 				case 'A' ... 'F':
+#endif
 					if (self->ice_flags & _ICONV_CENCODE_POSTHEX)
 						goto uni_handle_illegal_after_escape;
 					break;
@@ -235,7 +292,18 @@ escape_bytes:
 						goto force_escape_ch;
 					break;
 
+#if 1
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+#else
 				case '0' ... '7':
+#endif
 					if (self->ice_flags & (_ICONV_CENCODE_POSTHEX | _ICONV_CENCODE_POSTOCT)) {
 						char seq[3];
 handle_illegal_after_escape:
@@ -254,9 +322,20 @@ handle_illegal_after_escape:
 					}
 					break;
 
+#if 1
+				case '8':
+				case '9':
+				case 'a': case 'A':
+				case 'b': case 'B':
+				case 'c': case 'C':
+				case 'd': case 'D':
+				case 'e': case 'E':
+				case 'f': case 'F':
+#else
 				case '8' ... '9':
 				case 'a' ... 'f':
 				case 'A' ... 'F':
+#endif
 					if (self->ice_flags & _ICONV_CENCODE_POSTHEX)
 						goto handle_illegal_after_escape;
 					break;
@@ -287,7 +366,7 @@ err:
 err_ilseq:
 	self->ice_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->ice_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)(size_t)(end - data);
 }
 
@@ -596,7 +675,18 @@ exit_escape_at_data:
 					self->icd_data.idd_cesc.ce_esc = _ICONV_DECODE_CESCAPE_ESC_MODE_HEX;
 					break;
 
+#if 1
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+#else
 				case '0' ... '7':
+#endif
 					self->icd_data.idd_cesc.ce_esc = _ICONV_DECODE_CESCAPE_ESC_MODE_OCT_1;
 					self->icd_data.idd_cesc.ce_esc_value = (uint8_t)(ch - '0');
 					break;
@@ -636,7 +726,8 @@ exit_escape_at_data:
 				break;
 
 			/* Check if another string starts here! */
-			if (ch == ((self->icd_flags & _ICONV_CDECODE_STMASK) == _ICONV_CDECODE_ST_STR ? '\"' : '\'')) {
+			if (ch == ((self->icd_flags & _ICONV_CDECODE_STMASK) == _ICONV_CDECODE_ST_STR ? (char32_t)'\"'
+			                                                                              : (char32_t)'\'')) {
 				/* Switch back to inside-of-string mode. */
 				self->icd_flags = (self->icd_flags & ~_ICONV_CDECODE_STMASK) |
 				                  ((self->icd_flags & _ICONV_CDECODE_STMASK) == _ICONV_CDECODE_ST_STR
@@ -683,7 +774,7 @@ err:
 err_ilseq:
 	self->icd_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->icd_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)(size_t)(end - data);
 }
 

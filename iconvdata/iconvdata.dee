@@ -1341,7 +1341,7 @@ do_add_encode_identity_range:
 				"{" + iser_uni_ord + "," + iser_cp_off + "}")
 			, "		 ");
 		print("},");
-		print("		._encode_ranges_end = 0xffff,");
+		print("		/* ._encode_ranges_end = */ 0xffff,");
 		print("		{"),; /* _encode_rab */
 		printCompressed(exCodec.isc_encode_rab, "		 ");
 		print("},");

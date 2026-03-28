@@ -23,6 +23,10 @@
 #define UTF_BYTEORDER 1234
 #endif /* __INTELLISENSE__ */
 
+#ifndef LIBICONV_SETERRNO
+#define LIBICONV_SETERRNO(v) (errno = (v))
+#endif /* !LIBICONV_SETERRNO */
+
 DECL_BEGIN
 
 #if UTF_BYTEORDER == 1234
@@ -79,7 +83,7 @@ err:
 err_ilseq:
 	self->ice_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->ice_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)size;
 }
 
@@ -173,7 +177,7 @@ err:
 err_ilseq:
 	self->icd_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->icd_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)size;
 }
 #endif /* UTF_WIDTH == 16 */
@@ -245,7 +249,7 @@ libiconv_utf32be_decode(struct iconv_decode *__restrict self,
 	/* Handle unmatched utf-32 bytes. */
 	if (size) {
 		memcpy(self->icd_data.idd_utf.u_pb, data, size);
-		self->icd_data.idd_utf.u_pbc = size;
+		self->icd_data.idd_utf.u_pbc = (byte_t)size;
 	}
 	/* Flush all remaining data. */
 	DO_decode_output(buf, (size_t)(ptr - buf));

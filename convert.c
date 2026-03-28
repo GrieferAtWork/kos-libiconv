@@ -53,6 +53,10 @@ gcc_opt.append("-O3"); // Force _all_ optimizations because stuff in here is per
 #include "iconv.h"
 #include "transliterate.h"
 
+#ifndef LIBICONV_SETERRNO
+#define LIBICONV_SETERRNO(v) (errno = (v))
+#endif /* !LIBICONV_SETERRNO */
+
 DECL_BEGIN
 
 #if !defined(NDEBUG) && !defined(NDEBUG_FINI)
@@ -678,7 +682,7 @@ err:
 err_ilseq:
 	self->ice_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->ice_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)size;
 }
 
@@ -723,7 +727,7 @@ err:
 err_ilseq:
 	self->icd_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->icd_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)size;
 }
 #endif /* CODEC_CP_COUNT != 0 */
@@ -838,7 +842,7 @@ err:
 err_ilseq:
 	self->ice_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->ice_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)size;
 }
 
@@ -885,7 +889,7 @@ err:
 err_ilseq:
 	self->icd_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->icd_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)size;
 }
 #endif /* CODEC_CP7L_COUNT != 0 */
@@ -961,7 +965,7 @@ libiconv_cp646_encode(struct iconv_encode *__restrict self,
 		}
 		if (!IS_ICONV_ERR_DISCARD(self->ice_flags)) {
 			if (IS_ICONV_ERR_REPLACE(self->ice_flags)) {
-				*ptr++ = iconv_iso646_codepage_qmark(cp);
+				*ptr++ = (char)(unsigned char)iconv_iso646_codepage_qmark(cp);
 			} else {
 				*ptr++ = (char)(unsigned char)(uint32_t)c32;
 			}
@@ -976,7 +980,7 @@ err:
 err_ilseq:
 	self->ice_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->ice_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)size;
 }
 
@@ -1023,7 +1027,7 @@ err:
 err_ilseq:
 	self->icd_flags |= ICONV_HASERR;
 	if (IS_ICONV_ERR_ERRNO(self->icd_flags))
-		errno = EILSEQ;
+		LIBICONV_SETERRNO(EILSEQ);
 	return -(ssize_t)size;
 }
 #endif /* CODEC_ISO646_COUNT != 0 */

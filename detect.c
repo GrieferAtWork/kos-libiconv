@@ -267,7 +267,7 @@ NOTHROW_NCX(CC calculate_ascii_fuzzyness)(char16_t const decode[/*decode_count*/
 		 * don't overflow when multiplied with each other. */
 		temp = (uint64_t)cp_heuristic[i] * (uint64_t)ASCII_HEURISTIC_TOTAL;
 		temp /= cp_heuristic_sum;
-		cp_heuristic[i] = temp;
+		cp_heuristic[i] = (uint32_t)temp;
 	}
 
 	/* Fuzzy compare the codepage-based heuristic with the baseline.  */
