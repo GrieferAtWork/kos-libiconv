@@ -799,7 +799,7 @@ is_8bit_codec:
 
 				/* Check latin1 (special case because that codec doesn't have a code page object) */
 				{
-					size_t i;
+					char32_t i;
 					for (i = 128; i < 256; ++i) {
 						if (heuristic[i] != 0 && !istxtchar(i))
 							goto latin1_doesnt_work; /* latin1 would decode to non-text characters. */
