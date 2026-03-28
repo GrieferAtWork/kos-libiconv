@@ -2507,14 +2507,18 @@ NOTHROW_NCX(CC xml_entity_fromptr)(char const *__restrict ptr) {
 			--ptr;
 		return ptr;
 	}
+
 	/* `ptr' points into the second string! */
 	while (ptr[-1] != '\0')
 		--ptr;
+
 	/* `ptr' now points at the start of the second string. */
 	--ptr;
+
 	/* `ptr' now points at the nul after the first string. */
 	while ((unsigned char)ptr[-1] >= 0x02)
 		--ptr;
+
 	/* `ptr' now points at the start of the first string. */
 	return ptr;
 }
@@ -2675,12 +2679,12 @@ NOTHROW_NCX(CC xml_escape)(char *__restrict buf, char32_t ch) {
 		 * For everything larger in this sequence, hex is always
 		 * more compact, even when accounting for the additional
 		 * leading "x" which it requires! */
-		sprintf(buf, "#%u", (unsigned int)ch);
+		(void)sprintf(buf, "#%u", (unsigned int)ch);
 	} else {
 		/* For everything else, hex is just as long, or even shorter.
 		 * Because hex is easier to read we use it unless decimal  is
 		 * more efficient. */
-		sprintf(buf, "#x%" PRIX32, (uint32_t)ch);
+		(void)sprintf(buf, "#x%" PRIX32, (uint32_t)ch);
 	}
 	return buf;
 }
@@ -2999,6 +3003,7 @@ output_escape_character:
 			xml_entity_t const *ent;
 			if (ch == ';') {
 				char const *utf;
+
 				/* End of sequence. Check that our entry also ends. */
 				ent = self->icd_data.idd_xml.xe_ent.e_str;
 				if (xml_entity_name(ent)[self->icd_data.idd_xml.xe_ent.e_len] != '\0') {
@@ -3011,8 +3016,10 @@ output_escape_character:
 				}
 				self->icd_data.idd_xml.xe_mode = _ICONV_DECODE_XML_TXT;
 output_entity_utf8_and_break:
+
 				/* Load the utf replacement for this entry. */
 				utf = xml_entity_utf8(ent);
+
 				/* Output the utf replacement. */
 				DO_decode_output(utf, strlen(utf));
 				flush_start = data;
@@ -3029,6 +3036,7 @@ output_entity_utf8_and_break:
 					self->icd_data.idd_xml.xe_ent.e_str = ent;
 				}
 				++self->icd_data.idd_xml.xe_ent.e_len;
+
 				/* Check if the entry has been completed and it has an optional trailing ';'
 				 * If this is the case, then we must immediately output the replacement  and
 				 * switch to a mode where we consume the optional ';' */
