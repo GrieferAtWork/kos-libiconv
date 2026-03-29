@@ -73,7 +73,7 @@ enum {
 	CODEC_UTF32LE_BOM,          /* "utf32le-bom", "utf-32le-bom", "utf32lebom", "utf-32lebom", "x-utf-32le-bom" */
 	CODEC_UTF8,                 /* "utf8", "utf-8", "iso10646/utf8", "iso10646/utf-8", "iso-ir-193", "osf5010001", "cp65001", "windows-65001", "csutf8" */
 	CODEC_UTF8_BOM,             /* "utf8-bom", "utf-8-bom", "utf8bom", "utf-8bom" */
-	CODEC_XML_ESCAPE,           /* "xml-escape", "html-escape" */
+	CODEC_XML_ESCAPE,           /* "xml-escape", "html-escape", "xml" */
 
 	/* 8-bit codepage codecs */
 #define CODEC_CP_COUNT 110

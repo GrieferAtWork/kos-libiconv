@@ -3116,6 +3116,7 @@ struct codec_name_db_struct {
 	/* CODEC_XML_ESCAPE */
 	char db_XML_ESCAPE_0[11]; /* "xml-escape" */
 	char db_XML_ESCAPE_1[12]; /* "html-escape" */
+	char db_XML_ESCAPE_2[4];  /* "xml" */
 	char db_XML_ESCAPE_nul;
 
 	/* CODEC_X_MAC_ARMENIAN */
@@ -6245,6 +6246,7 @@ PRIVATE struct codec_name_db_struct const codec_name_db = {
 	/* CODEC_XML_ESCAPE */
 	"xml-escape",
 	"html-escape",
+	"xml",
 	0,
 
 	/* CODEC_X_MAC_ARMENIAN */
@@ -8302,6 +8304,7 @@ PRIVATE struct codec_db_entry const codec_db[] = {
 	{ offsetof(struct codec_name_db_struct, db_BIG5_8), /*                    "x-windows-950"                 */ CODEC_BIG5 },
 	{ offsetof(struct codec_name_db_struct, db_X0201_1), /*                   "x201"                          */ CODEC_X0201 },
 	{ offsetof(struct codec_name_db_struct, db_ISO_IR_13_4), /*               "x201-7"                        */ CODEC_ISO_IR_13 },
+	{ offsetof(struct codec_name_db_struct, db_XML_ESCAPE_2), /*              "xml"                           */ CODEC_XML_ESCAPE },
 	{ offsetof(struct codec_name_db_struct, db_XML_ESCAPE_0), /*              "xml-escape"                    */ CODEC_XML_ESCAPE },
 	{ offsetof(struct codec_name_db_struct, db_ISO646_YU_4), /*               "yu"                            */ CODEC_ISO646_YU },
 };
