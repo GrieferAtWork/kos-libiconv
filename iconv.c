@@ -838,6 +838,7 @@ NOTHROW_NCX(CC libiconv_encode_isinputshiftzero)(struct iconv_encode const *__re
 
 
 
+#ifndef LIBICONV_NO__iconv_decode_init
 /* Initialize the given iconv decoder for the purpose of
  * converting  data from an  arbitrary codec into UTF-8.
  * @param: self:             [in|out] iconv decode controller.
@@ -854,11 +855,13 @@ NOTHROW_NCX(CC _libiconv_decode_init)(/*in|out*/ struct iconv_decode *__restrict
 	self->icd_codec = libiconv_codec_and_flags_byname(input_codec_name, &self->icd_flags);
 	return libiconv_decode_init(self, input);
 }
+#endif /* !LIBICONV_NO__iconv_decode_init */
 
 
 
 
 
+#ifndef LIBICONV_NO__iconv_encode_init
 /* Initialize the given iconv encoder for the purpose of
  * converting  data from an  arbitrary codec into UTF-8.
  * @param: self:              [in|out] iconv encode controller.
@@ -875,10 +878,12 @@ NOTHROW_NCX(CC _libiconv_encode_init)(/*in|out*/ struct iconv_encode *__restrict
 	self->ice_codec = libiconv_codec_and_flags_byname(output_codec_name, &self->ice_flags);
 	return libiconv_encode_init(self, input);
 }
+#endif /* !LIBICONV_NO__iconv_encode_init */
 
 
 
 
+#ifndef LIBICONV_NO_struct_iconv_transcode
 /* The  combination  of the  encode+decode functions  into  a single  one which
  * allows  for conversion from an arbitrary codec into another arbitrary codec.
  * This is pretty much just a convenience wrapper around the other 2 functions,
@@ -931,16 +936,23 @@ NOTHROW_NCX(CC _libiconv_transcode_init)(/*in|out*/ struct iconv_transcode *__re
 done:
 	return result;
 }
+#endif /* !LIBICONV_NO_struct_iconv_transcode */
 
 
 
 /* Exports... */
+#ifndef LIBICONV_NO__iconv_decode_init
 DEFINE_PUBLIC_ALIAS(_iconv_decode_init, _libiconv_decode_init);
+#endif /* !LIBICONV_NO__iconv_decode_init */
 DEFINE_PUBLIC_ALIAS(iconv_decode_isshiftzero, libiconv_decode_isshiftzero);
+#ifndef LIBICONV_NO__iconv_encode_init
 DEFINE_PUBLIC_ALIAS(_iconv_encode_init, _libiconv_encode_init);
+#endif /* !LIBICONV_NO__iconv_encode_init */
 DEFINE_PUBLIC_ALIAS(iconv_encode_flush, libiconv_encode_flush);
 DEFINE_PUBLIC_ALIAS(iconv_encode_isinputshiftzero, libiconv_encode_isinputshiftzero);
+#ifndef LIBICONV_NO_struct_iconv_transcode
 DEFINE_PUBLIC_ALIAS(_iconv_transcode_init, _libiconv_transcode_init);
+#endif /* !LIBICONV_NO_struct_iconv_transcode */
 
 DECL_END
 

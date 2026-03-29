@@ -476,7 +476,7 @@ struct iconv_printer {
 struct iconv_decode {
 	/* Convert from an arbitrary codec to UTF-8 */
 	struct iconv_printer    icd_output; /* [1..1][in][const] Output printer. */
-	__UINTPTR_HALF_TYPE__   icd_flags;  /* [const] Error mode and flags. */
+	__UINTPTR_HALF_TYPE__   icd_flags;  /* Error mode and flags. */
 #ifdef LIBICONV_EXPOSE_INTERNAL
 	__UINTPTR_HALF_TYPE__   icd_codec;  /* [const] Internal codec ID. (s.a. `iconv_codec_t') */
 	union iconv_decode_data icd_data;   /* Internal data. */
@@ -487,6 +487,7 @@ struct iconv_decode {
 };
 
 
+#ifndef LIBICONV_NO__iconv_decode_init
 /* Initialize the given iconv decoder for the purpose of
  * converting  data from an  arbitrary codec into UTF-8.
  * @param: self:             [in|out] iconv decode controller.
@@ -523,6 +524,7 @@ __NOTHROW_NCX(iconv_decode_init)(/*in|out*/ struct iconv_decode *__restrict self
 	return _iconv_decode_init(self, input, input_codec_name);
 }
 #endif /* LIBICONV_WANT_PROTOTYPES */
+#endif /* !LIBICONV_NO__iconv_decode_init */
 
 /* Check  if the given decoder is in its default (zero) shift state. If it isn't,
  * then that must mean that it's still waiting for more input data to arrive, and
@@ -556,7 +558,7 @@ __NOTHROW_NCX(LIBICONV_CC iconv_decode_isshiftzero)(struct iconv_decode const *_
 struct iconv_encode {
 	/* Convert from UTF-8 to an arbitrary codec */
 	struct iconv_printer    ice_output; /* [1..1][in][const] Output printer. */
-	__UINTPTR_HALF_TYPE__   ice_flags;  /* [const] Error mode and flags. */
+	__UINTPTR_HALF_TYPE__   ice_flags;  /* Error mode and flags. */
 #ifdef LIBICONV_EXPOSE_INTERNAL
 	__UINTPTR_HALF_TYPE__   ice_codec;  /* [const] Internal codec ID. (s.a. `iconv_codec_t') */
 	union iconv_encode_data ice_data;   /* Internal data. */
@@ -567,6 +569,7 @@ struct iconv_encode {
 };
 
 
+#ifndef LIBICONV_NO__iconv_encode_init
 /* Initialize the given iconv encoder for the purpose of
  * converting  data from an  arbitrary codec into UTF-8.
  * @param: self:              [in|out] iconv encode controller.
@@ -603,6 +606,7 @@ __NOTHROW_NCX(iconv_encode_init)(/*in|out*/ struct iconv_encode *__restrict self
 	return _iconv_encode_init(self, input, output_codec_name);
 }
 #endif /* LIBICONV_WANT_PROTOTYPES */
+#endif /* !LIBICONV_NO__iconv_encode_init */
 
 /* Reset the internal shift state to its  default and print the associated byte  sequence
  * to the output printer of the encode descriptor, returning the sum of its return values
@@ -647,6 +651,7 @@ __NOTHROW_NCX(LIBICONV_CC iconv_encode_isinputshiftzero)(struct iconv_encode con
 /************************************************************************/
 /* ICONV Transcode  (aka. <Some-Codec> --> <Some-Codec>)                */
 /************************************************************************/
+#ifndef LIBICONV_NO_struct_iconv_transcode
 struct iconv_transcode {
 	struct iconv_decode it_decode; /* Decoder */
 	struct iconv_encode it_encode; /* Encoder */
@@ -694,6 +699,7 @@ __NOTHROW_NCX(iconv_transcode_init)(/*in|out*/ struct iconv_transcode *__restric
 	return _iconv_transcode_init(self, input, input_codec_name, output_codec_name);
 }
 #endif /* LIBICONV_WANT_PROTOTYPES */
+#endif /* !LIBICONV_NO_struct_iconv_transcode */
 /************************************************************************/
 
 
