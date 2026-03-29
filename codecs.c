@@ -8497,7 +8497,7 @@ NOTHROW_NCX(FCALL libiconv_codecbynamez)(char const *__restrict name,
 		 * So rather than risk allocating a lot of stack memory, we
 		 * just try to normalize it for the purpose of limiting its
 		 * max length.
-		 * If that fails, then we know no such codec can possibly
+		 * If that fails, then we know no such codec can't possibly
 		 * exist since the name would be too long. */
 		buf = (char *)alloca((CODE_NAME_MAXLEN + 1) * sizeof(char));
 		if (!libiconv_normalize_codec_name(buf, name, namelen))
